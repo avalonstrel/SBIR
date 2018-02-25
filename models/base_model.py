@@ -9,7 +9,7 @@ def create_model(opt):
         return DenseLossModel(opt)
     elif name == 'tripletsiamese':
         from .triplet_model import TripletModel 
-
+	return TripletModel(opt)
     return None
 
 

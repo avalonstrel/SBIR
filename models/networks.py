@@ -23,15 +23,17 @@ class AttentionLayer(torch.nn.Module):
         return out
 
 class ConvLayer(torch.nn.Module):
-    def __init__(self, num_input_features, num_output_features, kernel_size, stride, bias, is_relu=True):
+    def __init__(self, num_input_features, num_output_features, kernel_size, stride, bias=False, padding=0, is_relu=True):
+        super(ConvLayer, self).__init__()
         self.conv = nn.Conv2d(num_input_features, num_output_features 
-                        , kernel_size=kernel_size, stride=stride, bias=bias)
+                        , kernel_size=kernel_size, stride=stride, padding=padding,  bias=bias)
         self.bn = nn.BatchNorm2d(num_output_features)
         self.relu = nn.ReLU(inplace=True)
+        self.is_relu = is_relu
     def forward(self, x):
-        out = self.conv(out)
+        out = self.conv(x)
         out = self.bn(out)
-        if is_relu:
+        if self.is_relu:
             out = self.relu(out)
         return out
 
@@ -65,7 +67,7 @@ class AttentionNetwork(torch.nn.Module):
         self.conv_block = ConvBlock()
         self.attention_layer = AttentionLayer()
         self.gap = nn.AvgPool2d(kernel_size=7, stride=1, padding=0)
-        self.fc6 = nn.Linear(256, 512)
+        self.fc6 = nn.Linear(256*7*7, 512)
         self.fc7 = nn.Linear(512, 256)
 
     def forward(self, x):
@@ -83,12 +85,13 @@ Triplet Siamese Network, For SBIR
 '''
 class TripletSiameseNetwork(torch.nn.Module):
     def __init__(self, opt):
+        super(TripletSiameseNetwork, self).__init__()
         self.opt = opt
         self.feat_extractor = self.get_extractor(opt.feature_model)
 
     def forward_once(self, x):
         out = self.feat_extractor(x)
-        
+        return out  
     def get_extractor(self, feature_model):
         feature_extractor = None
         if feature_model == 'attention':

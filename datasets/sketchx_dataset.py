@@ -2,32 +2,35 @@ from torch.utils import data
 import numpy as np
 from torchvision import transforms
 from util.util import to_rgb
-import os, re
-
+import os, re, json
+import scipy.io as sio
+from PIL import Image
+import cv2
 #SketchX dataset
 class SketchXDataset(data.Dataset):
     def __init__(self, opt):# root,thing_type="chairs",levels="cs", mode="train", flag="two_loss"):
-
+        self.opt = opt
         # Parameters Setting
         root = opt.data_root
 
-
+         
         mode = opt.phase
         sketch_root = os.path.join(root, mode, "sketches")
         image_root = os.path.join(root, mode, "images")
 
         self.flag = opt.loss_flag
-        self.levels = levels
+        self.levels = opt.sketch_levels
+        self.transform_fun = transforms.Compose([transforms.ToTensor()])
+        
+        if 'chairs' in root:
+            thing_type = 'chairs'
+        else:
+            thing_type = 'shoes'
         annotation_fn = os.path.join(root, "annotation/{}_annotation.json".format(thing_type))
         
         self.annotation_data = json.load(open(annotation_fn,"r"))
         self.num = len(self.annotation_data[mode]["sketches"])
-        self.transform_fun = transforms.Compose([transforms.ToTensor()])
-        
-        if 'chairs' in self.root:
-            thing_type = 'chairs'
-        else:
-            thing_type = 'shoes'
+ 
         if thing_type == 'chairs':
             label_key = 'labels'
             offset = 1 if mode == "train" else 201
@@ -50,7 +53,7 @@ class SketchXDataset(data.Dataset):
 
         for root, subFolders, files in os.walk(sketch_root):
             sketch_pat = re.compile("\d+.png")
-            sketch_imgs = list(filter(lambda fname:sketch_pat.fullmatch(fname), files))
+            sketch_imgs = list(filter(lambda fname:sketch_pat.match(fname), files))
             if len(sketch_imgs) == 0:
                 continue
             for i, sketch_img in enumerate(sketch_imgs):
@@ -93,7 +96,7 @@ class SketchXDataset(data.Dataset):
             pil_numpy = to_rgb(pil_numpy[:,:,3])
             #pil_numpy = np.tile(pil_numpy[:,:,3],3).reshape(pil_numpy.shape[0:2]+(-1,))
             #pil_numpy[:,:,2] = 0
-        pil_numpy = cv2.resize(pil_numpy,(resize_size,resize_size))
+        pil_numpy = cv2.resize(pil_numpy,(self.opt.scale_size,self.opt.scale_size))
         if self.transform_fun is not None:
             pil_numpy = self.transform_fun(pil_numpy)
         #data_info.write(",".join([str(i) for i in pil_numpy.numpy().flatten() if i != 0])+"\n")

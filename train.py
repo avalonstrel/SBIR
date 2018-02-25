@@ -18,6 +18,7 @@ def train():
     data_loader_size = len(train_data_loader)
     print('Construct Model...')
     model = create_model(opt)
+    print(opt.model)
     model.train()
 
     total_steps = 0

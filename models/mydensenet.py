@@ -118,7 +118,7 @@ class MultiDenseNet(nn.Module):
         num_classes (int) - number of classification classes
     """
     def __init__(self, input_shape, feat_size=128, growth_rate=32, block_config=(6, 12, 24, 16),
-                 num_init_features=32, bn_size=4, drop_rate=0):
+                 num_init_features=64, bn_size=4, drop_rate=0):
 
         super(MultiDenseNet, self).__init__()
         self.block_config = block_config
@@ -139,7 +139,7 @@ class MultiDenseNet(nn.Module):
         self.transs = nn.ModuleList([])
         self.bns = nn.ModuleList([])
         #self.bottlenecks = nn.ModuleList([])
-        self.gaps = nn.MuduleList([])
+        self.gaps = []
         self.linears = nn.ModuleList([])
 
         block_input_shape = self._get_block_input_shape(input_shape)
@@ -198,7 +198,7 @@ class MultiDenseNet(nn.Module):
         input_var = Variable(torch.rand(bs,num_features,*input_shape))
         output_var = block(input_var)
         #output_var_ = self.simpliy(output_var,i)#F.avg_pool2d(output_var, kernel_size=7, stride=1).view(output_var.size(0), -1)
-        return output_var.size()[2:], output_var_.size(1) 
+        return output_var.size()[2:], output_var.size(1) 
     #def simpliy(self, features, i):
         #print(features.size())
         #features = self.bottlenecks[i](features)

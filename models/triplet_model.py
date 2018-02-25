@@ -20,7 +20,7 @@ class TripletModel(BaseModel):
         return None
 
     def initialize(self):
-        self.network = TripletNetwork(self.opt)
+        self.network = TripletSiameseNetwork(self.opt)
         self.network = torch.nn.DataParallel(self.network)
         self.loss = self.get_loss(self.opt.loss_type[0])
         self.cls_loss = torch.nn.CrossEntropyLoss()
