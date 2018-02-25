@@ -2,17 +2,16 @@ import torch
 from torch.utils import data
 
 
-
-def create_dataset(self, opt):
+def create_dataset(opt):
     name = opt.dataset_type
     if name == 'hairstyle':
-        from .hairstyle_dataset import *
+        from .hairstyle_dataset import HairStyleDataset
         return HairStyleDataset(opt)
     elif name == 'sketchx':
-        from .sketchy_dataset import *
+        from .sketchy_dataset import SketchXDataset
         return SketchXDataset(opt)
     elif name == 'sketchy':
-        from .sketchx_dataset import *
+        from .sketchx_dataset import SketchyDataset
         return SketchyDataset(opt)
 
     return None
@@ -29,11 +28,12 @@ class CustomDatasetDataLoader():
         return 'CustomDatasetDataLoader'
 
     def initialize(self, opt):
-        BaseDataLoader.initialize(self, opt)
+        #BaseDataLoader.initialize(self, opt)
         self.dataset = create_dataset(opt)
         if opt.phase == 'train':
             batch_size = opt.batch_size
         else:
+            #batch_size = opt.batch_size
             batch_size = len(self.dataset)
         self.dataloader = torch.utils.data.DataLoader(
             self.dataset,

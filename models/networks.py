@@ -2,12 +2,12 @@ import torch
 import torch.nn.functional as F
 import torchvision.models as models
 import numpy as np
-from mydensenet import MultiDenseNet
-
+from .mydensenet import MultiDenseNet
+import torch.nn as nn
 def save_feature(state, filename):
     torch.save(state, filename)
 
-class AttentionNetwork(nn.Module):
+class AttentionNetwork(torch.nn.Module):
     def __init__(self, out_features):
         super(AttentionNetwork, self).__init__()
         self.attention = nn.Linear(out_features, out_features, False)
@@ -19,10 +19,11 @@ class AttentionNetwork(nn.Module):
         return x + attention * x
 
 
-class DenseSBIRNetwork(nn.Module):
+class DenseSBIRNetwork(torch.nn.Module):
     def __init__(self, opt):
         super(DenseSBIRNetwork, self).__init__()
-        self.feat_extractor = MultiDenseNet(embedd_size=opt.feat_size)
+        input_shape = (3, opt.scale_size, opt.scale_size)
+        self.feat_extractor = MultiDenseNet(input_shape, feat_size=opt.feat_size)
         self.save_mode = opt.save_mode
         self.attention_mode = opt.attention_mode
         self.fc_layer_mode = opt.fc_layer_mode
@@ -40,9 +41,9 @@ class DenseSBIRNetwork(nn.Module):
 
         return output1, output2, output3
 
-class SBIRSiameseNetwork(nn.Module):
+class SBIRSiameseNetwork(torch.nn.Module):
 
-    def __init__(self, opt)#output_size,embedding_type, pretrain, concatation=[0,1,2,3], mode = False, attention=True,fc_layer_mode=True, fusion_mode=True):
+    def __init__(self, opt):#output_size,embedding_type, pretrain, concatation=[0,1,2,3], mode = False, attention=True,fc_layer_mode=True, fusion_mode=True):
         super(SBIRSiameseNetwork, self).__init__()
         self.save_mode = opt.save_mode
         self.embedding_type = opt.feature_model
@@ -117,7 +118,7 @@ class SBIRSiameseNetwork(nn.Module):
         return output1, output2, output3, output1_ori, output2_ori, output3_ori
 
 
-class ClassificationNetwork(nn.Module):
+class ClassificationNetwork(torch.nn.Module):
     def __init__ (self, input_size, n_labels):
         super(ClassificationNetwork, self).__init__()
         self.batch_norm = nn.BatchNorm1d(input_size)
@@ -131,7 +132,7 @@ class ClassificationNetwork(nn.Module):
         #output = self.batch_norm2(output)
         return output
 
-class AttributeNetwork(nn.Module):
+class AttributeNetwork(torch.nn.Module):
     def __init__ (self, input_size, n_labels):
         super(AttributeNetwork, self).__init__()
         hidden_size = 128

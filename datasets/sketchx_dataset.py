@@ -2,14 +2,15 @@ from torch.utils import data
 import numpy as np
 from torchvision import transforms
 from util.util import to_rgb
-
+import os, re
 
 #SketchX dataset
 class SketchXDataset(data.Dataset):
     def __init__(self, opt)# root,thing_type="chairs",levels="cs", mode="train", flag="two_loss"):
 
         # Parameters Setting
-        root = opt.dataroot
+        root = opt.data_root
+
 
         mode = opt.phase
         sketch_root = os.path.join(root, mode, "sketches")

@@ -1,0 +1,1 @@
+python train.py --data_root /home/lhy/datasets/hair_tmp_sketch/ --dataset_type hairstyle --phase train --num_epoch 20 --n_labels 40 --n_attrs 50 --scale_size 224 --batch_size 20 --gpu_ids 0,1 --save_mode

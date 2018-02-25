@@ -41,16 +41,16 @@ class BaseModel():
     def load_model(self, model):
         raise NotImplementedError("not implement error")
     def train(self, mode=True):
-        for module in optimize_modules:
+        for module in self.optimize_modules:
             module.train(mode)
 
     def parallel(self):
-        for i in range(self.optimize_modules):
-            self.optimize_modules[i] = torch.nn.DataParallel(self.optimize_modules)
+        for i in range(len(self.optimize_modules)):
+            pass#self.optimize_modules[i] = torch.nn.DataParallel(self.optimize_modules[i])
 
     def cuda(self):
-        for i in range(self.optimize_modules):
-            self.optimize_modules[i] = self.optimize_modules[i].cuda()
+        for i in range(len(self.optimize_modules)):
+            self.optimize_modules[i].cuda()
         
     # helper saving function that can be used by subclasses
     def save_network(self, network, network_label, epoch_label):

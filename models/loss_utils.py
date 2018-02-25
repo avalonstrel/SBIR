@@ -3,7 +3,7 @@ import torch.nn
 import math
 import numpy as np
 import torch.nn.functional as F
-import ot
+#import ot
 
 
 class DenseLoss(torch.nn.Module):
@@ -12,14 +12,16 @@ class DenseLoss(torch.nn.Module):
     By optimial transport
     '''
     def __init__(self, opt):
-        super(MultiDenseLoss, self).__init__()
+        super(DenseLoss, self).__init__()
         self.num_layers = opt.num_layers
-        self.base_loss = self.get_loss(opt.loss_type)
-    def get_loss(self, loss_type):
-        if loss_type == 'triplet':
-            loss = TripletLoss(opt)
-        elif loss_type == 'holef':
+        self.base_loss = self.get_loss(opt)
+    def get_loss(self, opt):
+        loss_type = opt.loss_type[0]
+        if loss_type == 'holef':
             loss = HOLEFLoss(opt)
+        else:
+            loss = TripletLoss(opt)
+ 
         return loss
 
     def forward(self, x0, x1, x2):
@@ -27,7 +29,9 @@ class DenseLoss(torch.nn.Module):
         for i in range(self.num_layers):
             for j in range(self.num_layers):
                 loss_W[i, j] = self.base_loss(x0[i], x1[j], x2[j])
-        weight = ot.emd([],[],loss_W)
+        #weight = ot.emd([],[],loss_W)
+        loss_W = torch.from_numpy(loss_W)
+        weight = np.eye(self.num_layers)
         weight = torch.from_numpy(weight)
         return torch.sum(weight*loss_W)
 

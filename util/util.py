@@ -1,9 +1,9 @@
 import os
-
+import numpy as np
 
 def accs_message(accs):
     if  isinstance(accs, dict):
-        return 'top {}:{}'.format(tuple(accs.keys()), (str(acc.avg)[:4] for acc in accs.values()))
+        return 'top {}:{}'.format(tuple(accs.keys()), tuple(str(acc.avg)[:4] for acc in accs.values()))
     elif isinstance(accs, float):
         return 'acc :{%4f}'.format(accs)
 def to_rgb(im):

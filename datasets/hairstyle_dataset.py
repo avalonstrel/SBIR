@@ -2,12 +2,16 @@ from torch.utils import data
 import numpy as np
 from torchvision import transforms
 from util.util import to_rgb
-
+import os, re
+from PIL import Image
+import json
+import cv2 
 """Sketch Dataset"""
 class HairStyleDataset(data.Dataset):
-    def __init__(self,  opt) #augment_types=[""], levels="cs", mode="train",flag="two_loss", train_split=20,  pair_inclass_num=5,pair_outclass_num=0,edge_map=True):
+    def __init__(self,  opt): #augment_types=[""], levels="cs", mode="train",flag="two_loss", train_split=20,  pair_inclass_num=5,pair_outclass_num=0,edge_map=True):
         # parameters setting
-        self.root = opt.dataroot
+        self.opt = opt
+        self.root = opt.data_root
         self.flag = opt.loss_flag
         self.edge_map = opt.edge_map
         self.levels = opt.sketch_levels
@@ -17,7 +21,7 @@ class HairStyleDataset(data.Dataset):
         train_split = 20
         mode = opt.phase
         augment_types = opt.augment_types
-
+        #print(self.flag, self.edge_map, self.levels, augment_types)
         # Data Initialization
         self.hair_imgs = []
         self.sketch_imgs = []
@@ -34,7 +38,7 @@ class HairStyleDataset(data.Dataset):
         # load pictures
         for root,subFolders,files in os.walk(self.root):
             hair_pat = re.compile("cropped_\w+.*\d+.*\.jpg")
-            hair_imgs = list(filter(lambda fname:hair_pat.fullmatch(fname),files))
+            hair_imgs = list(filter(lambda fname:hair_pat.match(fname),files))
             if len(hair_imgs) == 0:
                 print(root)
                 continue
@@ -48,7 +52,7 @@ class HairStyleDataset(data.Dataset):
 
                             flag = "_" if mode == "train" and augment_type != "" else ""
                             sketch_pat = re.compile("cropped_"+augment_type+flag+str(digit)+level+".*\.png")
-                            sketch_imgs = list(filter(lambda fname:sketch_pat.fullmatch(fname),files))
+                            sketch_imgs = list(filter(lambda fname:sketch_pat.match(fname),files))
                             for sketch_img in sketch_imgs:
                                 
                                 self.hair_imgs.append(os.path.join(root,hair_img))
@@ -78,7 +82,7 @@ class HairStyleDataset(data.Dataset):
         for i, fg_label in enumerate(self.fg_labels):
             self.fg_labels_dict[fg_label].append(i)
 
-        pair_inclass_num, pair_outclass_num = self.opt.pair_num
+        pair_inclass_num, pair_outclass_num = opt.pair_num
         if mode == "train":
             self.generate_triplet(pair_inclass_num,pair_outclass_num)
 
@@ -103,7 +107,7 @@ class HairStyleDataset(data.Dataset):
             pil_numpy = to_rgb(pil_numpy[:,:,3])
             #pil_numpy = np.tile(pil_numpy[:,:,3],3).reshape(pil_numpy.shape[0:2]+(-1,))
             #pil_numpy[:,:,2] = 0
-        pil_numpy = cv2.resize(pil_numpy,(resize_size,resize_size))
+        pil_numpy = cv2.resize(pil_numpy,(self.opt.scale_size,self.opt.scale_size))
         if self.transform_fun is not None:
             pil_numpy = self.transform_fun(pil_numpy)
         #data_info.write(",".join([str(i) for i in pil_numpy.numpy().flatten() if i != 0])+"\n")

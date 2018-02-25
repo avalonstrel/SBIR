@@ -1,7 +1,7 @@
 
 import torch
 import numpy as np
-
+import math
 
 class AverageMeter(object):
     """Computes and stores the average and current value"""
@@ -54,7 +54,7 @@ def retrieval_evaluation(output0, output1, category_labels, topk=(1,5)):
     print(correct, total)
     for top in topk:
         correct_fg[top] /= total * 0.01
-        print("top",top,correct_fg[top], correct_fg[top])
+        #print("top",top,correct_fg[top], correct_fg[top])
     return correct / total * 100.0, correct_fg
 
    
@@ -107,8 +107,8 @@ def accuracy(output, target, topk=(1,)):
     pred = pred.t()
     correct = pred.eq(target.view(1, -1).expand_as(pred))
 
-    res = []
+    res = {}
     for k in topk:
         correct_k = correct[:k].view(-1).float().sum(0, keepdim=True)
-        res.append(correct_k.mul_(100.0 / batch_size))
+        res[k] = (correct_k.mul_(100.0 / batch_size))
     return res

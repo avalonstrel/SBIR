@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils.model_zoo as model_zoo
 from collections import OrderedDict
-
+from torch.autograd import Variable
 __all__ = ['DenseNet', 'densenet121', 'densenet169', 'densenet201', 'densenet161']
 
 
@@ -117,10 +117,10 @@ class MultiDenseNet(nn.Module):
         drop_rate (float) - dropout rate after each dense layer
         num_classes (int) - number of classification classes
     """
-    def __init__(self, feat_size=128, growth_rate=32, block_config=(6, 12, 24, 16),
-                 num_init_features=64, bn_size=4, drop_rate=0):
+    def __init__(self, input_shape, feat_size=128, growth_rate=32, block_config=(6, 12, 24, 16),
+                 num_init_features=32, bn_size=4, drop_rate=0):
 
-        super(DenseNet, self).__init__()
+        super(MultiDenseNet, self).__init__()
         self.block_config = block_config
         self.multi_feat_sizes = []
         # First convolution
@@ -130,31 +130,42 @@ class MultiDenseNet(nn.Module):
             ('relu0', nn.ReLU(inplace=True)),
             ('pool0', nn.MaxPool2d(kernel_size=3, stride=2, padding=1)),
         ]))
-        self.features = nn.Sequential(OrderedDict([
-            ('feat0', self.features_before)]))
+        self.add_module('features_before', self.features_before)
+        #self.features = nn.Sequential(OrderedDict([
+        #    ('feat0', self.features_before)]))
         # Each denseblock
         num_features = num_init_features
-        self.blocks = {}
-        self.transs = {}
-        self.bns = {}
-        self.linears = {}
+        self.blocks = nn.ModuleList([])
+        self.transs = nn.ModuleList([])
+        self.bns = nn.ModuleList([])
+        self.bottlenecks = nn.ModuleList([])
+        self.linears = nn.ModuleList([])
+        block_input_shape = self._get_block_input_shape(input_shape)
         for i, num_layers in enumerate(block_config):
             block = _DenseBlock(num_layers=num_layers, num_input_features=num_features,
                                 bn_size=bn_size, growth_rate=growth_rate, drop_rate=drop_rate)
-            #self.blocks[i] = block
-            self.features.add_module('denseblock%d' % (i + 1), block)
-            num_features = num_features + num_layers * growth_rate
+            self.blocks.append(block)
+            #self.features.add_module('denseblock%d' % (i + 1), block)
+            
+            self.bottlenecks.append(nn.Conv2d(num_features + num_layers * growth_rate, 1, kernel_size=1, stride=1, bias=False))
+            block_input_shape, linear_num_features = self._get_linear_input_shape(num_features, block_input_shape, block,i)
 
-            self.bns[i] = nn.BatchNorm2d(num_features)
-            self.linears[i] = nn.Linear(num_features, feat_size)
+            num_features = num_features + num_layers * growth_rate
+            self.bns.append(nn.BatchNorm2d(num_features))
+            #print(i, block_input_shape, linear_num_features)
+            self.linears.append(nn.Linear(linear_num_features, feat_size))
             if i != len(block_config) - 1:
                 trans = _Transition(num_input_features=num_features, num_output_features=num_features // 2)
-                self.transs[i] = trans
-                self.features.add_module('transition%d' % (i + 1), trans)
+                
+                block_input_shape = self._get_trans_input_shape(num_features, block_input_shape, trans) 
+                self.transs.append(trans)
+            #    self.features.add_module('transition%d' % (i + 1), trans)
                 num_features = num_features // 2
-
+        for pre_key, modules in {'block':self.blocks, 'trans':self.transs, 'bn':self.bns, 'linaer':self.linears, 'bottlenecks':self.bottlenecks}.items():
+            for key, module in enumerate(modules):
+                self.add_module('{}_{}'.format(pre_key, key), module)
         # Final batch norm
-        self.features.add_module('norm5', nn.BatchNorm2d(num_features))
+        #self.features.add_module('norm5', nn.BatchNorm2d(num_features))
         self.final_bn = nn.BatchNorm2d(num_features)
 
         # Linear layer
@@ -169,16 +180,42 @@ class MultiDenseNet(nn.Module):
                 m.bias.data.zero_()
             elif isinstance(m, nn.Linear):
                 m.bias.data.zero_()
-
+    def _get_trans_input_shape(self, num_features, input_shape, trans):
+        bs = 1
+        input_var = Variable(torch.rand(bs,num_features,*input_shape))
+        output_var = trans(input_var)
+        return output_var.size()[2:] 
+    def _get_block_input_shape(self, input_shape):
+        bs = 1
+        input_var = Variable(torch.rand(bs, *input_shape))
+        output_var = self.features_before(input_var)
+        return output_var.size()[2:]
+    def _get_linear_input_shape(self, num_features, input_shape, block, i):
+        bs = 1
+        input_var = Variable(torch.rand(bs,num_features,*input_shape))
+        output_var = block(input_var)
+        output_var_ = self.simpliy(output_var,i)#F.avg_pool2d(output_var, kernel_size=7, stride=1).view(output_var.size(0), -1)
+        return output_var.size()[2:], output_var_.size(1) 
+    def simpliy(self, features, i):
+        #print(features.size())
+        features = self.bottlenecks[i](features)
+        #features = F.avg_pool2d(features, kernel_size=7, stride=1)#.view(features.size(0), -1)
+        features = F.avg_pool2d(features, kernel_size=7, stride=1).view(features.size(0), -1)
+        return features
     def forward(self, x):
         x = self.features_before(x)
         inter_xs = []
         for i, num_layers in enumerate(self.block_config):
             x = self.blocks[i](x)
             if self.training:
+                #print('before', x.size())
                 xtmp = self.bns[i](x)
+                #print('after', xtmp.size())
+
                 xtmp = F.relu(xtmp, inplace=True)
-                xtmp = F.avg_pool2d(xtmp, kernel_size=7, stride=1).view(xtmp.size(0), -1)
+                xtmp = self.simpliy(xtmp,i)#F.avg_pool2d(xtmp, kernel_size=7, stride=1).view(xtmp.size(0), -1)
+                
+                #print('xtmp',xtmp.size())
                 xtmp = self.linears[i](xtmp)
                 inter_xs.append(xtmp)
             if i != len(self.block_config) - 1:
@@ -186,6 +223,7 @@ class MultiDenseNet(nn.Module):
         x = self.final_bn(x)
         out = F.relu(x, inplace=True)
         out = F.avg_pool2d(out, kernel_size=7, stride=1).view(out.size(0), -1)
+        
         out = self.classifier(out)
         inter_xs.append(out)
         return inter_xs

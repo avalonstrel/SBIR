@@ -2,9 +2,10 @@ from torch.utils import data
 import numpy as np
 from torchvision import transforms
 from util.util import to_rgb
-
+import os,re
 class SketchyDataset(data.Dataset):
     def __init__(self, opt)# root,photo_types,sketch_types,batch_size, mode="train", train_split=2000,  pair_inclass_num=2,pair_outclass_num=3):
+        root = opt.data_root
         photo_types = opt.photo_types
         sketch_types = opt.sketch_types
         mode = opt.phase
