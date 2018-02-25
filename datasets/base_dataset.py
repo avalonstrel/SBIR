@@ -8,10 +8,10 @@ def create_dataset(opt):
         from .hairstyle_dataset import HairStyleDataset
         return HairStyleDataset(opt)
     elif name == 'sketchx':
-        from .sketchy_dataset import SketchXDataset
+        from .sketchx_dataset import SketchXDataset
         return SketchXDataset(opt)
     elif name == 'sketchy':
-        from .sketchx_dataset import SketchyDataset
+        from .sketchy_dataset import SketchyDataset
         return SketchyDataset(opt)
 
     return None

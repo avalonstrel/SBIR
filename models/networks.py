@@ -1,6 +1,6 @@
 import torch
 import torch.nn.functional as F
-import torchvision.models as models
+#import torchvision.models as models
 import numpy as np
 from .mydensenet import MultiDenseNet
 import torch.nn as nn
@@ -90,9 +90,10 @@ class TripletSiameseNetwork(torch.nn.Module):
         out = self.feat_extractor(x)
         
     def get_extractor(self, feature_model):
+        feature_extractor = None
         if feature_model == 'attention':
             feature_extractor = AttentionNetwork(self.opt)
-        else feature_model == 'densenet169':
+        elif feature_model == 'densenet169':
             feature_extractor = models.densenet169(pretrained=pretrain)
             feature_extractor.classifier = nn.Linear(feature_extractor.classifier.in_features, self.opt.feat_size)
         return feature_extractor

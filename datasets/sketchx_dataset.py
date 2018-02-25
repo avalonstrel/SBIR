@@ -6,7 +6,7 @@ import os, re
 
 #SketchX dataset
 class SketchXDataset(data.Dataset):
-    def __init__(self, opt)# root,thing_type="chairs",levels="cs", mode="train", flag="two_loss"):
+    def __init__(self, opt):# root,thing_type="chairs",levels="cs", mode="train", flag="two_loss"):
 
         # Parameters Setting
         root = opt.data_root
