@@ -138,8 +138,10 @@ class MultiDenseNet(nn.Module):
         self.blocks = nn.ModuleList([])
         self.transs = nn.ModuleList([])
         self.bns = nn.ModuleList([])
-        self.bottlenecks = nn.ModuleList([])
+        #self.bottlenecks = nn.ModuleList([])
+        self.gaps = nn.MuduleList([])
         self.linears = nn.ModuleList([])
+
         block_input_shape = self._get_block_input_shape(input_shape)
         for i, num_layers in enumerate(block_config):
             block = _DenseBlock(num_layers=num_layers, num_input_features=num_features,
@@ -147,21 +149,22 @@ class MultiDenseNet(nn.Module):
             self.blocks.append(block)
             #self.features.add_module('denseblock%d' % (i + 1), block)
             
-            self.bottlenecks.append(nn.Conv2d(num_features + num_layers * growth_rate, 1, kernel_size=1, stride=1, bias=False))
+            #self.bottlenecks.append(nn.Conv2d(num_features + num_layers * growth_rate, 1, kernel_size=1, stride=1, bias=False))
             block_input_shape, linear_num_features = self._get_linear_input_shape(num_features, block_input_shape, block,i)
 
             num_features = num_features + num_layers * growth_rate
             self.bns.append(nn.BatchNorm2d(num_features))
             #print(i, block_input_shape, linear_num_features)
-            self.linears.append(nn.Linear(linear_num_features, feat_size))
+            self.gaps.append(nn.AvgPool2d(kernel_size=block_input_shape[0], stride=1))
+            self.linears.append(nn.Linear(num_features, feat_size))
             if i != len(block_config) - 1:
                 trans = _Transition(num_input_features=num_features, num_output_features=num_features // 2)
                 
                 block_input_shape = self._get_trans_input_shape(num_features, block_input_shape, trans) 
                 self.transs.append(trans)
-            #    self.features.add_module('transition%d' % (i + 1), trans)
+            #    self.features.add_module('transition%d' % (i + 1), trans), 'bottlenecks':self.bottlenecks
                 num_features = num_features // 2
-        for pre_key, modules in {'block':self.blocks, 'trans':self.transs, 'bn':self.bns, 'linaer':self.linears, 'bottlenecks':self.bottlenecks}.items():
+        for pre_key, modules in {'block':self.blocks, 'trans':self.transs, 'bn':self.bns, 'linaer':self.linears}.items():
             for key, module in enumerate(modules):
                 self.add_module('{}_{}'.format(pre_key, key), module)
         # Final batch norm
@@ -194,14 +197,14 @@ class MultiDenseNet(nn.Module):
         bs = 1
         input_var = Variable(torch.rand(bs,num_features,*input_shape))
         output_var = block(input_var)
-        output_var_ = self.simpliy(output_var,i)#F.avg_pool2d(output_var, kernel_size=7, stride=1).view(output_var.size(0), -1)
+        #output_var_ = self.simpliy(output_var,i)#F.avg_pool2d(output_var, kernel_size=7, stride=1).view(output_var.size(0), -1)
         return output_var.size()[2:], output_var_.size(1) 
-    def simpliy(self, features, i):
+    #def simpliy(self, features, i):
         #print(features.size())
-        features = self.bottlenecks[i](features)
+        #features = self.bottlenecks[i](features)
         #features = F.avg_pool2d(features, kernel_size=7, stride=1)#.view(features.size(0), -1)
-        features = F.avg_pool2d(features, kernel_size=7, stride=1).view(features.size(0), -1)
-        return features
+        #features = F.avg_pool2d(features, kernel_size=7, stride=1).view(features.size(0), -1)
+        #return features
     def forward(self, x):
         x = self.features_before(x)
         inter_xs = []
@@ -213,8 +216,9 @@ class MultiDenseNet(nn.Module):
                 #print('after', xtmp.size())
 
                 xtmp = F.relu(xtmp, inplace=True)
-                xtmp = self.simpliy(xtmp,i)#F.avg_pool2d(xtmp, kernel_size=7, stride=1).view(xtmp.size(0), -1)
-                
+                #xtmp = self.simpliy(xtmp,i)#F.avg_pool2d(xtmp, kernel_size=7, stride=1).view(xtmp.size(0), -1)
+                xtmp = self.gaps[i](xtmp)
+                xtmp = xtmp.view(xtmp.size(0), -1)
                 #print('xtmp',xtmp.size())
                 xtmp = self.linears[i](xtmp)
                 inter_xs.append(xtmp)
