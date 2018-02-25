@@ -7,17 +7,102 @@ import torch.nn as nn
 def save_feature(state, filename):
     torch.save(state, filename)
 
-class AttentionNetwork(torch.nn.Module):
-    def __init__(self, out_features):
-        super(AttentionNetwork, self).__init__()
-        self.attention = nn.Linear(out_features, out_features, False)
-        self.out_features = out_features
+class AttentionLayer(torch.nn.Module):
+    def __init__(self):
+        super(AttentionLayer, self).__init__()
+        self.attention1 = nn.Conv2d(256, 256, kernel_size=1, stride=1, padding=0)
+        self.attention2 = nn.Conv2d(256, 1, kernel_size=1, stride=1, padding=0)
+        
+        #self.out_features = out_features
     def forward(self, x):
-        attention = self.attention(x)
-        attention = F.softmax(attention,dim=1)
+        
+        out = self.attention1(x)
+        attention = self.attention2(out)
+        out = (x + attention * x)
 
-        return x + attention * x
+        return out
 
+class ConvLayer(torch.nn.Module):
+    def __init__(self, num_input_features, num_output_features, kernel_size, stride, bias, is_relu=True):
+        self.conv = nn.Conv2d(num_input_features, num_output_features 
+                        , kernel_size=kernel_size, stride=stride, bias=bias)
+        self.bn = nn.BatchNorm2d(num_output_features)
+        self.relu = nn.ReLU(inplace=True)
+    def forward(self, x):
+        out = self.conv(out)
+        out = self.bn(out)
+        if is_relu:
+            out = self.relu(out)
+        return out
+
+class ConvBlock(torch.nn.Module):
+    def __init__(self):
+        super(ConvBlock, self).__init__()
+        self.conv1 = ConvLayer(3, 64, kernel_size=15, stride=3, bias=False)
+        self.pool1 = nn.MaxPool2d(kernel_size=3, stride=2, padding=0)
+        self.conv2 = ConvLayer(64, 128, kernel_size=5, stride=1, padding=0)
+        self.pool2 = nn.MaxPool2d(kernel_size=3, stride=2, padding=0)
+        self.conv3 = ConvLayer(128, 256, kernel_size=3, stride=1, padding=1)
+        self.conv4 = ConvLayer(256, 256, kernel_size=3, stride=1, padding=1)
+        self.conv5 = ConvLayer(256, 256, kernel_size=3, stride=1, padding=1, is_relu=False)
+        self.pool3 = nn.MaxPool2d(kernel_size=3, stride=2, padding=0)
+
+    def forward(self, x):
+        out = self.conv1(x)
+        out = self.pool1(out)
+        out = self.conv2(out)
+        out = self.pool2(out)
+        out = self.conv3(out)
+        out = self.conv4(out)
+        out = self.conv5(out)
+        out = self.pool3(out)
+        return out
+
+
+class AttentionNetwork(torch.nn.Module):
+    def __init__(self, opt):
+        super(AttentionNetwork, self).__init__()
+        self.conv_block = ConvBlock()
+        self.attention_layer = AttentionLayer()
+        self.gap = nn.AvgPool2d(kernel_size=7, stride=1, padding=0)
+        self.fc6 = nn.Linear(256, 512)
+        self.fc7 = nn.Linear(512, 256)
+
+    def forward(self, x):
+        conv_feature = self.conv_block(x)
+        attention_feature = self.attention_layer(conv_feature)
+        linear_input_feature = attention_feature.view(attention_feature.size(0), -1)
+        out = self.fc6(linear_input_feature)
+        out = self.fc7(out)
+        gap_feature = self.gap(attention_feature).view(attention_feature.size(0), -1)
+        out = torch.cat([out, gap_feature], 1)
+        return out
+
+'''
+Triplet Siamese Network, For SBIR
+'''
+class TripletSiameseNetwork(torch.nn.Module):
+    def __init__(self, opt):
+        self.opt = opt
+        self.feat_extractor = self.get_extractor(opt.feature_model)
+
+    def forward_once(self, x):
+        out = self.feat_extractor(x)
+        
+    def get_extractor(self, feature_model):
+        if feature_model == 'attention':
+            feature_extractor = AttentionNetwork(self.opt)
+        else feature_model == 'densenet169':
+            feature_extractor = models.densenet169(pretrained=pretrain)
+            feature_extractor.classifier = nn.Linear(feature_extractor.classifier.in_features, self.opt.feat_size)
+        return feature_extractor
+
+    def forward(self, x0, x1, x2):
+        out0 = self.forward_once(x0)
+        out1 = self.forward_once(x1)
+        out2 = self.forward_once(x2)
+
+        return out0, out1, out2
 
 class DenseSBIRNetwork(torch.nn.Module):
     def __init__(self, opt):

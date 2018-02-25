@@ -8,13 +8,13 @@ from util.evaluation import *
 from util.util import *
 from torch.autograd import Variable
 
-class DenseLossModel(BaseModel):
+class AttetionModel(BaseModel):
 
     def name(self):
-        return 'DenseLossModel'
+        return 'AttentionModel'
 
     def initialize(self):
-        self.network = DenseSBIRNetwork(self.opt)
+        self.network = SBIRNetwork(self.opt)
         self.network = torch.nn.DataParallel(self.network)
         self.loss = DenseLoss(self.opt)
         self.cls_loss = torch.nn.CrossEntropyLoss()
@@ -238,7 +238,7 @@ class DenseLossModel(BaseModel):
         if 'holef' in self.opt.distance_type:
             self.save_network(self.loss.base_loss.linear, epoch_label)
         if self.opt.save_mode:
-            self.save_feature(self.opt.phase, epoch_label)
+            self.save_feature(self.opt.feature_model, epoch_label)
 
     '''
     Load the model
