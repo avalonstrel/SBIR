@@ -60,6 +60,7 @@ class HOLEFLoss(torch.nn.Module):
     def reset_parameter(self):
         stdv = 1. / math.sqrt(self.weight.size(1))
         self.weight.data.uniform_(-stdv, stdv)
+        
     def higher_energy_distance(self, x, y):
         x = x.unsqueeze(1)
         y = y.unsqueeze(2)
@@ -67,7 +68,8 @@ class HOLEFLoss(torch.nn.Module):
         output = self.linear(outer_sub)
         output = output.view(output.size(0),-1)
        
-        return (torch.sum(output,1))   
+        return (torch.sum(output,1)) 
+
     def forward(self, x0, x1, x2):
         dist_pos = self.higher_energy_distance(x0, x1)
         dist_neg = self.higher_energy_distance(x0, x2)

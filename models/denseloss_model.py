@@ -51,6 +51,8 @@ class DenseLossModel(BaseModel):
         
         self.optimizer = torch.optim.Adam([{"params":module.parameters()} for module in self.optimize_modules], lr=self.opt.learning_rate, weight_decay=self.opt.weight_decay)
         
+        self.reset_features()
+        self.reset_test_features()
         if len(self.opt.gpu_ids) > 1:
             self.parallel()
             print('Model parallel...')
@@ -62,6 +64,16 @@ class DenseLossModel(BaseModel):
         if self.opt.continue_train:
             self.load_model(self.opt.start_epoch)
 
+    def reset_features(self):
+        self.features = {'sketch':[], 'image':[], 'neg_image':[], 'labels':[]}
+    def reset_test_features(self):
+        self.test_features = {'sketch':[], 'image':[], 'neg_image':[], 'labels':[]}
+
+    def append_features(self, output0, output1, output2, labels):
+        self.features['sketch'].append(output0)
+        self.features['image'].append(output1)
+        self.features['neg_image'].append(output2)
+        self.features['labels'].append(labels)
 
     def reset_records(self):
         self.result_record = self.copy_initialize_record(self.result_record)
@@ -129,7 +141,8 @@ class DenseLossModel(BaseModel):
         #Feature Extractor (4 dim in each paramters)
         output0, output1, output2 = self.network(x0, x1, x2)
         num_feat = len(output0)
-        self.features =  {'sketch':output0, 'image':output1, 'neg_image':output2}#output0, output1, output2]
+        #self.features =  {'sketch':output0, 'image':output1, 'neg_image':output2}#output0, output1, output2]
+        self.append_features(self.features, output0, output1, output2, labels)
         #Dense Loss
         #print(num_feat)
         loss = self.loss(output0, output1, output2)
@@ -162,9 +175,24 @@ class DenseLossModel(BaseModel):
 
         self.optimizer.step()
 
+    def combine_features(self, features):
+        combined_features = {}
+        for key, feat_list in features.items():
+
+            tmp = feat_list[0]
+            for feat in feat_list[1:]:
+                tmp = torch.cat([tmp, feat], 0)
+            combined_features[key] = tmp
+        return combined_features
+
+    def retrieval_evaluation(self, data, labels):
+        cate_accs, cate_fg_accs = retrieval_evaluation(data['sketch'], data['image'], labels, self.opt.topk)
+        self.update_record(self.test_result_record, 'retrieval', loss, prediction.size(0), accs=cate_fg_accs)
+        self.test_result_record['cate_retrieval'] = self.record_initialize(True)
+        self.update_record(self.test_result_record, 'cate_retrieval', loss, prediction.size(0), accs=cate_accs)
 
 
-    def test(self, test_data):
+    def test(self, test_data, retrieval_now=True):
 
         self.train(False)
         self.network.train(True)
@@ -179,7 +207,8 @@ class DenseLossModel(BaseModel):
         #Feature Extractor (4 dim in each paramters)
         output0, output1, output2 = self.network(x0, x1, x2)
         num_feat = len(output0)
-        self.features =  {'sketch':output0, 'image':output1, 'neg_image':output2}#output0, output1, output2]
+        #self.features =  {'sketch':output0, 'image':output1, 'neg_image':output2}#output0, output1, output2]
+        self.append_features(self.test_features, output0, output1, output2, labels)
         #Dense Loss
         #print(num_feat)
         loss = self.loss(output0, output1, output2)
@@ -208,11 +237,8 @@ class DenseLossModel(BaseModel):
             
         self.test_result_record['retrieval'] = self.record_initialize(True)
 
-        cate_accs, cate_fg_accs = retrieval_evaluation(final_layer_data['sketch'], final_layer_data['image'], labels, self.opt.topk)
-
-        self.update_record(self.test_result_record, 'retrieval', loss, prediction.size(0), accs=cate_fg_accs)
-        self.test_result_record['cate_retrieval'] = self.record_initialize(True)
-        self.update_record(self.test_result_record, 'cate_retrieval', loss, prediction.size(0), accs=cate_accs)
+        if retrieval_now:
+            self.retrieval_evaluation(final_layer_data, labels)
 
         self.train(True)
 
@@ -224,12 +250,19 @@ class DenseLossModel(BaseModel):
         mkdir(feature_dir)
         feature_name = 'DenseLossSBIRNetwork_{}_{}.pth.tar'.format(mode, epoch_label)
         save_path = os.path.join(feature_dir, save_filename)
-        torch.save(self.features, save_path)
-
+        torch.save(self.test_features, save_path)
+        '''
+        if mode == 'train':
+            torch.save(self.features, save_path)
+            self.reset_features()
+        else:
+            torch.save(self.test_features, save_path)
+            self.reset_test_features()
+        '''
     '''
     Save the model
     '''
-    def save_model(self,  epoch_label):
+    def save_model(self,  epoch_label, is_save_feature=False):
         self.save_network(self.network, 'DenseSBIRNetwork' , epoch_label)
         for key, i in self.feat_map.items():
             self.save_network(self.cls_network[i], key + '_Cls', epoch_label)
@@ -237,7 +270,7 @@ class DenseLossModel(BaseModel):
             self.save_network(self.attr_network, 'attr', epoch_label)
         if 'holef' in self.opt.distance_type:
             self.save_network(self.loss.base_loss.linear, epoch_label)
-        if self.opt.save_mode:
+        if self.opt.save_mode and is_save_feature:
             self.save_feature(self.opt.phase, epoch_label)
 
     '''

@@ -51,7 +51,7 @@ def retrieval_evaluation(output0, output1, category_labels, topk=(1,5)):
         for top in topk:
             if i in maxk_indices[:top]:
                 correct_fg[top] += 1
-    print(correct, total)
+    #print(correct, total)
     for top in topk:
         correct_fg[top] /= total * 0.01
         #print("top",top,correct_fg[top], correct_fg[top])
