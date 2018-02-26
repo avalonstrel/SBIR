@@ -68,8 +68,8 @@ def train():
             model.test(batch_test_data, opt.retrieval_now)
 
         if not opt.retrieval_now:
-                    model.combine_features(model.test_features)
-                    model.retrieval_evaluation(model.test_features, model.test_features['labels'])
+            model.combine_features(model.test_features)
+            model.retrieval_evaluation(model.test_features, model.test_features['labels'])
 
         if epoch % opt.save_epoch_freq == 0:
             print('Save Model at epoch {}.'.format(epoch))

@@ -147,7 +147,7 @@ class TripletModel(BaseModel):
         output0, output1, output2 = self.network(x0, x1, x2)
         #num_feat = len(output0)
         #self.features =  {'sketch':output0, 'image':output1, 'neg_image':output2}#output0, output1, output2]
-        self.append_features(self.features, output0, output1, output2, labels)
+        
         #Dense Loss
         #print(num_feat)
         loss = self.loss(output0, output1, output2)
@@ -179,7 +179,7 @@ class TripletModel(BaseModel):
         loss.backward()
 
         self.optimizer.step()
-
+        self.append_features(self.features, output0, output1, output2, labels)
     def combine_features(self, features):
         combined_features = {}
         for key, feat_list in features.items():
@@ -240,7 +240,8 @@ class TripletModel(BaseModel):
             self.update_record(self.test_result_record, key, attr_loss, predicted_attrs.size(0))
             
         self.test_result_record['retrieval'] = self.record_initialize(True)
-        self.append_features(self.test_features, output0, output1, output2, labels)
+        if not self.opt.dataset_type == 'sketchy':
+            self.append_features(self.test_features, output0, output1, output2, labels)
         if retrieval_now:
             self.retrieval_evaluation(final_layer_data, loss, prediction,labels)
 
