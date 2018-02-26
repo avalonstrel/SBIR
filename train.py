@@ -84,6 +84,6 @@ def train():
         model.reset_features()
         model.reset_test_features()
         model.reset_records()
-        model.reset_test_record()
+        model.reset_test_records()
 
 train()

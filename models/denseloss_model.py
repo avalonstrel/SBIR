@@ -185,7 +185,7 @@ class DenseLossModel(BaseModel):
             combined_features[key] = tmp
         return combined_features
 
-    def retrieval_evaluation(self, data, labels):
+    def retrieval_evaluation(self, data, loss, prediction, labels):
         cate_accs, cate_fg_accs = retrieval_evaluation(data['sketch'], data['image'], labels, self.opt.topk)
         self.update_record(self.test_result_record, 'retrieval', loss, prediction.size(0), accs=cate_fg_accs)
         self.test_result_record['cate_retrieval'] = self.record_initialize(True)

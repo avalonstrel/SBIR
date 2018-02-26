@@ -190,7 +190,7 @@ class TripletModel(BaseModel):
             combined_features[key] = tmp
         return combined_features
 
-    def retrieval_evaluation(self, data, labels):
+    def retrieval_evaluation(self, data, loss, prediction,  labels):
         cate_accs, cate_fg_accs = retrieval_evaluation(data['sketch'], data['image'], labels, self.opt.topk)
         self.update_record(self.test_result_record, 'retrieval', loss, prediction.size(0), accs=cate_fg_accs)
         self.test_result_record['cate_retrieval'] = self.record_initialize(True)
@@ -241,7 +241,7 @@ class TripletModel(BaseModel):
             
         self.test_result_record['retrieval'] = self.record_initialize(True)
         if retrieval_now:
-            self.retrieval_evaluation(final_layer_data, labels)
+            self.retrieval_evaluation(final_layer_data, loss, prediction,labels)
 
         self.train(True)
 
@@ -251,7 +251,7 @@ class TripletModel(BaseModel):
     def save_feature(self, mode, epoch_label):
         feature_dir = os.path.join(self.save_dir, 'feature')
         mkdir(feature_dir)
-        feature_name = 'DenseLossSBIRNetwork_{}_{}.pth.tar'.format(mode, epoch_label)
+        save_filename = 'TripletSBIRNetwork_{}_{}.pth.tar'.format(mode, epoch_label)
         save_path = os.path.join(feature_dir, save_filename)
         if mode == 'train':
             torch.save(self.features, save_path)

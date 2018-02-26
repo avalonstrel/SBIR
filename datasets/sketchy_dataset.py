@@ -2,12 +2,15 @@ from torch.utils import data
 import numpy as np
 from torchvision import transforms
 from util.util import to_rgb
-import os,re
+import os,re,json
+import cv2
+from PIL import Image
 class SketchyDataset(data.Dataset):
     def __init__(self, opt):# root,photo_types,sketch_types,batch_size, mode="train", train_split=2000,  pair_inclass_num=2,pair_outclass_num=3):
+        self.opt = opt
         root = opt.data_root
-        photo_types = opt.photo_types
-        sketch_types = opt.sketch_types
+        photo_types = opt.sketchy_photo_types
+        sketch_types = opt.sketchy_sketch_types
         mode = opt.phase
         
         self.photo_imgs = []
@@ -28,7 +31,7 @@ class SketchyDataset(data.Dataset):
             label = 0
             for photo_root, subFolders, files in os.walk(photo_root):
                 photo_pat = re.compile("n.+\.jpg")
-                photo_imgs = list(filter(lambda fname:photo_pat.fullmatch(fname),files))
+                photo_imgs = list(filter(lambda fname:photo_pat.match(fname),files))
                 if len(photo_imgs) == 0:
                     print(photo_root)
                     continue
@@ -61,7 +64,7 @@ class SketchyDataset(data.Dataset):
         if mode == "test":
             self.fg_labels = []
             for i in range(len(self.photo_imgs)):
-                self.fg_labels.append(i % batch_size)
+                self.fg_labels.append(i % self.opt.batch_size)
 
 
         print("{} pairs loaded. After generate triplet".format(len(self.photo_imgs)))
@@ -75,7 +78,7 @@ class SketchyDataset(data.Dataset):
             pil_numpy = to_rgb(pil_numpy[:,:,3])
             #pil_numpy = np.tile(pil_numpy[:,:,3],3).reshape(pil_numpy.shape[0:2]+(-1,))
 
-        pil_numpy = cv2.resize(pil_numpy,(resize_size,resize_size))
+        pil_numpy = cv2.resize(pil_numpy,(self.opt.scale_size,self.opt.scale_size))
         if self.transform_fun is not None:
             pil_numpy = self.transform_fun(pil_numpy)
         return pil_numpy

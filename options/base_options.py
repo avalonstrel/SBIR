@@ -11,7 +11,7 @@ class BaseOptions():
     def initialize(self):
         self.parser.add_argument('--data_root', type=str,  help='path to sketch image pair dataset should have corresponding parser')
         self.parser.add_argument('--print_freq', type=int, default=10, help='frequency of showing training results on console')
-        self.parser.add_argument('--print_val_freq', type=int, default=1000, help='frequency of showing training results on console')
+        self.parser.add_argument('--print_val_freq', type=int, default=10000, help='frequency of showing training results on console')
 
         self.parser.add_argument('--sketch_root', type=str, help='path to sketch dataset should be paired as image data by use number')
         self.parser.add_argument('--image_root', type=str, help='path to image dataset should be paried as sketch data by number')
