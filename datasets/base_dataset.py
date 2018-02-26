@@ -33,8 +33,11 @@ class CustomDatasetDataLoader():
         if opt.phase == 'train':
             batch_size = opt.batch_size
         else:
+            if opt.dataset_type == 'sketchy':
+                batch_size = opt.batch_size
             #batch_size = opt.batch_size
-            batch_size = len(self.dataset)
+            else:
+                batch_size = len(self.dataset)
         self.dataloader = torch.utils.data.DataLoader(
             self.dataset,
             batch_size=batch_size,

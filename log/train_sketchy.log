@@ -1,0 +1,250 @@
+Initialize Parameters...
+Load data...
+['/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000']
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+Traceback (most recent call last):
+  File "train.py", line 89, in <module>
+    train()
+  File "train.py", line 14, in train
+    train_data_loader = CustomDatasetDataLoader(opt)
+  File "/home/lhy/SBIR/datasets/base_dataset.py", line 25, in __init__
+    self.initialize(self.opt)
+  File "/home/lhy/SBIR/datasets/base_dataset.py", line 32, in initialize
+    self.dataset = create_dataset(opt)
+  File "/home/lhy/SBIR/datasets/base_dataset.py", line 15, in create_dataset
+    return SketchyDataset(opt)
+  File "/home/lhy/SBIR/datasets/sketchy_dataset.py", line 34, in __init__
+    photo_imgs = list(filter(lambda fname:photo_pat.fullmatch(fname),files))
+  File "/home/lhy/SBIR/datasets/sketchy_dataset.py", line 34, in <lambda>
+    photo_imgs = list(filter(lambda fname:photo_pat.fullmatch(fname),files))
+AttributeError: '_sre.SRE_Pattern' object has no attribute 'fullmatch'
+Initialize Parameters...
+Load data...
+['/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000']
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+('Total Sketchy:', 125)
+67934 pairs loaded.
+679340 pairs loaded. After generate triplet
+['/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000']
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+('Total Sketchy:', 125)
+3769 pairs loaded.
+Traceback (most recent call last):
+  File "train.py", line 89, in <module>
+    train()
+  File "train.py", line 16, in train
+    test_data_loader = CustomDatasetDataLoader(opt)
+  File "/home/lhy/SBIR/datasets/base_dataset.py", line 25, in __init__
+    self.initialize(self.opt)
+  File "/home/lhy/SBIR/datasets/base_dataset.py", line 32, in initialize
+    self.dataset = create_dataset(opt)
+  File "/home/lhy/SBIR/datasets/base_dataset.py", line 15, in create_dataset
+    return SketchyDataset(opt)
+  File "/home/lhy/SBIR/datasets/sketchy_dataset.py", line 67, in __init__
+    self.fg_labels.append(i % batch_size)
+NameError: global name 'batch_size' is not defined
+Initialize Parameters...
+Load data...
+['/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000']
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+('Total Sketchy:', 125)
+67934 pairs loaded.
+679340 pairs loaded. After generate triplet
+['/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000']
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+('Total Sketchy:', 125)
+3769 pairs loaded.
+3769 pairs loaded. After generate triplet
+Construct Model...
+Model parallel...
+Model cuda ing...
+tripletsiamese
+Start Training...
+Initialize Parameters...
+Load data...
+['/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000']
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+('Total Sketchy:', 125)
+67934 pairs loaded.
+679340 pairs loaded. After generate triplet
+['/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000']
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+('Total Sketchy:', 125)
+3769 pairs loaded.
+3769 pairs loaded. After generate triplet
+Construct Model...
+Model parallel...
+Model cuda ing...
+tripletsiamese
+Start Training...
+Initialize Parameters...
+Load data...
+['/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000']
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+('Total Sketchy:', 125)
+67934 pairs loaded.
+679340 pairs loaded. After generate triplet
+['/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000']
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+('Total Sketchy:', 125)
+3769 pairs loaded.
+3769 pairs loaded. After generate triplet
+Construct Model...
+Model parallel...
+Model cuda ing...
+tripletsiamese
+Start Training...
+Traceback (most recent call last):
+  File "train.py", line 89, in <module>
+    train()
+  File "train.py", line 35, in train
+    model.optimize(batch_data)
+  File "/home/lhy/SBIR/models/triplet_model.py", line 171, in optimize
+    attr_loss = self.attr_loss(predicted_attrs, attrs)
+  File "/usr/local/lib/python2.7/dist-packages/torch/nn/modules/module.py", line 325, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/usr/local/lib/python2.7/dist-packages/torch/nn/modules/loss.py", line 425, in forward
+    return F.binary_cross_entropy_with_logits(input, target, size_average=self.size_average)
+  File "/usr/local/lib/python2.7/dist-packages/torch/nn/functional.py", line 1206, in binary_cross_entropy_with_logits
+    raise ValueError("Target size ({}) must be the same as input size ({})".format(target.size(), input.size()))
+ValueError: Target size (torch.Size([50])) must be the same as input size (torch.Size([50, 125]))
+scripts/train_attention_sketchy.sh: line 1: combine_cls,two_loss: command not found
+Initialize Parameters...
+Load data...
+['/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000']
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+('Total Sketchy:', 125)
+67934 pairs loaded.
+679340 pairs loaded. After generate triplet
+['/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000']
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+('Total Sketchy:', 125)
+3769 pairs loaded.
+3769 pairs loaded. After generate triplet
+Construct Model...
+Model parallel...
+Model cuda ing...
+tripletsiamese
+Start Training...
+Train Epoch: 0 [50/679340 (0.00%)] Time:11.4527 	total:2.465 | combine:4.894, top (1, 10, 5):('2.0', '8.0', '2.0')
+Train Epoch: 0 [550/679340 (0.00%)] Time:14.1582 	total:2.689 | combine:4.866, top (1, 10, 5):('2.0', '6.0', '4.0')
+Train Epoch: 0 [1050/679340 (0.00%)] Time:15.2430 	total:1.750 | combine:4.876, top (1, 10, 5):('0.0', '8.0', '0.0')
+Train Epoch: 0 [1550/679340 (0.00%)] Time:15.0260 	total:2.651 | combine:4.891, top (1, 10, 5):('0.0', '6.0', '4.0')
+Train Epoch: 0 [2050/679340 (0.00%)] Time:14.3021 	total:1.862 | combine:4.855, top (1, 10, 5):('2.0', '6.0', '4.0')
+Initialize Parameters...
+Load data...
+['/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000']
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+('Total Sketchy:', 125)
+67934 pairs loaded.
+679340 pairs loaded. After generate triplet
+['/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000']
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+('Total Sketchy:', 125)
+3769 pairs loaded.
+3769 pairs loaded. After generate triplet
+Construct Model...
+Model parallel...
+Model cuda ing...
+tripletsiamese
+Start Training...
+Train Epoch: 0 [50/679340 (0.00%)] Time:11.388282 	total:2.357 | combine:4.900, top (1, 10, 5):('2.0', '4.0', '2.0')
+Train Epoch: 0 [550/679340 (0.00%)] Time:10.271908 	total:1.894 | combine:4.914, top (1, 10, 5):('0.0', '6.0', '0.0')
+Train Epoch: 0 [1050/679340 (0.00%)] Time:13.090027 	total:2.144 | combine:4.898, top (1, 10, 5):('0.0', '6.0', '2.0')
+Train Epoch: 0 [1550/679340 (0.00%)] Time:12.567203 	total:2.382 | combine:4.815, top (1, 10, 5):('2.0', '14.0', '4.0')
+Train Epoch: 0 [2050/679340 (0.00%)] Time:12.030326 	total:1.760 | combine:4.867, top (1, 10, 5):('0.0', '6.0', '2.0')
+Train Epoch: 0 [2550/679340 (0.00%)] Time:12.081777 	total:1.373 | combine:4.847, top (1, 10, 5):('0.0', '8.0', '4.0')
+Train Epoch: 0 [3050/679340 (0.00%)] Time:10.678324 	total:1.916 | combine:4.867, top (1, 10, 5):('0.0', '4.0', '0.0')
+Train Epoch: 0 [3550/679340 (0.00%)] Time:10.396760 	total:1.715 | combine:4.832, top (1, 10, 5):('0.0', '6.0', '0.0')
+Train Epoch: 0 [4050/679340 (0.00%)] Time:11.027655 	total:2.428 | combine:4.851, top (1, 10, 5):('0.0', '8.0', '4.0')
+Train Epoch: 0 [4550/679340 (0.00%)] Time:10.093644 	total:2.169 | combine:4.801, top (1, 10, 5):('4.0', '14.0', '6.0')
+Train Epoch: 0 [5050/679340 (0.00%)] Time:9.776082 	total:1.643 | combine:4.843, top (1, 10, 5):('0.0', '10.0', '2.0')
+Train Epoch: 0 [5550/679340 (0.00%)] Time:9.291948 	total:2.121 | combine:4.842, top (1, 10, 5):('2.0', '6.0', '2.0')
+Train Epoch: 0 [6050/679340 (0.00%)] Time:9.261574 	total:1.783 | combine:4.832, top (1, 10, 5):('2.0', '6.0', '4.0')
+Train Epoch: 0 [6550/679340 (0.00%)] Time:8.888743 	total:2.443 | combine:4.820, top (1, 10, 5):('0.0', '6.0', '4.0')
+Train Epoch: 0 [7050/679340 (0.00%)] Time:8.941999 	total:1.664 | combine:4.833, top (1, 10, 5):('2.0', '6.0', '4.0')
+Train Epoch: 0 [7550/679340 (0.00%)] Time:9.029206 	total:2.001 | combine:4.830, top (1, 10, 5):('0.0', '10.0', '0.0')
+Train Epoch: 0 [8050/679340 (0.00%)] Time:8.865821 	total:1.952 | combine:4.827, top (1, 10, 5):('0.0', '16.0', '4.0')
+Train Epoch: 0 [8550/679340 (0.00%)] Time:8.502728 	total:1.698 | combine:4.831, top (1, 10, 5):('0.0', '10.0', '2.0')
+Train Epoch: 0 [9050/679340 (0.00%)] Time:8.068174 	total:1.927 | combine:4.824, top (1, 10, 5):('0.0', '12.0', '6.0')
+Train Epoch: 0 [9550/679340 (0.00%)] Time:8.117062 	total:1.669 | combine:4.831, top (1, 10, 5):('0.0', '8.0', '2.0')
+THCudaCheck FAIL file=/pytorch/torch/lib/THC/generic/THCStorage.cu line=58 error=2 : out of memory
+Traceback (most recent call last):
+  File "train.py", line 89, in <module>
+    train()
+  File "train.py", line 50, in train
+    model.test(batch_test_data, opt.retrieval_now)
+  File "/home/lhy/SBIR/models/triplet_model.py", line 205, in test
+    test_data[i] = item.cuda()
+  File "/usr/local/lib/python2.7/dist-packages/torch/_utils.py", line 69, in _cuda
+    return new_type(self.size()).copy_(self, async)
+RuntimeError: cuda runtime error (2) : out of memory at /pytorch/torch/lib/THC/generic/THCStorage.cu:58
+Initialize Parameters...
+Load data...
+['/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000']
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+('Total Sketchy:', 125)
+67934 pairs loaded.
+679340 pairs loaded. After generate triplet
+['/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000']
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+/home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/tx_000000000000
+('Total Sketchy:', 125)
+3769 pairs loaded.
+3769 pairs loaded. After generate triplet
+Construct Model...
+Model parallel...
+Model cuda ing...
+tripletsiamese
+Start Training...
+Train Epoch: 0 [50/679340 (0.00%)] Time:10.956955 	total:2.574 | combine:4.946, top (1, 10, 5):('0.0', '6.0', '0.0')
+Train Epoch: 0 [550/679340 (0.00%)] Time:6.576521 	total:2.560 | combine:4.913, top (1, 10, 5):('0.0', '6.0', '2.0')
+Train Epoch: 0 [1050/679340 (0.00%)] Time:7.745981 	total:2.518 | combine:4.800, top (1, 10, 5):('0.0', '8.0', '4.0')
+Train Epoch: 0 [1550/679340 (0.00%)] Time:7.557213 	total:2.208 | combine:4.853, top (1, 10, 5):('0.0', '8.0', '4.0')
+Train Epoch: 0 [2050/679340 (0.00%)] Time:7.863562 	total:2.523 | combine:4.825, top (1, 10, 5):('0.0', '10.0', '4.0')
+Train Epoch: 0 [2550/679340 (0.00%)] Time:7.813644 	total:2.488 | combine:4.817, top (1, 10, 5):('2.0', '10.0', '4.0')
+Train Epoch: 0 [3050/679340 (0.00%)] Time:7.413173 	total:2.006 | combine:4.864, top (1, 10, 5):('0.0', '8.0', '0.0')
+Train Epoch: 0 [3550/679340 (0.00%)] Time:7.193902 	total:1.998 | combine:4.832, top (1, 10, 5):('4.0', '6.0', '6.0')
+Train Epoch: 0 [4050/679340 (0.00%)] Time:7.544900 	total:1.574 | combine:4.813, top (1, 10, 5):('2.0', '10.0', '2.0')
+Train Epoch: 0 [4550/679340 (0.00%)] Time:6.989379 	total:2.109 | combine:4.812, top (1, 10, 5):('0.0', '20.0', '10.0')
+Train Epoch: 0 [5050/679340 (0.00%)] Time:7.450761 	total:2.316 | combine:4.832, top (1, 10, 5):('0.0', '16.0', '4.0')
+Train Epoch: 0 [5550/679340 (0.00%)] Time:6.777965 	total:1.630 | combine:4.830, top (1, 10, 5):('0.0', '4.0', '2.0')
+Train Epoch: 0 [6050/679340 (0.00%)] Time:6.503215 	total:2.059 | combine:4.843, top (1, 10, 5):('0.0', '8.0', '2.0')
+Train Epoch: 0 [6550/679340 (0.00%)] Time:7.236566 	total:1.907 | combine:4.822, top (1, 10, 5):('6.0', '12.0', '10.0')
+Train Epoch: 0 [7050/679340 (0.00%)] Time:6.971208 	total:1.625 | combine:4.822, top (1, 10, 5):('2.0', '10.0', '6.0')
+Train Epoch: 0 [7550/679340 (0.00%)] Time:7.306846 	total:1.690 | combine:4.819, top (1, 10, 5):('0.0', '12.0', '6.0')
+Train Epoch: 0 [8050/679340 (0.00%)] Time:6.704703 	total:1.256 | combine:4.822, top (1, 10, 5):('2.0', '18.0', '6.0')
+Train Epoch: 0 [8550/679340 (0.00%)] Time:6.846973 	total:1.843 | combine:4.835, top (1, 10, 5):('2.0', '6.0', '4.0')
+Train Epoch: 0 [9050/679340 (0.00%)] Time:6.602054 	total:2.118 | combine:4.829, top (1, 10, 5):('4.0', '10.0', '6.0')
+Train Epoch: 0 [9550/679340 (0.00%)] Time:6.467958 	total:1.822 | combine:4.823, top (1, 10, 5):('2.0', '16.0', '10.0')
+THCudaCheck FAIL file=/pytorch/torch/lib/THC/generic/THCStorage.cu line=58 error=2 : out of memory
+Traceback (most recent call last):
+  File "train.py", line 89, in <module>
+    train()
+  File "train.py", line 50, in train
+    model.test(batch_test_data, opt.retrieval_now)
+  File "/home/lhy/SBIR/models/triplet_model.py", line 212, in test
+    output0, output1, output2 = self.network(x0, x1, x2)
+  File "/usr/local/lib/python2.7/dist-packages/torch/nn/modules/module.py", line 325, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/usr/local/lib/python2.7/dist-packages/torch/nn/parallel/data_parallel.py", line 68, in forward
+    outputs = self.parallel_apply(replicas, inputs, kwargs)
+  File "/usr/local/lib/python2.7/dist-packages/torch/nn/parallel/data_parallel.py", line 78, in parallel_apply
+    return parallel_apply(replicas, inputs, kwargs, self.device_ids[:len(replicas)])
+  File "/usr/local/lib/python2.7/dist-packages/torch/nn/parallel/parallel_apply.py", line 67, in parallel_apply
+    raise output
+RuntimeError: cuda runtime error (2) : out of memory at /pytorch/torch/lib/THC/generic/THCStorage.cu:58
