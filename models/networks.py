@@ -38,9 +38,13 @@ class ConvLayer(torch.nn.Module):
         return out
 
 class ConvBlock(torch.nn.Module):
-    def __init__(self):
+    def __init__(self, opt):
         super(ConvBlock, self).__init__()
-        self.conv1 = ConvLayer(3, 64, kernel_size=15, stride=3, bias=False)
+        if self.opt.image_type == 'GRAY':
+            num_input_features = 1
+        else:
+            num_input_features = 3
+        self.conv1 = ConvLayer(num_input_features, 64, kernel_size=15, stride=3, bias=False)
         self.pool1 = nn.MaxPool2d(kernel_size=3, stride=2, padding=0)
         self.conv2 = ConvLayer(64, 128, kernel_size=5, stride=1, padding=0)
         self.pool2 = nn.MaxPool2d(kernel_size=3, stride=2, padding=0)
@@ -64,7 +68,7 @@ class ConvBlock(torch.nn.Module):
 class AttentionNetwork(torch.nn.Module):
     def __init__(self, opt):
         super(AttentionNetwork, self).__init__()
-        self.conv_block = ConvBlock()
+        self.conv_block = ConvBlock(opt)
         self.attention_layer = AttentionLayer()
         self.gap = nn.AvgPool2d(kernel_size=7, stride=1, padding=0)
         self.fc6 = nn.Linear(256*7*7, 512)

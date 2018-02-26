@@ -240,6 +240,7 @@ class TripletModel(BaseModel):
             self.update_record(self.test_result_record, key, attr_loss, predicted_attrs.size(0))
             
         self.test_result_record['retrieval'] = self.record_initialize(True)
+        
         if retrieval_now:
             self.retrieval_evaluation(final_layer_data, loss, prediction,labels)
 

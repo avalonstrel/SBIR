@@ -96,6 +96,10 @@ class SketchXDataset(data.Dataset):
             pil_numpy = to_rgb(pil_numpy[:,:,3])
             #pil_numpy = np.tile(pil_numpy[:,:,3],3).reshape(pil_numpy.shape[0:2]+(-1,))
             #pil_numpy[:,:,2] = 0
+        
+        if self.opt.image_type == 'GRAY':
+            gray_pil = Image.fromarray(pil_numpy)
+            pil_numpy = np.array(gray_pil.convert('L'))
         pil_numpy = cv2.resize(pil_numpy,(self.opt.scale_size,self.opt.scale_size))
         if self.transform_fun is not None:
             pil_numpy = self.transform_fun(pil_numpy)

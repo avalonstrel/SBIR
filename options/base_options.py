@@ -30,11 +30,13 @@ class BaseOptions():
         self.parser.add_argument('--edge_map', action='store_true', help='Choose Whether use the edge map of image data')
         self.parser.add_argument('--sketch_levels', type=str,default='c', help='The sketch level mode used')
         self.parser.add_argument('--feat_size', type=int,default=64, help='The size of embedding feature')
+
         self.parser.add_argument('--attention_mode', action='store_true', help='Whether use attention in embedding')
         self.parser.add_argument('--fc_layer_mode',action='store_true', help='Whether use fc_layer in embedding mode')
         self.parser.add_argument('--fusion_mode', action='store_true', help='Whether use fusion mode')
         self.parser.add_argument('--save_mode', action='store_true', default=True, help='Whether save embedded feature')
         self.parser.add_argument('--dataset_type', type=str, required=True, help='Dataset type')
+        self.parser.add_argument('--image_type', type=str, default='GRAY', help='Image type')
         self.parser.add_argument('--serial_batches', action='store_true', help='if true, takes images in order to make batches, otherwise takes them randomly')
         self.parser.add_argument('--max_dataset_size', type=int, default=float("inf"), help='Maximum number of samples allowed per dataset. If the dataset directory contains more than max_dataset_size, only a subset is loaded.')
         self.parser.add_argument('--margin', type=float, default=5.0, help='margin for triplet loss parameter')
