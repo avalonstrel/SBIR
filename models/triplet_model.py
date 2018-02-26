@@ -128,10 +128,10 @@ class TripletModel(BaseModel):
     def reset_test_features(self):
         self.test_features = {'sketch':[], 'image':[], 'neg_image':[], 'labels':[]}
     def append_features(self, features, output0, output1, output2, labels):
-        features['sketch'].append(output0)
-        features['image'].append(output1)
-        features['neg_image'].append(output2)
-        features['labels'].append(labels)
+        features['sketch'].append(output0.cpu())
+        features['image'].append(output1.cpu())
+        features['neg_image'].append(output2.cpu())
+        features['labels'].append(labels.cpu())
 
     def optimize(self, batch_data):
 
@@ -212,7 +212,7 @@ class TripletModel(BaseModel):
         output0, output1, output2 = self.network(x0, x1, x2)
         #num_feat = len(output0)
         #self.features =  {'sketch':output0, 'image':output1, 'neg_image':output2}#output0, output1, output2]
-        self.append_features(self.test_features, output0, output1, output2, labels)
+        
         #Dense Loss
         #print(num_feat)
         loss = self.loss(output0, output1, output2)
@@ -240,7 +240,7 @@ class TripletModel(BaseModel):
             self.update_record(self.test_result_record, key, attr_loss, predicted_attrs.size(0))
             
         self.test_result_record['retrieval'] = self.record_initialize(True)
-        
+        self.append_features(self.test_features, output0, output1, output2, labels)
         if retrieval_now:
             self.retrieval_evaluation(final_layer_data, loss, prediction,labels)
 
