@@ -102,7 +102,8 @@ class SketchXDataset(data.Dataset):
             pil_numpy = np.array(gray_pil.convert('L'))
 
         pil_numpy = cv2.resize(pil_numpy,(self.opt.scale_size,self.opt.scale_size))
-        pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
+        if self.opt.image_type == 'GRAY':
+            pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
         if self.transform_fun is not None:
             pil_numpy = self.transform_fun(pil_numpy)
         #data_info.write(",".join([str(i) for i in pil_numpy.numpy().flatten() if i != 0])+"\n")
