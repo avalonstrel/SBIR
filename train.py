@@ -37,7 +37,7 @@ def train():
             if batch_idx % opt.print_freq == 0:
                 batch_end_time = time.time()
                 now_size = opt.batch_size * (batch_idx+1)
-                print('Train Epoch: {} [{}/{} ({:.2f}%)] Time:{:.4f} \t{}'.format(epoch, 
+                print('Train Epoch: {} [{}/{} ({:.2f}%)] Time:{:.6f} \t{}'.format(epoch, 
                                                                     now_size, data_loader_size, now_size / data_loader_size * 100.0, 
                                                                     batch_end_time - batch_start_time,
                                                                     model.generate_message(model.result_record)))
@@ -52,7 +52,7 @@ def train():
                     model.combine_features(model.test_features)
                     model.retrieval_evaluation(model.test_features, model.test_features['labels'])
                 val_end_time = time.time()
-                print('Validation Epoch: {} [{}/{} ({:.2f}%)] Time:{:.4f} \t{}'.format(epoch, 
+                print('Validation Epoch: {} [{}/{} ({:.2f}%)] Time:{:.6f} \t{}'.format(epoch, 
                                                                     now_size, data_loader_size, now_size / data_loader_size * 100.0, 
                                                                     val_end_time - val_start_time,
                                                                     model.generate_message(model.test_result_record)))
@@ -78,7 +78,7 @@ def train():
         
         epoch_end_time = time.time()
 
-        print('End of epoch {} / {}, Time:{:.4f}, \t {}'.format(epoch, opt.start_epoch + opt.num_epoch, 
+        print('End of epoch {} / {}, Time:{:.6f}, \t {}'.format(epoch, opt.start_epoch + opt.num_epoch, 
                                                                 epoch_end_time - epoch_start_time,
                                                                 model.generate_message(model.test_result_record)))
         model.reset_features()
