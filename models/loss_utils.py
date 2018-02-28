@@ -59,10 +59,7 @@ class HOLEFLoss(torch.nn.Module):
             self.I = self.I.cuda()
         #self.I = torch.eye(k)
     def reset_parameter(self):
-        weight_bias = torch.autograd.Variable(torch.Tensor(self.k,self.k))
-        stdv = 1. / math.sqrt(weight_bias.size(1))
-        weight_bias.data.uniform_(-stdv, stdv)
-        self.weight = self.weight + weight_bias
+        torch.nn.init.orthogonal(self.weight)
     def higher_energy_distance(self, x, y):
         x = x.unsqueeze(1)
         y = y.unsqueeze(2)
