@@ -56,7 +56,7 @@ class HOLEFLoss(torch.nn.Module):
         if cuda:
             #self.linear = self.linear.cuda()
             self.weight.cuda()
-            self.I.cuda()
+            self.I = self.I.cuda()
         #self.I = torch.eye(k)
     def reset_parameter(self):
         weight_bias = torch.autograd.Variable(torch.Tensor(self.k,self.k))
