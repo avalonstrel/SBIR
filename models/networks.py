@@ -30,6 +30,7 @@ class ConvLayer(torch.nn.Module):
         self.bn = nn.BatchNorm2d(num_output_features)
         self.relu = nn.ReLU(inplace=True)
         self.is_relu = is_relu
+        self.is_bn = is_bn
     def forward(self, x):
         out = self.conv(x)
         if self.is_bn:
