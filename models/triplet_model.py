@@ -50,9 +50,10 @@ class TripletModel(BaseModel):
             self.attr_network = torch.nn.DataParallel(self.attr_network)
             self.optimize_modules.append(self.attr_network)
             self.result_record['attr'] = self.record_initialize(False)
-        if 'holef' in self.opt.distance_type or 'holef' in self.opt.loss_type:
-            self.optimize_modules.append(self.loss.base_loss.linear)
-            self.loss.base_loss.linear = torch.nn.DataParallel(self.losdds.base_loss.linear)
+        if 'holef' in self.opt.loss_type:
+            self.optimize_modules.append(self.loss.linear)
+            self.loss.linear = torch.nn.DataParallel(self.loss.linear)
+
         self.test_result_record = self.copy_initialize_record(self.result_record)
         
         self.optimizer = torch.optim.Adam([{"params":module.parameters()} for module in self.optimize_modules], lr=self.opt.learning_rate, weight_decay=self.opt.weight_decay)
