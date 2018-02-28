@@ -129,10 +129,10 @@ class TripletModel(BaseModel):
     def reset_test_features(self):
         self.test_features = {'sketch':[], 'image':[], 'neg_image':[], 'labels':[]}
     def append_features(self, features, output0, output1, output2, labels):
-        features['sketch'].append(output0.cpu())
-        features['image'].append(output1.cpu())
-        features['neg_image'].append(output2.cpu())
-        features['labels'].append(labels.cpu())
+        features['sketch'].append(np.asarray(output0))
+        features['image'].append(np.asarray(output0))
+        features['neg_image'].append(np.asarray(output0))
+        features['labels'].append(np.asarray(output0))
 
     def optimize(self, batch_data):
 

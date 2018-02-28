@@ -44,8 +44,8 @@ class HOLEFLoss(torch.nn.Module):
     def __init__(self, opt): # k, alpha=0.0005,beta=0.0005, margin=2.0, cuda=True):
         super(HOLEFLoss, self).__init__()
         self.margin = opt.margin
-        self.alpha = 0.005
-        self.beta = 0.005
+        self.alpha = 0.0005
+        self.beta = 0.0005
         cuda = opt.cuda
         k = opt.feat_size
         #self.weight = torch.nn.Parameter(torch.Tensor(k,k))
