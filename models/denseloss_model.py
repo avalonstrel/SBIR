@@ -70,10 +70,10 @@ class DenseLossModel(BaseModel):
         self.test_features = {'sketch':[], 'image':[], 'neg_image':[], 'labels':[]}
 
     def append_features(self, output0, output1, output2, labels):
-        self.features['sketch'].append(output0)
-        self.features['image'].append(output1)
-        self.features['neg_image'].append(output2)
-        self.features['labels'].append(labels)
+        self.features['sketch'].append(output0.cpu())
+        self.features['image'].append(output1.cpu())
+        self.features['neg_image'].append(output2.cpu())
+        self.features['labels'].append(labels.cpu())
 
     def reset_records(self):
         self.result_record = self.copy_initialize_record(self.result_record)
@@ -142,9 +142,10 @@ class DenseLossModel(BaseModel):
         output0, output1, output2 = self.network(x0, x1, x2)
         num_feat = len(output0)
         #self.features =  {'sketch':output0, 'image':output1, 'neg_image':output2}#output0, output1, output2]
-        self.append_features(self.features, output0, output1, output2, labels)
+        
         #Dense Loss
         #print(num_feat)
+        
         loss = self.loss(output0, output1, output2)
 
         #Cls Loss
@@ -174,7 +175,7 @@ class DenseLossModel(BaseModel):
         loss.backward()
 
         self.optimizer.step()
-
+        self.append_features(self.features, output0, output1, output2, labels)
     def combine_features(self, features):
         combined_features = {}
         for key, feat_list in features.items():
@@ -208,7 +209,7 @@ class DenseLossModel(BaseModel):
         output0, output1, output2 = self.network(x0, x1, x2)
         num_feat = len(output0)
         #self.features =  {'sketch':output0, 'image':output1, 'neg_image':output2}#output0, output1, output2]
-        self.append_features(self.test_features, output0, output1, output2, labels)
+        
         #Dense Loss
         #print(num_feat)
         loss = self.loss(output0, output1, output2)
@@ -239,7 +240,8 @@ class DenseLossModel(BaseModel):
 
         if retrieval_now:
             self.retrieval_evaluation(final_layer_data, labels)
-
+            
+        self.append_features(self.test_features, output0, output1, output2, labels)
         self.train(True)
 
     '''
