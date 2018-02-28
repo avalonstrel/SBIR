@@ -64,7 +64,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
             pil = pil.convert('L')
         else:
             pil = pil.convert('RGB')
-
+        pil_numpy = np.array(pil)
         pil_numpy = cv2.resize(pil_numpy,(self.opt.scale_size,self.opt.scale_size))
 
         if self.opt.image_type == 'GRAY':
@@ -77,12 +77,15 @@ class ImageNetEdgeMapDataset(data.Dataset):
         pil = pil.convert('L')
         pil_numpy = np.array(pil)
         edge_map = cv2.Canny(pil_numpy, 100, 200)
+        edge_map = cv2.resize(edge_map,(self.opt.scale_size,self.opt.scale_size))
         if self.opt.image_type == 'RGB':
             edge_map = to_rgb(edge_map)
+
         elif self.opt.image_type == 'GRAY':
             edge_map = edge_map.reshape(edge_map.shape + (1,))
         if self.transform_fun is not None:
             edge_map = self.transform_fun(edge_map)
+
         return edge_map
     def __len__(self):
         return len(self.photo_imgs)
