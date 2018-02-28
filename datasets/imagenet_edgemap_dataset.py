@@ -94,8 +94,8 @@ class ImageNetEdgeMapDataset(data.Dataset):
         photo_img,photo_neg_img,fg_label,label = self.photo_imgs[index], self.photo_neg_imgs[index], self.fg_labels[index], self.labels[index]
         photo_pil,photo_neg_pil = Image.open(photo_img), Image.open(photo_neg_img)
         #if self.transform is not None:
-        photo_pil = self.transform(photo_pil)
         sketch_pil = self.load_sketch(photo_pil)
+        photo_pil = self.transform(photo_pil)
         photo_neg_pil = self.transform(photo_neg_pil)
         return sketch_pil, photo_pil, photo_neg_pil, label, fg_label, label
 
