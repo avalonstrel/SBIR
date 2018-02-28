@@ -49,7 +49,7 @@ class HOLEFLoss(torch.nn.Module):
         self.k = k
         self.weight = torch.autograd.Variable(torch.eye(k))
         #self.linear = torch.nn.Linear(k,k,bias=False)
-        self.register_parameter('weight',self.weight)
+        self.register_parameter('sweight',self.weight)
         self.I = torch.autograd.Variable(torch.eye(k), requires_grad=False)
         
         self.reset_parameter()
