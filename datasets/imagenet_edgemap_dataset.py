@@ -61,7 +61,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
 
     def transform(self, pil):
 
-        print(np.array(pil).shape)
+        #print(np.array(pil).shape)
         if self.opt.image_type == 'GRAY':
             pil = pil.convert('L')
         else:
