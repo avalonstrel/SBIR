@@ -68,7 +68,7 @@ class TripletModel(BaseModel):
             self.cuda()
             print('Modelcuda ing...')
         if self.opt.continue_train:
-            self.load_model(self.opt.start_epoch, self.opt.trained_model_path)
+            self.load_model(self.opt.start_epoch_label, self.opt.trained_model_path)
 
 
     def reset_records(self):
