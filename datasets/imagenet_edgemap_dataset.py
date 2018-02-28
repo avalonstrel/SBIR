@@ -45,6 +45,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
                     continue
                 img_path = os.path.join(root, cls_root, photo_img)
                 self.photo_imgs.append(img_path)
+                self.photo_neg_imgs.append(img_path)
                 self.fg_labels.append(fg_label)
                 self.labels.append(label)
                 fg_label += 1
