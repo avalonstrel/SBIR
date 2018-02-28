@@ -30,6 +30,7 @@ class TripletModel(BaseModel):
         self.feat_map = {} 
         self.result_record = {'total':self.record_initialize(False)}
         self.features = []
+
         if 'sketch_cls' in self.opt.loss_type:
             self.cls_network.append(ClassificationNetwork(self.opt.feat_size, self.opt.n_labels))
             self.feat_map['sketch'] = len(self.feat_map) 
@@ -133,9 +134,9 @@ class TripletModel(BaseModel):
         self.test_features = {'sketch':[], 'image':[], 'neg_image':[], 'labels':[]}
     def append_features(self, features, output0, output1, output2, labels):
         features['sketch'].append(np.asarray(output0))
-        features['image'].append(np.asarray(output0))
-        features['neg_image'].append(np.asarray(output0))
-        features['labels'].append(np.asarray(output0))
+        features['image'].append(np.asarray(output1))
+        features['neg_image'].append(np.asarray(output2))
+        features['labels'].append(np.asarray(labels))
 
     def optimize(self, batch_data):
 
