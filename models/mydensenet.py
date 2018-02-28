@@ -151,7 +151,7 @@ class MultiDenseNet(nn.Module):
             
             #self.bottlenecks.append(nn.Conv2d(num_features + num_layers * growth_rate, 1, kernel_size=1, stride=1, bias=False))
             block_input_shape, linear_num_features = self._get_linear_input_shape(num_features, block_input_shape, block,i)
-
+            print(block_input_shape, num_features)
             num_features = num_features + num_layers * growth_rate
             self.bns.append(nn.BatchNorm2d(num_features))
             #print(i, block_input_shape, linear_num_features)
