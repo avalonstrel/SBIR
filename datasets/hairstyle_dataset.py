@@ -97,7 +97,7 @@ class HairStyleDataset(data.Dataset):
         
         if len(pil_numpy.shape) == 2:
             if self.edge_map and mode == "image":
-                pil_numpy = cv2.Canny(pil_numpy,100,200)
+                pil_numpy = cv2.Canny(pil_numpy, 100, 200)
             #show("edge",pil_numpy)
             pil_numpy = to_rgb(pil_numpy)
             #pil_numpy = np.tile(pil_numpy,3).reshape(pil_numpy.shape+(-1,))
