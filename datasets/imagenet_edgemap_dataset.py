@@ -43,6 +43,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
             for i, photo_img in enumerate(photo_imgs, start=0):
                 if i < start or i >= end:
                     continue
+                img_path = os.path.join(root, cls_root, photo_img)
                 self.photo_imgs.append(photo_img)
                 self.fg_labels.append(fg_label)
                 self.labels.append(label)
