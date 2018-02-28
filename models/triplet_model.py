@@ -52,7 +52,7 @@ class TripletModel(BaseModel):
             self.result_record['attr'] = self.record_initialize(False)
         if 'holef' in self.opt.loss_type:
             self.optimize_modules.append(self.loss.linear)
-            #self.loss.linear = torch.nn.DataParallel(self.loss.linear)
+            self.loss.linear = torch.nn.DataParallel(self.loss.linear)
 
         self.test_result_record = self.copy_initialize_record(self.result_record)
         

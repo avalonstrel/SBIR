@@ -76,8 +76,8 @@ class HOLEFLoss(torch.nn.Module):
         dist_neg = self.higher_energy_distance(x0, x2)
         mdist = self.margin + dist_pos - dist_neg
         loss = torch.clamp(mdist, min=0.0)
-        norm1 = self.alpha * torch.norm(self.linear.weight -self.I,1)
-        normF = self.beta * torch.sqrt(torch.sum(torch.pow(self.linear.weight - self.I, 2)))
+        norm1 = self.alpha * torch.norm(self.linear.module.weight -self.I,1)
+        normF = self.beta * torch.sqrt(torch.sum(torch.pow(self.linear.module.weight - self.I, 2)))
         loss = torch.sum(loss) / 2.0 / x0.size(0) + norm1 + normF
         # print("loss:{},norm1:{},normF:{}".format(loss.data,norm1.data, normF.data))
         return loss
