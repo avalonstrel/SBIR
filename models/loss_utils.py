@@ -53,7 +53,7 @@ class HOLEFLoss(torch.nn.Module):
         
         self.I = torch.autograd.Variable(torch.eye(k), requires_grad=False)
         
-        #self.reset_parameter()
+        self.reset_parameter()
         if cuda:
             #self.linear = self.linear.cuda()
             self.weight = self.weight.cuda()
@@ -81,7 +81,8 @@ class HOLEFLoss(torch.nn.Module):
         norm1 = self.alpha * torch.norm(self.weight -self.I,1)
         normF = self.beta * torch.sqrt(torch.sum(torch.pow(self.weight - self.I, 2)))
         loss = torch.sum(loss) / 2.0 / x0.size(0) + norm1 + normF
-        # print("loss:{},norm1:{},normF:{}".format(loss.data,norm1.data, normF.data))
+        print(self.weight.data[0])
+        print("loss:{},norm1:{},normF:{}".format(loss.data,norm1.data, normF.data))
         return loss
 class TripletLoss(torch.nn.Module):
     """
