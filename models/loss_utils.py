@@ -50,7 +50,7 @@ class HOLEFLoss(torch.nn.Module):
         self.weight = torch.nn.Parameter(torch.eye(k))
         #self.linear = torch.nn.Linear(k,k,bias=False)
         #self.register_parameter('sweight',self.weight)
-        self.I = torch.nn.Parameter(torch.eye(k), requires_grad=False)
+        self.I = torch.autograd.Variable(torch.eye(k), requires_grad=False)
         
         #self.reset_parameter()
         if cuda:
