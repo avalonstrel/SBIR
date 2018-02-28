@@ -133,4 +133,4 @@ class SketchXDataset(data.Dataset):
 
             return sketch_pil, image_pil, image_neg_pil, attribute, fg_label,label
         else:
-            return sketch_pil, image_pil, image_neg_pil, fg_label,label
+            return sketch_pil, image_pil, image_neg_pil, label, fg_label, label
