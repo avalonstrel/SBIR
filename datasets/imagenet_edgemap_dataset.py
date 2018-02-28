@@ -27,6 +27,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
             start, end = 0, 90
         elif mode == 'test':
             start, end = 90, 95
+            mode == 'train'
         #photo_roots = [root+photo_type for photo_type in photo_types]
         #print(photo_roots)
         root = os.path.join(root, mode)
