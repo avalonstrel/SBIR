@@ -68,9 +68,9 @@ class HOLEFLoss(torch.nn.Module):
         x = x.unsqueeze(1)
         y = y.unsqueeze(2)
         outer_sub = torch.pow(x - y, 2)
-        output = self.linear(outer_sub)
-        output = output.view(output.size(0),-1)
-       
+        #output = self.linear(outer_sub)
+        #output = output.view(output.size(0),-1)
+        output = outer_sub * self.weight
         return (torch.sum(output,1)) 
 
     def forward(self, x0, x1, x2):
