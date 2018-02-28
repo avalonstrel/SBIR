@@ -32,7 +32,6 @@ class ImageNetEdgeMapDataset(data.Dataset):
         #print(photo_roots)
         root = os.path.join(root, mode)
         fg_label, label = 0, 0
-        pair_inclass_num, pair_outclass_num = self.opt.pair_num
 
         for cls_root, subFolders, files in os.walk(root):
             photo_pat = re.compile("n.+\.JPEG")
@@ -53,6 +52,8 @@ class ImageNetEdgeMapDataset(data.Dataset):
         print('Total ImageNet Class:{} Total Num:{}'.format(label, fg_label))
         self.n_labels = label
         self.n_fg_labels = fg_label
+        pair_inclass_num, pair_outclass_num = self.opt.pair_num
+
         if tri_mode == "train":
             self.generate_triplet(pair_inclass_num,pair_outclass_num)
 
@@ -98,7 +99,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
         sketch_pil = self.load_sketch(photo_pil)
         photo_pil = self.transform(photo_pil)
         photo_neg_pil = self.transform(photo_neg_pil)
-        print(label, fg_label)
+        #print(label, fg_label)
         return sketch_pil, photo_pil, photo_neg_pil, label, fg_label, label
 
 
