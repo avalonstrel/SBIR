@@ -128,8 +128,9 @@ class SketchXDataset(data.Dataset):
         #if self.transform is not None:
         image_pil = self.transform(image_pil)
         image_neg_pil = self.transform(image_neg_pil)
-        if self.flag == "two_loss":
-            return sketch_pil, image_pil, image_neg_pil, fg_label,label
-        elif self.flag == "three_loss":
+        
+        if self.flag == "three_loss":
 
             return sketch_pil, image_pil, image_neg_pil, attribute, fg_label,label
+        else:
+            return sketch_pil, image_pil, image_neg_pil, fg_label,label
