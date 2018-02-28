@@ -47,6 +47,7 @@ class HOLEFLoss(torch.nn.Module):
         self.alpha = 0.005
         self.beta = 0.005
         cuda = opt.cuda
+        k = opt.feat_size
         #self.weight = torch.nn.Parameter(torch.Tensor(k,k))
         self.linear = torch.nn.Linear(k,k,bias=False)
         
