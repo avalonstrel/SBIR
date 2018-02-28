@@ -241,7 +241,7 @@ class TripletModel(BaseModel):
             self.update_record(self.test_result_record, key, attr_loss, predicted_attrs.size(0))
             
         self.test_result_record['retrieval'] = self.record_initialize(True)
-        if not self.opt.dataset_type == 'sketchy':
+        if not (self.opt.dataset_type == 'sketchy' or self.opt.dataset_type == 'imagenet'):
             self.append_features(self.test_features, output0, output1, output2, labels)
         if retrieval_now:
             self.retrieval_evaluation(final_layer_data, loss, prediction,labels)
