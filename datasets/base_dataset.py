@@ -13,7 +13,9 @@ def create_dataset(opt):
     elif name == 'sketchy':
         from .sketchy_dataset import SketchyDataset
         return SketchyDataset(opt)
-
+    elif name == 'imagenet':
+        from .imagenet_edgemap_dataset import ImageNetEdgeMapDataset
+        return ImageNetEdgeMapDataset(opt)
     return None
 
 

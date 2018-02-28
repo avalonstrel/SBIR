@@ -61,8 +61,11 @@ class BaseModel():
         #    network.cuda(gpu_ids[0])
 
     # helper loading function that can be used by subclasses
-    def load_network(self, network, network_label, epoch_label):
+    def load_network(self, network, network_label, epoch_label, load_path=None):
         save_filename = '%s_net_%s.pth.tar' % (epoch_label, network_label)
-        save_path = os.path.join(self.save_dir, save_filename)
+        if not load_path is None:
+            save_path = os.path.join(load_path, save_filename)
+        else:
+            save_path = os.path.join(self.save_dir, save_filename)
         if os.path.exists(save_path):
             network.load_state_dict(torch.load(save_path))

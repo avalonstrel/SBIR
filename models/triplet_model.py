@@ -68,7 +68,7 @@ class TripletModel(BaseModel):
             self.cuda()
             print('Modelcuda ing...')
         if self.opt.continue_train:
-            self.load_model(self.opt.start_epoch)
+            self.load_model(self.opt.start_epoch, self.opt.trained_model_path)
 
 
     def reset_records(self):
@@ -278,12 +278,12 @@ class TripletModel(BaseModel):
     '''
     Load the model
     '''
-    def load_model(self,  epoch_label):
-        self.load_network(self.network, 'TripletSBIRNetwork' , epoch_label)
+    def load_model(self,  epoch_label, load_path):
+        self.load_network(self.network, 'TripletSBIRNetwork' , epoch_label, load_path=load_path)
         for key, i in self.feat_map.items():
             self.load_network(self.cls_network[i], key + '_Cls', epoch_label)
         if 'attr' in self.opt.loss_type:
-            self.load_network(self.attr_network, 'attr', epoch_label)
+            self.load_network(self.attr_network, 'attr', epoch_label, load_path=load_path)
         if 'holef' in self.opt.distance_type:
-            self.load_network(self.loss.base_loss.linear, epoch_label)
+            self.load_network(self.loss.base_loss.linear, epoch_label, load_path=load_path)
 
