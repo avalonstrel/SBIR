@@ -50,7 +50,7 @@ def train():
                     model.test(batch_test_data, opt.retrieval_now)
                 if not opt.retrieval_now:
                     model.combine_features(model.test_features)
-                    model.retrieval_evaluation(model.test_features, model.test_features['labels'])
+                    model.retrieval_evaluation(model.test_features, model.test_result_record['total']['loss_value'].avg, model.test_features['labels'])
                 val_end_time = time.time()
                 print('Validation Epoch: {} [{}/{} ({:.2f}%)] Time:{:.6f} \t{}'.format(epoch, 
                                                                     now_size, data_loader_size, now_size / data_loader_size * 100.0, 
@@ -69,7 +69,7 @@ def train():
 
         if not opt.retrieval_now:
             model.combine_features(model.test_features)
-            model.retrieval_evaluation(model.test_features, model.test_features['labels'])
+            model.retrieval_evaluation(model.test_features, model.test_result_record['total']['loss_value'].avg, model.test_features['labels'])
 
         if epoch % opt.save_epoch_freq == 0:
             print('Save Model at epoch {}.'.format(epoch))

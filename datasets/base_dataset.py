@@ -35,7 +35,7 @@ class CustomDatasetDataLoader():
         if opt.phase == 'train':
             batch_size = opt.batch_size
         else:
-            if opt.dataset_type == 'sketchy' or opt.dataset_type == 'imagenet':
+            if not opt.retrieval_now:
                 batch_size = opt.batch_size
             #batch_size = opt.batch_size
             else:

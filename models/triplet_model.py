@@ -95,7 +95,10 @@ class TripletModel(BaseModel):
 
     # Record training data during training
     def update_record(self, result_record, key, loss, size, prediction=None, labels=None, accs=None ):
-        result_record[key]['loss_value'].update(loss.data[0], size)
+        if isinstance(loss, float):
+            result_record[key]['loss_value'].update(loss, size)
+        else:
+            result_record[key]['loss_value'].update(loss.data[0], size)
         if accs != None:
             
             for i, topk in enumerate(self.opt.topk):
@@ -191,11 +194,12 @@ class TripletModel(BaseModel):
             combined_features[key] = tmp
         return combined_features
 
-    def retrieval_evaluation(self, data, loss, prediction,  labels):
+    def retrieval_evaluation(self, data, loss,  labels):
+        self.test_result_record['retrieval'] = self.record_initialize(True)
         cate_accs, cate_fg_accs = retrieval_evaluation(data['sketch'], data['image'], labels, self.opt.topk)
-        self.update_record(self.test_result_record, 'retrieval', loss, prediction.size(0), accs=cate_fg_accs)
+        self.update_record(self.test_result_record, 'retrieval', loss, labels.size(0), accs=cate_fg_accs)
         self.test_result_record['cate_retrieval'] = self.record_initialize(True)
-        self.update_record(self.test_result_record, 'cate_retrieval', loss, prediction.size(0), accs=cate_accs)
+        self.update_record(self.test_result_record, 'cate_retrieval', loss, labels.size(0), accs=cate_accs)
 
     def test(self, test_data, retrieval_now=True):
 
@@ -240,11 +244,12 @@ class TripletModel(BaseModel):
             loss += attr_loss * self.opt.loss_rate[1]
             self.update_record(self.test_result_record, key, attr_loss, predicted_attrs.size(0))
             
-        self.test_result_record['retrieval'] = self.record_initialize(True)
-        if not (self.opt.dataset_type == 'sketchy' or self.opt.dataset_type == 'imagenet'):
-            self.append_features(self.test_features, output0, output1, output2, labels)
+        self.update_record(self.test_result_record, 'total', loss, final_layer_data['sketch'].size(0))
+
+        #if not (self.opt.dataset_type == 'sketchy' or self.opt.dataset_type == 'imagenet'):
+        self.append_features(self.test_features, output0, output1, output2, labels)
         if retrieval_now:
-            self.retrieval_evaluation(final_layer_data, loss, final_layer_data['sketch'],labels)
+            self.retrieval_evaluation(final_layer_data, loss, labels)
 
         self.train(True)
 
