@@ -35,7 +35,7 @@ class DenseLoss(torch.nn.Module):
         weight = torch.from_numpy(weight)
         return torch.sum(weight*loss_W)
 
-
+  
 
 class HOLEFLoss(torch.nn.Module):
     """
@@ -48,20 +48,22 @@ class HOLEFLoss(torch.nn.Module):
         self.beta = 0.0005
         cuda = opt.cuda
         k = opt.feat_size
-        #self.weight = torch.nn.Parameter(torch.Tensor(k,k))
-        self.linear = torch.nn.Linear(k,k,bias=False)
+        self.weight = torch.nn.Parameter(torch.eye(k))
+        #self.linear = torch.nn.Linear(k,k,bias=False)
         
         self.I = torch.autograd.Variable(torch.eye(k), requires_grad=False)
         
         #self.reset_parameter()
         if cuda:
-            self.linear = self.linear.cuda()
+            #self.linear = self.linear.cuda()
+            self.weight = self.weight.cuda()
             self.I = self.I.cuda()
         #self.I = torch.eye(k)
     def reset_parameter(self):
-        stdv = 1. / math.sqrt(self.weight.size(1))
-        self.weight.data.uniform_(-stdv, stdv)
-        
+        weight_bias = torch.nn.Parameter(torch.Tensor(k,k))
+        stdv = 1. / math.sqrt(weight_bias.size(1))
+        weight_bias.data.uniform_(-stdv, stdv)
+        self.weight = self.weight + weight_bias
     def higher_energy_distance(self, x, y):
         x = x.unsqueeze(1)
         y = y.unsqueeze(2)
@@ -76,8 +78,8 @@ class HOLEFLoss(torch.nn.Module):
         dist_neg = self.higher_energy_distance(x0, x2)
         mdist = self.margin + dist_pos - dist_neg
         loss = torch.clamp(mdist, min=0.0)
-        norm1 = self.alpha * torch.norm(self.linear.module.weight -self.I,1)
-        normF = self.beta * torch.sqrt(torch.sum(torch.pow(self.linear.module.weight - self.I, 2)))
+        norm1 = self.alpha * torch.norm(self.weight -self.I,1)
+        normF = self.beta * torch.sqrt(torch.sum(torch.pow(self.weight - self.I, 2)))
         loss = torch.sum(loss) / 2.0 / x0.size(0) + norm1 + normF
         # print("loss:{},norm1:{},normF:{}".format(loss.data,norm1.data, normF.data))
         return loss

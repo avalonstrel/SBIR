@@ -21,9 +21,10 @@ class AverageMeter(object):
         self.avg = self.sum / self.count
 
 
-def retrieval_evaluation(output0, output1, category_labels, topk=(1,5)):
-    output0 = output0.data.cpu()
-    output1 = output1.data.cpu()
+def retrieval_evaluation(output0, output1, category_labels, topk=(1,5),need_cpu=True):
+    if need_cpu:
+        output0 = output0.data.cpu()
+        output1 = output1.data.cpu()
     diff = torch.zeros(output0.size(0),output0.size(0))
     def distance(x,y):
         return -math.sqrt(torch.sum(torch.pow(x-y, 2)))
