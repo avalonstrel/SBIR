@@ -35,8 +35,6 @@ class DenseLoss(torch.nn.Module):
         weight = torch.from_numpy(weight)
         return torch.sum(weight*loss_W)
 
-  
-
 class HOLEFLoss(torch.nn.Module):
     """
     HOLEF Loss
@@ -51,7 +49,7 @@ class HOLEFLoss(torch.nn.Module):
         self.k = k
         self.weight = torch.autograd.Variable(torch.eye(k))
         #self.linear = torch.nn.Linear(k,k,bias=False)
-        
+        self.register_parameter('weight',self.weight)
         self.I = torch.autograd.Variable(torch.eye(k), requires_grad=False)
         
         self.reset_parameter()
@@ -71,7 +69,9 @@ class HOLEFLoss(torch.nn.Module):
         outer_sub = torch.pow(x - y, 2)
         #output = self.linear(outer_sub)
         #output = output.view(output.size(0),-1)
+        
         output = outer_sub * self.weight
+        print(output.size())
         return (torch.sum(output,1)) 
 
     def forward(self, x0, x1, x2):
