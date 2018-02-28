@@ -22,7 +22,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
         self.transform_fun = transforms.Compose([transforms.ToTensor()])
         self.fg_labels = []
         self.labels = []
-
+        tri_mode = mode
         if mode == "train":
             start, end = 0, 90
         elif mode == 'test':
@@ -53,7 +53,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
         print('Total ImageNet Class:{} Total Num:{}'.format(label, fg_label))
         self.n_labels = label
         self.n_fg_labels = fg_label
-        if mode == "train" :
+        if tri_mode == "train":
             self.generate_triplet(pair_inclass_num,pair_outclass_num)
 
         print("{} pairs loaded. After generate triplet".format(len(self.photo_imgs)))
