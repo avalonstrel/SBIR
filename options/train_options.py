@@ -19,7 +19,7 @@ class TrainOptions(BaseOptions):
         self.parser.add_argument('--save_epoch_freq', type=int, default=1, help='frequency of saving checkpoints at the end of epochs')        
         self.parser.add_argument('--continue_train', action='store_true', help='continue training: load the start epoch model')
         self.parser.add_argument('--trained_model_path', type=str,  help='Load which model to continue training')
-        self.parser.add_argument('--start_epoch', type=int, default=0, help='Start epoch for continue training')
+        self.parser.add_argument('--start_epoch', type=str, default=latest, help='Start epoch for continue training')
         self.parser.add_argument('--num_layers', type=int, default=4, help='The feature loss layers')
         self.parser.add_argument('--retrieval_now',action='store_true', help='Retrieval result when training?')
         #self.parser.add_argument('--pool_size', type=int, default=50, help='the size of image buffer that stores previously generated images')
