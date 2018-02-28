@@ -30,7 +30,8 @@ class BaseOptions():
         self.parser.add_argument('--edge_map', action='store_true', help='Choose Whether use the edge map of image data')
         self.parser.add_argument('--sketch_levels', type=str,default='c', help='The sketch level mode used')
         self.parser.add_argument('--feat_size', type=int,default=64, help='The size of embedding feature')
-
+        self.parser.add_argument('--is_relu', action='store_true', help='Choose Whether the first Conv Layer use relu')
+        self.parser.add_argument('--is_bn', action='store_true', help='Choose Whether the first Conv Layer use batchnorm')
         self.parser.add_argument('--attention_mode', action='store_true', help='Whether use attention in embedding')
         self.parser.add_argument('--fc_layer_mode',action='store_true', help='Whether use fc_layer in embedding mode')
         self.parser.add_argument('--fusion_mode', action='store_true', help='Whether use fusion mode')

@@ -23,7 +23,7 @@ class AttentionLayer(torch.nn.Module):
         return out
 
 class ConvLayer(torch.nn.Module):
-    def __init__(self, num_input_features, num_output_features, kernel_size, stride, bias=False, padding=0, is_relu=True):
+    def __init__(self, num_input_features, num_output_features, kernel_size, stride, bias=False, padding=0, is_relu=True, is_bn=True):
         super(ConvLayer, self).__init__()
         self.conv = nn.Conv2d(num_input_features, num_output_features 
                         , kernel_size=kernel_size, stride=stride, padding=padding,  bias=bias)
@@ -32,7 +32,8 @@ class ConvLayer(torch.nn.Module):
         self.is_relu = is_relu
     def forward(self, x):
         out = self.conv(x)
-        out = self.bn(out)
+        if self.is_bn:
+            out = self.bn(out)
         if self.is_relu:
             out = self.relu(out)
         return out
@@ -44,7 +45,7 @@ class ConvBlock(torch.nn.Module):
             num_input_features = 1
         else:
             num_input_features = 3
-        self.conv1 = ConvLayer(num_input_features, 64, kernel_size=15, stride=3, bias=False)
+        self.conv1 = ConvLayer(num_input_features, 64, kernel_size=15, stride=3, bias=False, is_relu=opt.is_relu, is_bn=opt.is_bn)
         self.pool1 = nn.MaxPool2d(kernel_size=3, stride=2, padding=0)
         self.conv2 = ConvLayer(64, 128, kernel_size=5, stride=1, padding=0)
         self.pool2 = nn.MaxPool2d(kernel_size=3, stride=2, padding=0)
