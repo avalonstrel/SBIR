@@ -100,7 +100,7 @@ class SketchyDataset(data.Dataset):
         return pil_numpy
 
     def load_sketch(self, pil):
-        pil = pil.convert('RGB')
+        #pil = pil.convert('RGB')
         pil_numpy = np.array(pil)
 
         
