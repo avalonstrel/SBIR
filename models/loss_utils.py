@@ -101,11 +101,12 @@ class TripletLoss(torch.nn.Module):
         #print(diff_pos.cpu().numpy())
         dist_pos_sq = torch.sum(torch.pow(diff_pos, 2), 1)
         dist_pos = torch.sqrt(dist_pos_sq)
-        print(dist_pos.data.cpu().numpy())
+        #print(dist_pos.data.cpu().numpy())
         dist_neg_sq = torch.sum(torch.pow(diff_neg, 2), 1)
         dist_neg = torch.sqrt(dist_neg_sq)
         #print(diff_.data.cpu().numpy())
         mdist = self.margin + dist_pos - dist_neg
+        
         loss = torch.clamp(mdist, min=0.0)
 
         loss = torch.sum(loss) / 2.0 / x0.size()[0]
