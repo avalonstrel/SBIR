@@ -97,7 +97,8 @@ class SketchXDataset(data.Dataset):
 
     def load_image(self, pil):
         def show(mode, pil_numpy):
-            print(mode, ",".join([str(i) for i in pil_numpy.flatten() if i != 0]))
+            print(mode, len(",".join([str(i) for i in pil_numpy.flatten() if i != 0])))
+
         if self.opt.image_type == 'RGB':
             pil = pil.convert('RGB')
             pil_numpy = np.array(pil)
@@ -107,6 +108,7 @@ class SketchXDataset(data.Dataset):
         elif self.opt.image_type == 'EDGE':
             pil = pil.convert('L')
             pil_numpy = np.array(pil)
+            show('edge', pil_numpy)
             pil_numpy = cv2.Canny(pil_numpy, 50, 100)
 
         #print('image{}'.format(pil_numpy.shape))
@@ -125,8 +127,8 @@ class SketchXDataset(data.Dataset):
         pil = pil.convert('L')
         pil_numpy = np.array(pil)
         #print('sketch before{}'.format(pil_numpy.shape))
-        print(pil_numpy.shape)
-        show('sketch_before', pil_numpy)
+        #print(pil_numpy.shape)
+        #show('sketch_before', pil_numpy)
         if len(pil_numpy.shape) == 2:
             pil_numpy = pil_numpy
         elif pil_numpy.shape[2] == 4:
@@ -137,7 +139,7 @@ class SketchXDataset(data.Dataset):
         #elif self.opt.sketch_type == 'GRAY':
         #    pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
         #print('sketch{}'.format(pil_numpy.shape))
-        show('sketch', pil_numpy)
+        #show('sketch', pil_numpy)
         transform_fun = self.transform_fun if self.mode == 'train' else self.test_transform_fun
         if transform_fun is not None :
             pil = Image.fromarray(pil_numpy)
