@@ -124,7 +124,7 @@ class SketchXDataset(data.Dataset):
         #pil = pil.convert('RGB')
         pil_numpy = np.array(pil)
         #print('sketch before{}'.format(pil_numpy.shape))
-        
+        show('sketch_before', pil_numpy)
         if len(pil_numpy.shape) == 2:
             pil_numpy = pil_numpy
         elif pil_numpy.shape[2] == 4:
@@ -135,11 +135,12 @@ class SketchXDataset(data.Dataset):
         #elif self.opt.sketch_type == 'GRAY':
         #    pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
         #print('sketch{}'.format(pil_numpy.shape))
+        show('sketch', pil_numpy)
         transform_fun = self.transform_fun if self.mode == 'train' else self.test_transform_fun
         if transform_fun is not None :
             pil = Image.fromarray(pil_numpy)
             pil_numpy = transform_fun(pil)
-        show('sketch', pil_numpy.numpy())
+        
         return pil_numpy
 
 
