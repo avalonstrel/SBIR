@@ -59,7 +59,7 @@ class HOLEFLoss(torch.nn.Module):
             self.I = self.I.cuda()
         #self.I = torch.eye(k)
     def reset_parameter(self):
-        torch.nn.init.orthogonal(self.weight)
+        torch.nn.init.kaiming_uniform(self.weight)
     def higher_energy_distance(self, x, y):
         x = x.unsqueeze(1)
         y = y.unsqueeze(2)

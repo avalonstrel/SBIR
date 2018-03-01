@@ -13,10 +13,17 @@ class SketchyDataset(data.Dataset):
         sketch_types = opt.sketchy_sketch_types
         mode = opt.phase
         
+        if self.opt.random_crop:
+            transforms_list.append(transforms.RandomResizedCrop(self.opt.scale_size))
+        if self.opt.flip:
+            transforms_list.append(tansforms.RandomHorizontalFlip(0.5))
+        transforms_list.append(transforms.ToTensor())
+        self.transform_fun = transforms.Compose(transforms_list)
+        
         self.photo_imgs = []
         self.sketch_imgs = []
         self.photo_neg_imgs = []
-        self.transform_fun = transforms.Compose([transforms.ToTensor()])
+        
         self.fg_labels = []
         self.labels = []
         if mode == "train":
@@ -69,6 +76,44 @@ class SketchyDataset(data.Dataset):
 
         print("{} pairs loaded. After generate triplet".format(len(self.photo_imgs)))
 
+    def load_image(self, pil):
+        if self.opt.image_type == 'RGB':
+            pil = pil.convert('RGB')
+            pil_numpy = np.array(pil)
+        elif self.opt.image_type == 'GRAY':
+            pil = pil.convert('L')
+            pil_numpy = np.array(pil)
+        elif self.opt.image_type == 'EDGE':
+            pil = pil.convert('L')
+            pil_numpy = np.array(pil)
+            pil_numpy = cv2.Canny(pil_numpy, 100, 200)
+        if self.opt.image_type == 'GRAY' or self.opt.image_type == 'EDGE':
+            pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
+
+        if self.transform_fun is not None:
+            pil_numpy = self.transform_fun(pil_numpy)
+
+        return pil_numpy
+
+    def load_sketch(self, pil):
+        pil = pil.convert('RGB')
+        pil_numpy = np.array(pil)
+
+        
+        if len(pil_numpy.shape) == 2:
+            pil_numpy = pil_numpy
+        elif pil_numpy.shape[2] == 4:
+            pil_numpy = pil_numpy[:,:,3]
+            
+        if self.opt.sketch_type == 'RGB':
+            pil_numpy = to_rgb(pil_numpy)   
+        elif self.opt.sketch_type == 'GRAY':
+            pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
+        if self.transform_fun is not None:
+            pil_numpy = self.transform_fun(pil_numpy)
+
+        return pil_numpy
+
     def transform(self, pil):
         pil_numpy = np.array(pil)
         if len(pil_numpy.shape) == 2:
@@ -87,6 +132,7 @@ class SketchyDataset(data.Dataset):
         if self.transform_fun is not None:
             pil_numpy = self.transform_fun(pil_numpy)
         return pil_numpy
+
     def __len__(self):
         return len(self.photo_imgs)
 
@@ -94,9 +140,9 @@ class SketchyDataset(data.Dataset):
         photo_img,sketch_img,photo_neg_img,fg_label,label = self.photo_imgs[index], self.sketch_imgs[index], self.photo_neg_imgs[index], self.fg_labels[index], self.labels[index]
         photo_pil,sketch_pil,photo_neg_pil = Image.open(photo_img), Image.open(sketch_img), Image.open(photo_neg_img)
         #if self.transform is not None:
-        photo_pil = self.transform(photo_pil)
-        sketch_pil = self.transform(sketch_pil)
-        photo_neg_pil = self.transform(photo_neg_pil)
+        photo_pil = self.load_image(photo_pil)
+        sketch_pil = self.load_sketch(sketch_pil)
+        photo_neg_pil = self.load_image(photo_neg_pil)
         return sketch_pil,photo_pil,photo_neg_pil, label, fg_label,label
 
 

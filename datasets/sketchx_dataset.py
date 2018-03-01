@@ -20,7 +20,13 @@ class SketchXDataset(data.Dataset):
 
         self.flag = opt.loss_flag
         self.levels = opt.sketch_levels
-        self.transform_fun = transforms.Compose([transforms.ToTensor()])
+        transforms_list = []
+        if self.opt.random_crop:
+            transforms_list.append(transforms.RandomResizedCrop(self.opt.scale_size))
+        if self.opt.flip:
+            transforms_list.append(tansforms.RandomHorizontalFlip(0.5))
+        transforms_list.append(transforms.ToTensor())
+        self.transform_fun = transforms.Compose(transforms_list)
         
         if 'chairs' in root:
             thing_type = 'chairs'
@@ -86,12 +92,51 @@ class SketchXDataset(data.Dataset):
         self.n_fg_labels = len(sketch_imgs)
         print("{} images loaded. After generate triplet".format(len(self.image_imgs)))
 
+    def load_image(self, pil):
+        if self.opt.image_type == 'RGB':
+            pil = pil.convert('RGB')
+            pil_numpy = np.array(pil)
+        elif self.opt.image_type == 'GRAY':
+            pil = pil.convert('L')
+            pil_numpy = np.array(pil)
+        elif self.opt.image_type == 'EDGE':
+            pil = pil.convert('L')
+            pil_numpy = np.array(pil)
+            pil_numpy = cv2.Canny(pil_numpy, 100, 200)
+        if self.opt.image_type == 'GRAY' or self.opt.image_type == 'EDGE':
+            pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
+
+        if self.transform_fun is not None:
+            pil_numpy = self.transform_fun(pil_numpy)
+
+        return pil_numpy
+
+    def load_sketch(self, pil):
+        pil = pil.convert('RGB')
+        pil_numpy = np.array(pil)
+
+        
+        if len(pil_numpy.shape) == 2:
+            pil_numpy = pil_numpy
+        elif pil_numpy.shape[2] == 4:
+            pil_numpy = pil_numpy[:,:,3]
+            
+        if self.opt.sketch_type == 'RGB':
+            pil_numpy = to_rgb(pil_numpy)   
+        elif self.opt.sketch_type == 'GRAY':
+            pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
+
+        return pil_numpy
+
+
     def transform(self, pil):
         pil = pil.convert('RGB')
         pil_numpy = np.array(pil)
+
         if len(pil_numpy.shape) == 2:
             pil_numpy = to_rgb(pil_numpy)
             #pil_numpy = np.tile(pil_numpy,3).reshape(pil_numpy.shape+(-1,))
+            
         elif pil_numpy.shape[2] == 4:
             pil_numpy = to_rgb(pil_numpy[:,:,3])
             #pil_numpy = np.tile(pil_numpy[:,:,3],3).reshape(pil_numpy.shape[0:2]+(-1,))
@@ -116,21 +161,18 @@ class SketchXDataset(data.Dataset):
         #print(len(self.attributes),"image",len(self.image_imgs),"ind:",index)
         image_img,sketch_img,image_neg_img,fg_label,label, attribute = self.image_imgs[index], self.sketch_imgs[index], self.image_neg_imgs[index], self.fg_labels[index], self.labels[index], self.attributes[index]
         if self.levels == "stack":
-            sketch_s_pil, sketch_c_pil = self.transform(Image.open(sketch_img[0])), self.transform(Image.open(sketch_img[1]))
+            sketch_s_pil, sketch_c_pil = self.load_sketch(Image.open(sketch_img[0])), self.load_sketch(Image.open(sketch_img[1]))
             sketch_s_pil[:,:,1] = sketch_c_pil[:,:,0]
             sketch_pil = sketch_s_pil
         else:
             sketch_pil = Image.open(sketch_img)
-            
-            sketch_pil = self.transform(sketch_pil)
+            sketch_pil = self.load_sketch(sketch_pil)
         image_pil, image_neg_pil = Image.open(image_img), Image.open(image_neg_img)
 
         #if self.transform is not None:
-        image_pil = self.transform(image_pil)
-        image_neg_pil = self.transform(image_neg_pil)
+        image_pil = self.load_image(image_pil)
+        image_neg_pil = self.load_image(image_neg_pil)
         
-        if self.flag == "three_loss":
 
-            return sketch_pil, image_pil, image_neg_pil, attribute, fg_label,label
-        else:
-            return sketch_pil, image_pil, image_neg_pil, label, fg_label, label
+        return sketch_pil, image_pil, image_neg_pil, attribute, fg_label,label
+        
