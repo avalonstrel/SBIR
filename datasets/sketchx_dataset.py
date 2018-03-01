@@ -24,7 +24,7 @@ class SketchXDataset(data.Dataset):
         if self.opt.random_crop:
             transforms_list.append(transforms.RandomResizedCrop(self.opt.scale_size))
         if self.opt.flip:
-            transforms_list.append(transforms.RandomHorizontalFlip)
+            transforms_list.append(transforms.RandomHorizontalFlip())
         transforms_list.append(transforms.ToTensor())
         self.transform_fun = transforms.Compose(transforms_list)
         
@@ -103,20 +103,20 @@ class SketchXDataset(data.Dataset):
             pil = pil.convert('L')
             pil_numpy = np.array(pil)
             pil_numpy = cv2.Canny(pil_numpy, 100, 200)
-        print('image{}'.format(pil_numpy.shape))
+        #print('image{}'.format(pil_numpy.shape))
         #if self.opt.image_type == 'GRAY' or self.opt.image_type == 'EDGE':
         #    pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
 
         if self.transform_fun is not None:
             pil = Image.fromarray(pil_numpy)
-            pil_numpy = self.transform_fun(pil_numpy)
+            pil_numpy = self.transform_fun(pil)
 
         return pil_numpy
 
     def load_sketch(self, pil):
         #pil = pil.convert('RGB')
         pil_numpy = np.array(pil)
-        print('sketch before{}'.format(pil_numpy.shape))
+        #print('sketch before{}'.format(pil_numpy.shape))
         
         if len(pil_numpy.shape) == 2:
             pil_numpy = pil_numpy
@@ -127,37 +127,13 @@ class SketchXDataset(data.Dataset):
             pil_numpy = to_rgb(pil_numpy)   
         #elif self.opt.sketch_type == 'GRAY':
         #    pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
-        print('sketch{}'.format(pil_numpy.shape))
+        #print('sketch{}'.format(pil_numpy.shape))
         if self.transform_fun is not None:
             pil = Image.fromarray(pil_numpy)
             pil_numpy = self.transform_fun(pil)
         return pil_numpy
 
 
-    def transform(self, pil):
-        pil = pil.convert('RGB')
-        pil_numpy = np.array(pil)
-
-        if len(pil_numpy.shape) == 2:
-            pil_numpy = to_rgb(pil_numpy)
-            #pil_numpy = np.tile(pil_numpy,3).reshape(pil_numpy.shape+(-1,))
-            
-        elif pil_numpy.shape[2] == 4:
-            pil_numpy = to_rgb(pil_numpy[:,:,3])
-            #pil_numpy = np.tile(pil_numpy[:,:,3],3).reshape(pil_numpy.shape[0:2]+(-1,))
-            #pil_numpy[:,:,2] = 0
-        
-        if self.opt.image_type == 'GRAY':
-            gray_pil = Image.fromarray(pil_numpy)
-            pil_numpy = np.array(gray_pil.convert('L'))
-
-        pil_numpy = cv2.resize(pil_numpy,(self.opt.scale_size,self.opt.scale_size))
-        if self.opt.image_type == 'GRAY':
-            pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
-        if self.transform_fun is not None:
-            pil_numpy = self.transform_fun(pil_numpy)
-        #data_info.write(",".join([str(i) for i in pil_numpy.numpy().flatten() if i != 0])+"\n")
-        return pil_numpy
 
     def __len__(self):
         return len(self.image_imgs)
