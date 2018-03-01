@@ -130,7 +130,7 @@ class SketchXDataset(data.Dataset):
         print('sketch{}'.format(pil_numpy.shape))
         if self.transform_fun is not None:
             pil = Image.fromarray(pil_numpy)
-            pil_numpy = self.transform_fun(pil_numpy)
+            pil_numpy = self.transform_fun(pil)
         return pil_numpy
 
 
