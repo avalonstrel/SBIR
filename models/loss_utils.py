@@ -42,8 +42,8 @@ class HOLEFLoss(torch.nn.Module):
     def __init__(self, opt): # k, alpha=0.0005,beta=0.0005, margin=2.0, cuda=True):
         super(HOLEFLoss, self).__init__()
         self.margin = opt.margin
-        self.alpha = 0.0005
-        self.beta = 0.0005
+        self.alpha = 0.005
+        self.beta = 0.005
         cuda = opt.cuda
         k = opt.feat_size
         self.k = k
@@ -59,7 +59,7 @@ class HOLEFLoss(torch.nn.Module):
             self.I = self.I.cuda()
         #self.I = torch.eye(k)
     def reset_parameter(self):
-        torch.nn.init.orthogonal(self.weight)
+        torch.nn.init.kaiming_uniform(self.weight)
     def higher_energy_distance(self, x, y):
         x = x.unsqueeze(1)
         y = y.unsqueeze(2)
@@ -68,7 +68,8 @@ class HOLEFLoss(torch.nn.Module):
         #output = output.view(output.size(0),-1)
         
         output = outer_sub * self.weight
-        print(output.size(), outer_sub.size())
+        #print(outer_sub[0].data[0], self.weight.data[0], output[0].data[0])
+        #print(output.size(), outer_sub.size())
         return (torch.sum(output,1)) 
 
     def forward(self, x0, x1, x2):

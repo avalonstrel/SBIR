@@ -35,8 +35,8 @@ class ConvLayer(torch.nn.Module):
         out = self.conv(x)
         if self.is_bn:
             out = self.bn(out)
-        if self.is_relu:
-            out = self.relu(out)
+        #if self.is_relu:
+        #    out = self.relu(out)
         return out
 
 class ConvBlock(torch.nn.Module):

@@ -286,7 +286,9 @@ class TripletModel(BaseModel):
     Load the model
     '''
     def load_model(self,  epoch_label, load_path):
+        print('Load Model TripletSBIRNetwork {}'.format(load_path))
         self.load_network(self.network, 'TripletSBIRNetwork' , epoch_label, load_path=load_path)
+         
         for key, i in self.feat_map.items():
             self.load_network(self.cls_network[i], key + '_Cls', epoch_label)
         if 'attr' in self.opt.loss_type:

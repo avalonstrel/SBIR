@@ -1,2 +1,2 @@
-python train.py --data_root /home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/ --dataset_type sketchy  --name attention_hol_nrb_g_sketchy --model tripletsiamese --feature_model attention --loss_type 'holef,one_loss' --feat_size 512 --phase train --num_epoch 20 --n_labels 125 --n_attrs 125 --scale_size 225 --image_type GRAY --batch_size 100 --gpu_ids 0 --save_mode \
-2>&1 |tee -a log/train_attention_holef_norelubn_sketchy.log
+python train.py --data_root /home/lhy/datasets/sketchy/rendered_256x256/256x256/photo/ --dataset_type sketchy  --name attention_hol_nr_g_sketchy --model tripletsiamese --feature_model attention --loss_type 'holef,one_loss' --feat_size 512 --phase train --num_epoch 20 --n_labels 125 --n_attrs 125 --scale_size 225 --image_type GRAY --batch_size 20 --gpu_ids 0,2 --save_mode --is_bn --retrieval_now \
+2>&1 |tee -a log/train_attention_holef_norelu_sketchy.log
