@@ -121,7 +121,7 @@ class SketchXDataset(data.Dataset):
     def load_sketch(self, pil):
         def show(mode, pil_numpy):
             print(mode, len(",".join([str(i) for i in pil_numpy.flatten() if i != 0])))
-        #pil = pil.convert('RGB')
+        pil = pil.convert('L')
         pil_numpy = np.array(pil)
         #print('sketch before{}'.format(pil_numpy.shape))
         print(pil_numpy.shape)
