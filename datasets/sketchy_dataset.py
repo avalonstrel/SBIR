@@ -111,8 +111,8 @@ class SketchyDataset(data.Dataset):
             
         if self.opt.sketch_type == 'RGB':
             pil_numpy = to_rgb(pil_numpy)   
-        elif self.opt.sketch_type == 'GRAY':
-            pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
+        #elif self.opt.sketch_type == 'GRAY':
+        #    pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
         if self.transform_fun is not None:
             pil = Image.fromarray(pil_numpy)
             pil_numpy = self.transform_fun(pil)
