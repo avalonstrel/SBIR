@@ -113,6 +113,7 @@ class SketchXDataset(data.Dataset):
         return len(self.image_imgs)
 
     def __getitem__(self,index):
+        #print(index)
         #print(len(self.attributes),"image",len(self.image_imgs),"ind:",index)
         image_img,sketch_img,image_neg_img,fg_label,label, attribute = self.image_imgs[index], self.sketch_imgs[index], self.image_neg_imgs[index], self.fg_labels[index], self.labels[index], self.attributes[index]
         if self.levels == "stack":
