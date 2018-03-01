@@ -12,7 +12,7 @@ class SketchyDataset(data.Dataset):
         photo_types = opt.sketchy_photo_types
         sketch_types = opt.sketchy_sketch_types
         mode = opt.phase
-        
+        transforms_list = []
         if self.opt.random_crop:
             transforms_list.append(transforms.RandomResizedCrop(self.opt.scale_size))
         if self.opt.flip:

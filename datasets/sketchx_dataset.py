@@ -24,7 +24,7 @@ class SketchXDataset(data.Dataset):
         if self.opt.random_crop:
             transforms_list.append(transforms.RandomResizedCrop(self.opt.scale_size))
         if self.opt.flip:
-            transforms_list.append(transforms.RandomHorizontalFlip(0.5))
+            transforms_list.append(transforms.RandomHorizontalFlip)
         transforms_list.append(transforms.ToTensor())
         self.transform_fun = transforms.Compose(transforms_list)
         
@@ -103,10 +103,12 @@ class SketchXDataset(data.Dataset):
             pil = pil.convert('L')
             pil_numpy = np.array(pil)
             pil_numpy = cv2.Canny(pil_numpy, 100, 200)
-        if self.opt.image_type == 'GRAY' or self.opt.image_type == 'EDGE':
-            pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
+        print('image{}'.format(pil_numpy.shape))
+        #if self.opt.image_type == 'GRAY' or self.opt.image_type == 'EDGE':
+        #    pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
 
         if self.transform_fun is not None:
+            pil = Image.fromarray(pil_numpy)
             pil_numpy = self.transform_fun(pil_numpy)
 
         return pil_numpy
@@ -114,7 +116,7 @@ class SketchXDataset(data.Dataset):
     def load_sketch(self, pil):
         pil = pil.convert('RGB')
         pil_numpy = np.array(pil)
-
+        print('sketch before{}'.format(pil_numpy.shape))
         
         if len(pil_numpy.shape) == 2:
             pil_numpy = pil_numpy
@@ -123,9 +125,12 @@ class SketchXDataset(data.Dataset):
 
         if self.opt.sketch_type == 'RGB':
             pil_numpy = to_rgb(pil_numpy)   
-        elif self.opt.sketch_type == 'GRAY':
-            pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
-
+        #elif self.opt.sketch_type == 'GRAY':
+        #    pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
+        print('sketch{}'.format(pil_numpy.shape))
+        if self.transform_fun is not None:
+            pil = Image.fromarray(pil_numpy)
+            pil_numpy = self.transform_fun(pil_numpy)
         return pil_numpy
 
 
