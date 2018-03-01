@@ -12,11 +12,13 @@ class SketchyDataset(data.Dataset):
         photo_types = opt.sketchy_photo_types
         sketch_types = opt.sketchy_sketch_types
         mode = opt.phase
+
         transforms_list = []
         if self.opt.random_crop:
-            transforms_list.append(transforms.RandomResizedCrop(self.opt.scale_size))
+            transforms_list.append(transforms.Resize((300,300)))
+            transforms_list.append(transforms.RandomCrop((self.opt.scale_size, self.opt.scale_size)))
         if self.opt.flip:
-            transforms_list.append(transforms.RandomHorizontalFlip(0.5))
+            transforms_list.append(transforms.RandomHorizontalFlip())
         transforms_list.append(transforms.ToTensor())
         self.transform_fun = transforms.Compose(transforms_list)
 
@@ -87,11 +89,13 @@ class SketchyDataset(data.Dataset):
             pil = pil.convert('L')
             pil_numpy = np.array(pil)
             pil_numpy = cv2.Canny(pil_numpy, 100, 200)
-        if self.opt.image_type == 'GRAY' or self.opt.image_type == 'EDGE':
-            pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
+
+        #if self.opt.image_type == 'GRAY' or self.opt.image_type == 'EDGE':
+        #    pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
 
         if self.transform_fun is not None:
-            pil_numpy = self.transform_fun(pil_numpy)
+            pil = Image.fromarray(pil_numpy)
+            pil_numpy = self.transform_fun(pil)
 
         return pil_numpy
 
@@ -110,7 +114,8 @@ class SketchyDataset(data.Dataset):
         elif self.opt.sketch_type == 'GRAY':
             pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
         if self.transform_fun is not None:
-            pil_numpy = self.transform_fun(pil_numpy)
+            pil = Image.fromarray(pil_numpy)
+            pil_numpy = self.transform_fun(pil)
 
         return pil_numpy
 
