@@ -93,6 +93,8 @@ class SketchXDataset(data.Dataset):
         print("{} images loaded. After generate triplet".format(len(self.image_imgs)))
 
     def load_image(self, pil):
+        def show(mode, pil_numpy):
+            print(mode, ",".join([str(i) for i in pil_numpy.flatten() if i != 0]))
         if self.opt.image_type == 'RGB':
             pil = pil.convert('RGB')
             pil_numpy = np.array(pil)
@@ -114,6 +116,8 @@ class SketchXDataset(data.Dataset):
         return pil_numpy
 
     def load_sketch(self, pil):
+        def show(mode, pil_numpy):
+            print(mode, ",".join([str(i) for i in pil_numpy.flatten() if i != 0]))
         #pil = pil.convert('RGB')
         pil_numpy = np.array(pil)
         #print('sketch before{}'.format(pil_numpy.shape))
@@ -131,6 +135,7 @@ class SketchXDataset(data.Dataset):
         if self.transform_fun is not None:
             pil = Image.fromarray(pil_numpy)
             pil_numpy = self.transform_fun(pil)
+        show('sketch', pil_numpy)
         return pil_numpy
 
 
