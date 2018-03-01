@@ -24,7 +24,7 @@ class SketchXDataset(data.Dataset):
         if self.opt.random_crop:
             transforms_list.append(transforms.RandomResizedCrop(self.opt.scale_size))
         if self.opt.flip:
-            transforms_list.append(tansforms.RandomHorizontalFlip(0.5))
+            transforms_list.append(transforms.RandomHorizontalFlip(0.5))
         transforms_list.append(transforms.ToTensor())
         self.transform_fun = transforms.Compose(transforms_list)
         
@@ -120,7 +120,7 @@ class SketchXDataset(data.Dataset):
             pil_numpy = pil_numpy
         elif pil_numpy.shape[2] == 4:
             pil_numpy = pil_numpy[:,:,3]
-            
+
         if self.opt.sketch_type == 'RGB':
             pil_numpy = to_rgb(pil_numpy)   
         elif self.opt.sketch_type == 'GRAY':

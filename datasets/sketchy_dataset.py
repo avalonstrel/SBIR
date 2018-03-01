@@ -16,10 +16,10 @@ class SketchyDataset(data.Dataset):
         if self.opt.random_crop:
             transforms_list.append(transforms.RandomResizedCrop(self.opt.scale_size))
         if self.opt.flip:
-            transforms_list.append(tansforms.RandomHorizontalFlip(0.5))
+            transforms_list.append(transforms.RandomHorizontalFlip(0.5))
         transforms_list.append(transforms.ToTensor())
         self.transform_fun = transforms.Compose(transforms_list)
-        
+
         self.photo_imgs = []
         self.sketch_imgs = []
         self.photo_neg_imgs = []
