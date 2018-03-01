@@ -75,15 +75,17 @@ class AttentionNetwork(torch.nn.Module):
         self.gap = nn.AvgPool2d(kernel_size=7, stride=1, padding=0)
         self.fc6 = nn.Linear(256*7*7, 512)
         self.fc7 = nn.Linear(512, 256)
-
+        self.bn7 = nn.BatchNorm2d(512)
     def forward(self, x):
         conv_feature = self.conv_block(x)
         attention_feature = self.attention_layer(conv_feature)
         linear_input_feature = attention_feature.view(attention_feature.size(0), -1)
         out = self.fc6(linear_input_feature)
         out = self.fc7(out)
+
         gap_feature = self.gap(attention_feature).view(attention_feature.size(0), -1)
         out = torch.cat([out, gap_feature], 1)
+        out = self.bn7(out)
         return out
 
 '''

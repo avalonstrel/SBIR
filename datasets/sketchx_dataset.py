@@ -27,7 +27,7 @@ class SketchXDataset(data.Dataset):
             transforms_list.append(transforms.Resize(300))
             transforms_list.append(transforms.RandomCrop(self.opt.scale_size))
         if self.opt.flip:
-            transforms_list.append(transforms.RandomHorizontalFlip())
+            transforms_list.append(transforms.RandomVerticalFlip())
         transforms_list.append(transforms.ToTensor())
         self.transform_fun = transforms.Compose(transforms_list)
         self.test_transform_fun = transforms.Compose([transforms.Resize(self.opt.scale_size),transforms.ToTensor()])
