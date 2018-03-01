@@ -124,6 +124,7 @@ class SketchXDataset(data.Dataset):
         #pil = pil.convert('RGB')
         pil_numpy = np.array(pil)
         #print('sketch before{}'.format(pil_numpy.shape))
+        print(pil_numpy.shape)
         show('sketch_before', pil_numpy)
         if len(pil_numpy.shape) == 2:
             pil_numpy = pil_numpy
