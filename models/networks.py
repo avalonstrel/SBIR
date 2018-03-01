@@ -42,7 +42,7 @@ class ConvLayer(torch.nn.Module):
 class ConvBlock(torch.nn.Module):
     def __init__(self, opt):
         super(ConvBlock, self).__init__()
-        if opt.image_type == 'GRAY':
+        if opt.sketch_type == 'GRAY':
             num_input_features = 1
         else:
             num_input_features = 3
