@@ -120,7 +120,7 @@ class SketchXDataset(data.Dataset):
 
     def load_sketch(self, pil):
         def show(mode, pil_numpy):
-            print(mode, ",".join([str(i) for i in pil_numpy.flatten() if i != 0]))
+            print(mode, len(",".join([str(i) for i in pil_numpy.flatten() if i != 0])))
         #pil = pil.convert('RGB')
         pil_numpy = np.array(pil)
         #print('sketch before{}'.format(pil_numpy.shape))
@@ -139,7 +139,7 @@ class SketchXDataset(data.Dataset):
         if transform_fun is not None :
             pil = Image.fromarray(pil_numpy)
             pil_numpy = transform_fun(pil)
-        #show('sketch', pil_numpy)
+        show('sketch', pil_numpy)
         return pil_numpy
 
 
