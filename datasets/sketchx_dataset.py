@@ -139,7 +139,7 @@ class SketchXDataset(data.Dataset):
         if transform_fun is not None :
             pil = Image.fromarray(pil_numpy)
             pil_numpy = transform_fun(pil)
-        show('sketch', pil_numpy)
+        show('sketch', pil_numpy.numpy())
         return pil_numpy
 
 
