@@ -79,6 +79,7 @@ class SketchyDataset(data.Dataset):
         print("{} pairs loaded. After generate triplet".format(len(self.photo_imgs)))
 
     def load_image(self, pil):
+
         if self.opt.image_type == 'RGB':
             pil = pil.convert('RGB')
             pil_numpy = np.array(pil)
@@ -100,7 +101,7 @@ class SketchyDataset(data.Dataset):
         return pil_numpy
 
     def load_sketch(self, pil):
-        #pil = pil.convert('RGB')
+        pil = pil.convert('L')
         pil_numpy = np.array(pil)
 
         
