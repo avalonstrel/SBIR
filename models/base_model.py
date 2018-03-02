@@ -26,7 +26,7 @@ class BaseModel():
     def initialize(self):
         raise NotImplementedError("not implement error")
 
-    def train(self):
+    def optimize(self):
         raise NotImplementedError("not implement error")
 
 
@@ -40,6 +40,7 @@ class BaseModel():
 
     def load_model(self, model):
         raise NotImplementedError("not implement error")
+
     def train(self, mode=True):
         for module in self.optimize_modules:
             module.train(mode)

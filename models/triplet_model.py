@@ -14,7 +14,7 @@ class TripletModel(BaseModel):
         return 'TripletModel'
     def get_loss(self, loss_type):
         if loss_type == 'triplet':
-            return TripletLoss(self.opt)
+            return TripletMarginLoss(self.opt.margin)
         elif loss_type == 'holef':
             return HOLEFLoss(self.opt)
         return None
