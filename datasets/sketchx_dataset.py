@@ -166,8 +166,10 @@ class SketchXDataset(data.Dataset):
             #pil_numpy = np.tile(pil_numpy[:,:,3],3).reshape(pil_numpy.shape[0:2]+(-1,))
             #pil_numpy[:,:,2] = 0
         pil_numpy = cv2.resize(pil_numpy,(self.opt.scale_size, self.opt.scale_size))
+
         if self.transform_fun is not None:
-            pil_numpy = self.transform_fun(pil_numpy)
+            pil = Image.fromarray(pil_numpy)
+            pil_numpy = self.transform_fun(pil)
         #data_info.write(",".join([str(i) for i in pil_numpy.numpy().flatten() if i != 0])+"\n")
         return pil_numpy
     def __len__(self):
