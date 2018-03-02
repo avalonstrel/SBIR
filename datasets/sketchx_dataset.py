@@ -24,13 +24,13 @@ class SketchXDataset(data.Dataset):
         transforms_list = []
 
         if self.opt.random_crop:
-            #transforms_list.append(transforms.Resize((256,256)))
+            transforms_list.append(transforms.Resize((256,256)))
             transforms_list.append(transforms.RandomCrop((self.opt.scale_size, self.opt.scale_size)))
         if self.opt.flip:
             transforms_list.append(transforms.RandomVerticalFlip())
         transforms_list.append(transforms.ToTensor())
         self.transform_fun = transforms.Compose(transforms_list)
-        self.test_transform_fun = transforms.Compose([transforms.ToTensor()])
+        self.test_transform_fun = transforms.Compose([transforms.Resize((self.opt.scale_size, self.opt.scale_size)), transforms.ToTensor()])
         if 'chairs' in root:
             thing_type = 'chairs'
         else:
@@ -109,14 +109,14 @@ class SketchXDataset(data.Dataset):
             pil = pil.convert('L')
             pil_numpy = np.array(pil)
             #show('edge', pil_numpy)
-            pil_numpy = cv2.Canny(pil_numpy, 0, 50)
+            pil_numpy = cv2.Canny(pil_numpy, 0, 200)
 
         #print('image{}'.format(pil_numpy.shape))
-        if self.opt.image_type == 'GRAY' or self.opt.image_type == 'EDGE':
-            pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
-        pil_numpy = cv2.resize(pil_numpy, (self.opt.scale_size, self.opt.scale_size))
-        if self.opt.sketch_type == 'GRAY' or self.opt.image_type == 'EDGE':
-            pil_numpy = pil_numpy.reshape(pil_numpy.shape[:2])
+        #if self.opt.image_type == 'GRAY' or self.opt.image_type == 'EDGE':
+        #    pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
+        #pil_numpy = cv2.resize(pil_numpy, (self.opt.scale_size, self.opt.scale_size))
+        #if self.opt.sketch_type == 'GRAY' or self.opt.image_type == 'EDGE':
+        #    pil_numpy = pil_numpy.reshape(pil_numpy.shape[:2])
         transform_fun = self.transform_fun if self.mode == 'train' else self.test_transform_fun
         if transform_fun is not None :
             pil = Image.fromarray(pil_numpy)
@@ -143,9 +143,9 @@ class SketchXDataset(data.Dataset):
             pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
         #print('sketch{}'.format(pil_numpy.shape))
         #show('sketch', pil_numpy)
-        pil_numpy = cv2.resize(pil_numpy, (self.opt.scale_size, self.opt.scale_size))
-        if self.opt.sketch_type == 'GRAY':
-            pil_numpy = pil_numpy.reshape(pil_numpy.shape[:2])
+        #pil_numpy = cv2.resize(pil_numpy, (self.opt.scale_size, self.opt.scale_size))
+        #if self.opt.sketch_type == 'GRAY':
+        #    pil_numpy = pil_numpy.reshape(pil_numpy.shape[:2])
         transform_fun = self.transform_fun if self.mode == 'train' else self.test_transform_fun
         if transform_fun is not None:
             pil = Image.fromarray(pil_numpy)
