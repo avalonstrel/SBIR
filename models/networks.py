@@ -105,7 +105,7 @@ class TripletSiameseNetwork(torch.nn.Module):
         if feature_model == 'attention':
             feature_extractor = AttentionNetwork(self.opt)
         elif feature_model == 'densenet169':
-            feature_extractor = models.densenet169(pretrained=pretrain)
+            feature_extractor = models.densenet169(pretrained=not self.opt.no_densenet_pretrain)
             feature_extractor.classifier = nn.Linear(feature_extractor.classifier.in_features, self.opt.feat_size)
         return feature_extractor
 
