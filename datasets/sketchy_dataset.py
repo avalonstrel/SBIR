@@ -12,6 +12,7 @@ class SketchyDataset(data.Dataset):
         photo_types = opt.sketchy_photo_types
         sketch_types = opt.sketchy_sketch_types
         mode = opt.phase
+        self.mode = mode
 
         transforms_list = []
         if self.opt.random_crop:
