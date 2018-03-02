@@ -109,7 +109,7 @@ class SketchXDataset(data.Dataset):
             pil = pil.convert('L')
             pil_numpy = np.array(pil)
             #show('edge', pil_numpy)
-            pil_numpy = cv2.Canny(pil_numpy, 50, 100)
+            pil_numpy = cv2.Canny(pil_numpy, 0, 50)
 
         #print('image{}'.format(pil_numpy.shape))
         if self.opt.image_type == 'GRAY' or self.opt.image_type == 'EDGE':
