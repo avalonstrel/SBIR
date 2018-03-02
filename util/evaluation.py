@@ -46,7 +46,7 @@ def retrieval_evaluation(output0, output1, category_labels, topk=(1,5),need_cpu=
     total = predictions.shape[0]
     maxk = max(topk)
     for i, prediction in enumerate(predictions):
-        print("prediction:{}, {}".format(np.argmax(prediction), prediction),"category:",category_labels[i],"predict category:",category_labels[np.argmax(prediction)])
+        #print("prediction:{}, {}".format(np.argmax(prediction), prediction),"category:",category_labels[i],"predict category:",category_labels[np.argmax(prediction)])
         if category_labels[i] == category_labels[np.argmax(prediction)]:
             correct += 1
         maxk_indices = prediction.argsort()[-maxk:][::-1]
