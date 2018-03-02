@@ -79,6 +79,8 @@ class SketchyDataset(data.Dataset):
         print("{} pairs loaded. After generate triplet".format(len(self.photo_imgs)))
 
     def load_image(self, pil):
+        def show(mode, pil_numpy):
+            print(mode, len(",".join([str(i) for i in pil_numpy.flatten() if i != 0])))
 
         if self.opt.image_type == 'RGB':
             pil = pil.convert('RGB')
@@ -89,36 +91,51 @@ class SketchyDataset(data.Dataset):
         elif self.opt.image_type == 'EDGE':
             pil = pil.convert('L')
             pil_numpy = np.array(pil)
-            pil_numpy = cv2.Canny(pil_numpy, 100, 200)
+            #show('edge', pil_numpy)
+            pil_numpy = cv2.Canny(pil_numpy, 0, 200)
 
+        #print('image{}'.format(pil_numpy.shape))
         #if self.opt.image_type == 'GRAY' or self.opt.image_type == 'EDGE':
         #    pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
-
-        if self.transform_fun is not None:
+        #pil_numpy = cv2.resize(pil_numpy, (self.opt.scale_size, self.opt.scale_size))
+        #if self.opt.sketch_type == 'GRAY' or self.opt.image_type == 'EDGE':
+        #    pil_numpy = pil_numpy.reshape(pil_numpy.shape[:2])
+        transform_fun = self.transform_fun if self.mode == 'train' else self.test_transform_fun
+        if transform_fun is not None :
             pil = Image.fromarray(pil_numpy)
-            pil_numpy = self.transform_fun(pil)
-
+            pil_numpy = transform_fun(pil)
         return pil_numpy
 
     def load_sketch(self, pil):
+        def show(mode, pil_numpy):
+            print(mode, len(",".join([str(i) for i in pil_numpy.flatten() if i != 0])))
         pil = pil.convert('L')
         pil_numpy = np.array(pil)
 
-        
-        if len(pil_numpy.shape) == 2:
-            pil_numpy = pil_numpy
-        elif pil_numpy.shape[2] == 4:
-            pil_numpy = pil_numpy[:,:,3]
-            
+        #print('sketch before{}'.format(pil_numpy.shape))
+        #print(pil_numpy.shape)
+        #show('sketch_before', pil_numpy)
+        #if len(pil_numpy.shape) == 2:
+        #    pil_numpy = pil_numpy
+        #elif pil_numpy.shape[2] == 4:
+        #    pil_numpy = pil_numpy[:,:,3]
+
         if self.opt.sketch_type == 'RGB':
             pil_numpy = to_rgb(pil_numpy)   
         #elif self.opt.sketch_type == 'GRAY':
         #    pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
-        if self.transform_fun is not None:
+        #print('sketch{}'.format(pil_numpy.shape))
+        #show('sketch', pil_numpy)
+        #pil_numpy = cv2.resize(pil_numpy, (self.opt.scale_size, self.opt.scale_size))
+        #if self.opt.sketch_type == 'GRAY':
+        #    pil_numpy = pil_numpy.reshape(pil_numpy.shape[:2])
+        transform_fun = self.transform_fun if self.mode == 'train' else self.test_transform_fun
+        if transform_fun is not None:
             pil = Image.fromarray(pil_numpy)
-            pil_numpy = self.transform_fun(pil)
-
+            pil_numpy = transform_fun(pil)
+        
         return pil_numpy
+
 
     def transform(self, pil):
         pil_numpy = np.array(pil)
