@@ -28,6 +28,7 @@ class SketchXDataset(data.Dataset):
             transforms_list.append(transforms.RandomCrop((self.opt.scale_size, self.opt.scale_size)))
         if self.opt.flip:
             transforms_list.append(transforms.RandomVerticalFlip())
+        transforms_list.append(transforms.Resize((self.opt.scale_size, self.opt.scale_size)))
         transforms_list.append(transforms.ToTensor())
         self.transform_fun = transforms.Compose(transforms_list)
         self.test_transform_fun = transforms.Compose([transforms.Resize((self.opt.scale_size, self.opt.scale_size)), transforms.ToTensor()])
@@ -154,7 +155,21 @@ class SketchXDataset(data.Dataset):
         return pil_numpy
 
 
-
+    def transform(self, pil):
+        pil = pil.convert('RGB')
+        pil_numpy = np.array(pil)
+        if len(pil_numpy.shape) == 2:
+            pil_numpy = to_rgb(pil_numpy)
+            #pil_numpy = np.tile(pil_numpy,3).reshape(pil_numpy.shape+(-1,))
+        elif pil_numpy.shape[2] == 4:
+            pil_numpy = to_rgb(pil_numpy[:,:,3])
+            #pil_numpy = np.tile(pil_numpy[:,:,3],3).reshape(pil_numpy.shape[0:2]+(-1,))
+            #pil_numpy[:,:,2] = 0
+        #pil_numpy = cv2.resize(pil_numpy,(resize_size,resize_size))
+        if self.transform_fun is not None:
+            pil_numpy = self.transform_fun(pil_numpy)
+        #data_info.write(",".join([str(i) for i in pil_numpy.numpy().flatten() if i != 0])+"\n")
+        return pil_numpy
     def __len__(self):
         return len(self.image_imgs)
 
@@ -162,18 +177,18 @@ class SketchXDataset(data.Dataset):
         #print(len(self.attributes),"image",len(self.image_imgs),"ind:",index)
         image_img,sketch_img,image_neg_img,fg_label,label, attribute = self.image_imgs[index], self.sketch_imgs[index], self.image_neg_imgs[index], self.fg_labels[index], self.labels[index], self.attributes[index]
         if self.levels == "stack":
-            sketch_s_pil, sketch_c_pil = self.load_sketch(Image.open(sketch_img[0])), self.load_sketch(Image.open(sketch_img[1]))
+            sketch_s_pil, sketch_c_pil = self.transform(Image.open(sketch_img[0])), self.transform(Image.open(sketch_img[1]))
             sketch_s_pil[:,:,1] = sketch_c_pil[:,:,0]
             sketch_pil = sketch_s_pil
         else:
             sketch_pil = Image.open(sketch_img)
-            sketch_pil = self.load_sketch(sketch_pil)
+            sketch_pil = self.transform(sketch_pil)
         image_pil, image_neg_pil = Image.open(image_img), Image.open(image_neg_img)
 
         #if self.transform is not None:
-        image_pil = self.load_image(image_pil)
-        image_neg_pil = self.load_image(image_neg_pil)
+        image_pil = self.transform(image_pil)
+        image_neg_pil = self.transform(image_neg_pil)
         
 
-        return sketch_pil, image_pil, image_neg_pil, attribute, fg_label,label
+        return sketch_pil, image_pil, image_neg_pil, attribute, fg_label, label
         
