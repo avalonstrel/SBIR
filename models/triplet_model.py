@@ -216,7 +216,7 @@ class TripletModel(BaseModel):
 
         #Feature Extractor (4 dim in each paramters)
         output0, output1, output2 = self.network(x0, x1, x2)
-        print(output0.data[0], output1.data[0])
+        #print(output0.data[0], output1.data[0])
 
         #num_feat = len(output0)
         #self.features =  {'sketch':output0, 'image':output1, 'neg_image':output2}#output0, output1, output2]
@@ -224,7 +224,7 @@ class TripletModel(BaseModel):
         #Dense Loss
         #print(num_feat)
         loss = self.loss(output0, output1, output2)
-        print(loss.data[0])
+        #print(loss.data[0])
         #Cls Loss
         final_layer_data = {'sketch':output0, 
                             'image':output1, 
