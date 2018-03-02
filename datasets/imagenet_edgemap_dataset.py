@@ -16,7 +16,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
         photo_types = opt.sketchy_photo_types
         sketch_types = opt.sketchy_sketch_types
         mode = opt.phase
-
+        transforms_list = []
         if self.opt.random_crop:
             transforms_list.append(transforms.Resize((256,256)))
             transforms_list.append(transforms.RandomCrop((self.opt.scale_size, self.opt.scale_size)))
