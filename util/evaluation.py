@@ -36,7 +36,7 @@ def retrieval_evaluation(output0, output1, category_labels, topk=(1,5),need_cpu=
     #dist = -torch.sqrt(dist_sq)
     #predictions = dist.cpu().numpy()
     predictions = diff.numpy()
-    #print(predictions)
+    print(predictions)
     category_labels = category_labels.cpu().data.numpy()
     correct = 0.0
     correct_fg = {}
