@@ -7,7 +7,7 @@ from .loss_utils import *
 from util.evaluation import *
 from util.util import *
 from torch.autograd import Variable
-
+from torchvision import models
 class TripletModel(BaseModel):
 
     def name(self):
