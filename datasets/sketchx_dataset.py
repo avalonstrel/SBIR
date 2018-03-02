@@ -129,10 +129,10 @@ class SketchXDataset(data.Dataset):
         #print('sketch before{}'.format(pil_numpy.shape))
         #print(pil_numpy.shape)
         #show('sketch_before', pil_numpy)
-        if len(pil_numpy.shape) == 2:
-            pil_numpy = pil_numpy
-        elif pil_numpy.shape[2] == 4:
-            pil_numpy = pil_numpy[:,:,3]
+        #if len(pil_numpy.shape) == 2:
+        #    pil_numpy = pil_numpy
+        #elif pil_numpy.shape[2] == 4:
+        #    pil_numpy = pil_numpy[:,:,3]
 
         if self.opt.sketch_type == 'RGB':
             pil_numpy = to_rgb(pil_numpy)   
