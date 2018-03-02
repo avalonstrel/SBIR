@@ -28,7 +28,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
         self.test_transform_fun = transforms.Compose([transforms.Resize((self.opt.scale_size, self.opt.scale_size)), transforms.ToTensor()])
         self.photo_imgs = []
         self.photo_neg_imgs = []
-        self.transform_fun = transforms.Compose([transforms.ToTensor()])
+        #self.transform_fun = transforms.Compose([transforms.ToTensor()])
         self.fg_labels = []
         self.labels = []
         tri_mode = mode
