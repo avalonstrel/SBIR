@@ -139,8 +139,8 @@ class SketchXDataset(data.Dataset):
 
         if self.opt.sketch_type == 'RGB':
             pil_numpy = to_rgb(pil_numpy)   
-        elif self.opt.sketch_type == 'GRAY':
-            pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
+        #elif self.opt.sketch_type == 'GRAY':
+        #    pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
         #print('sketch{}'.format(pil_numpy.shape))
         #show('sketch', pil_numpy)
         #pil_numpy = cv2.resize(pil_numpy, (self.opt.scale_size, self.opt.scale_size))
