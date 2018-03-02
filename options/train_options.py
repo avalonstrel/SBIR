@@ -25,6 +25,7 @@ class TrainOptions(BaseOptions):
         self.parser.add_argument('--retrieval_now',action='store_true', help='Retrieval result when training?')
         self.parser.add_argument('--random_crop', action='store_true', help='Random_crop on data')
         self.parser.add_argument('--flip', action='store_true', help='Flip on data')
+        self.parser.add_argument('--no_densenet_pretrain', action='store_true', help='Whether use pretrained densenet')
         #self.parser.add_argument('--pool_size', type=int, default=50, help='the size of image buffer that stores previously generated images')
         self.update()
         
