@@ -16,7 +16,16 @@ class ImageNetEdgeMapDataset(data.Dataset):
         photo_types = opt.sketchy_photo_types
         sketch_types = opt.sketchy_sketch_types
         mode = opt.phase
-        
+
+        if self.opt.random_crop:
+            transforms_list.append(transforms.Resize((256,256)))
+            transforms_list.append(transforms.RandomCrop((self.opt.scale_size, self.opt.scale_size)))
+        if self.opt.flip:
+            transforms_list.append(transforms.RandomVerticalFlip())
+        #transforms_list.append(transforms.Resize((self.opt.scale_size, self.opt.scale_size)))
+        transforms_list.append(transforms.ToTensor())
+        self.transform_fun = transforms.Compose(transforms_list)
+        self.test_transform_fun = transforms.Compose([transforms.Resize((self.opt.scale_size, self.opt.scale_size)), transforms.ToTensor()])
         self.photo_imgs = []
         self.photo_neg_imgs = []
         self.transform_fun = transforms.Compose([transforms.ToTensor()])
@@ -68,25 +77,27 @@ class ImageNetEdgeMapDataset(data.Dataset):
         else:
             pil = pil.convert('RGB')
         pil_numpy = np.array(pil)
-        pil_numpy = cv2.resize(pil_numpy,(self.opt.scale_size,self.opt.scale_size))
+        #pil_numpy = cv2.resize(pil_numpy,(self.opt.scale_size,self.opt.scale_size))
 
-        if self.opt.image_type == 'GRAY':
-            pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
+        #if self.opt.image_type == 'GRAY':
+        #    pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
         if self.transform_fun is not None:
-            pil_numpy = self.transform_fun(pil_numpy)
+            pil = Image.fromarray(pil_numpy)
+            pil_numpy = self.transform_fun(pil)
 
         return pil_numpy
+
     def load_sketch(self, pil):
         pil = pil.convert('L')
         pil_numpy = np.array(pil)
         edge_map = cv2.Canny(pil_numpy, 100, 200)
-        edge_map = cv2.resize(edge_map,(self.opt.scale_size,self.opt.scale_size))
-        if self.opt.image_type == 'RGB':
+        #edge_map = cv2.resize(edge_map,(self.opt.scale_size,self.opt.scale_size))
+        if self.opt.sketch_type == 'RGB':
             edge_map = to_rgb(edge_map)
-
-        elif self.opt.image_type == 'GRAY':
-            edge_map = edge_map.reshape(edge_map.shape + (1,))
+        #elif self.opt.sketch_type == 'GRAY':
+        #    edge_map = edge_map.reshape(edge_map.shape + (1,))
         if self.transform_fun is not None:
+            edge_map = Image.fromarray(edge_map)
             edge_map = self.transform_fun(edge_map)
 
         return edge_map
