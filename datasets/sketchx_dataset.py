@@ -28,10 +28,10 @@ class SketchXDataset(data.Dataset):
             transforms_list.append(transforms.RandomCrop((self.opt.scale_size, self.opt.scale_size)))
         if self.opt.flip:
             transforms_list.append(transforms.RandomVerticalFlip())
-        transforms_list.append(transforms.Resize((self.opt.scale_size, self.opt.scale_size)))
+        #transforms_list.append(transforms.Resize((self.opt.scale_size, self.opt.scale_size)))
         transforms_list.append(transforms.ToTensor())
         self.transform_fun = transforms.Compose(transforms_list)
-        self.test_transform_fun = transforms.Compose([transforms.Resize((self.opt.scale_size, self.opt.scale_size)), transforms.ToTensor()])
+        self.test_transform_fun = transforms.Compose([ transforms.ToTensor()])
         if 'chairs' in root:
             thing_type = 'chairs'
         else:
@@ -165,7 +165,7 @@ class SketchXDataset(data.Dataset):
             pil_numpy = to_rgb(pil_numpy[:,:,3])
             #pil_numpy = np.tile(pil_numpy[:,:,3],3).reshape(pil_numpy.shape[0:2]+(-1,))
             #pil_numpy[:,:,2] = 0
-        #pil_numpy = cv2.resize(pil_numpy,(resize_size,resize_size))
+        pil_numpy = cv2.resize(pil_numpy,(resize_size,resize_size))
         if self.transform_fun is not None:
             pil_numpy = self.transform_fun(pil_numpy)
         #data_info.write(",".join([str(i) for i in pil_numpy.numpy().flatten() if i != 0])+"\n")
