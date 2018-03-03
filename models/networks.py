@@ -101,7 +101,7 @@ class AttentionNetwork(torch.nn.Module):
         self.conv_block = cnn_block(opt)
         self.attention_layer = AttentionLayer()
         self.gap = nn.AvgPool2d(kernel_size=7, stride=1, padding=0)
-        self.bn_attention = BatchNorm2d(512)
+        self.bn_attention = nn.BatchNorm2d(512)
         self.fc6 = nn.Linear(256*7*7, 512)
         self.bn6 = nn.BatchNorm2d(512)
         self.fc7 = nn.Linear(512, 256)

@@ -145,12 +145,13 @@ class ClassificationModel(BaseModel):
     def test(self, test_data, retrieval_now=True):
 
         self.train(False)
-        #self.network.train(True)
+        
         if self.opt.cuda:
             for i,item in enumerate(test_data):
                 test_data[i] = item.cuda()
         for i, item in enumerate(test_data):
             test_data[i] = Variable(item)
+
 
         x0, x1, x2, attrs, fg_labels, labels = test_data
 
@@ -163,7 +164,7 @@ class ClassificationModel(BaseModel):
         #print(loss.data[0])
         #Cls Loss
             
-        self.update_record(self.test_result_record, 'total',  cls_loss, prediction.size(0), prediction, labels )
+        self.update_record(self.test_result_record, 'total', cls_loss, prediction.size(0), prediction, labels )
 
 
         self.train(True)
