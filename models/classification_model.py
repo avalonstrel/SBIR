@@ -128,7 +128,7 @@ class ClassificationModel(BaseModel):
 
         self.optimizer.zero_grad()
 
-        loss.backward()
+        cls_loss.backward()
 
         self.optimizer.step()
         #self.append_features(self.features, output0, output1, output2, labels)
@@ -163,7 +163,7 @@ class ClassificationModel(BaseModel):
         #print(loss.data[0])
         #Cls Loss
             
-        self.update_record(self.test_result_record, 'total', cls_loss, cls_loss, prediction.size(0), prediction, labels )
+        self.update_record(self.test_result_record, 'total',  cls_loss, prediction.size(0), prediction, labels )
 
 
         self.train(True)
