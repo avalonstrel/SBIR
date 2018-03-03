@@ -32,11 +32,15 @@ class ImageNetEdgeMapDataset(data.Dataset):
         self.fg_labels = []
         self.labels = []
         tri_mode = mode
-        if mode == "train":
+        if opt.model == 'cls_model' and mode == 'train':
+            start, end = 0, 10000
+        elif mode == "train":
             start, end = 0, 90
         elif mode == 'test':
             start, end = 90, 95
             mode = 'train'
+        if opt.model == 'cls_model' and :
+            end = 10000
         #photo_roots = [root+photo_type for photo_type in photo_types]
         #print(photo_roots)
         root = os.path.join(root, mode)
@@ -64,7 +68,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
         self.n_fg_labels = fg_label
         pair_inclass_num, pair_outclass_num = self.opt.pair_num
 
-        if tri_mode == "train":
+        if tri_mode == "train" and not self.opt.model == 'cls_model':
             self.generate_triplet(pair_inclass_num,pair_outclass_num)
 
         print("{} pairs loaded. After generate triplet".format(len(self.photo_imgs)))

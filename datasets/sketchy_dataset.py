@@ -30,7 +30,9 @@ class SketchyDataset(data.Dataset):
         
         self.fg_labels = []
         self.labels = []
-        if mode == "train":
+        if opt.model == 'cls_model' and mode == 'train':
+            start, end = 0, 10000
+        elif mode == "train":
             start, end = 0, 90
         elif mode == 'test':
             start, end = 90, 95
@@ -70,7 +72,7 @@ class SketchyDataset(data.Dataset):
         self.n_fg_labels = fg_label
         print("{} pairs loaded.".format(len(self.photo_imgs)))
         pair_inclass_num, pair_outclass_num = self.opt.pair_num
-        if mode == "train" :
+        if mode == "train" and not opt.model == 'cls_model' :
             self.generate_triplet(pair_inclass_num,pair_outclass_num)
         if mode == "test":
             self.fg_labels = []
