@@ -111,7 +111,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
         sketch_pil = self.load_sketch(photo_pil)
         photo_pil = self.transform(photo_pil)
         photo_neg_pil = self.transform(photo_neg_pil)
-        print(sketch_pil.size(), photo_pil.size())
+        #print(sketch_pil.size(), photo_pil.size())
         #print(label, fg_label)
         return sketch_pil, photo_pil, photo_neg_pil, label, fg_label, label
 

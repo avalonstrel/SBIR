@@ -43,7 +43,7 @@ def train():
                                                                     model.generate_message(model.result_record)))
                 batch_start_time = time.time()
 
-            if total_steps % opt.print_val_freq == 0 and not opt.dataset_type in ['sketchy', 'imagenet']:
+            if total_steps % opt.print_val_freq == 0 and (not opt.dataset_type in ['sketchy', 'imagenet'] or opt.model == 'cls_model') :
                 val_start_time = time.time()
                 now_size = opt.batch_size * (batch_idx+1)
                 for i, batch_test_data in enumerate(test_data_loader):
@@ -63,7 +63,7 @@ def train():
                 model.save_model('total_{}'.format(total_steps))
                 model.save_model('latest', True)
             model.reset_records()
-        if not opt.dataset_type in ['sketchy', 'imagenet']:
+        if not opt.dataset_type in ['sketchy', 'imagenet'] or  opt.model == 'cls_model':
             for i, batch_test_data in enumerate(test_data_loader):
                 model.test(batch_test_data, opt.retrieval_now)
 
