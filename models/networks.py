@@ -65,12 +65,40 @@ class ConvBlock(torch.nn.Module):
         out = self.conv5(out)
         out = self.pool3(out)
         return out
-
+class SketchANet(torch.nn.Module):
+    def __init__(self, opt):
+        super(SketchANet, self).__init__()
+        if opt.sketch_type == 'GRAY':
+            num_input_features = 1
+        else:
+            num_input_features = 3
+        self.conv1 = ConvLayer(num_input_features, 64, kernel_size=15, stride=3, bias=False, is_bn=False )
+        self.pool1 = nn.MaxPool2d(kernel_size=3, stride=2, padding=0)
+        self.conv2 = ConvLayer(64, 128, kernel_size=5, stride=1, padding=0, is_bn=False)
+        self.pool2 = nn.MaxPool2d(kernel_size=3, stride=2, padding=0)
+        self.conv3 = ConvLayer(128, 256, kernel_size=3, stride=1, padding=1, is_bn=False)
+        self.conv4 = ConvLayer(256, 256, kernel_size=3, stride=1, padding=1, is_bn=False)
+        self.conv5 = ConvLayer(256, 256, kernel_size=3, stride=1, padding=1, is_bn=False)
+        self.pool3 = nn.MaxPool2d(kernel_size=3, stride=2, padding=0)
+    def forward(self, x):
+        out = self.conv1(x)
+        out = self.pool1(out)
+        out = self.conv2(out)
+        out = self.pool2(out)
+        out = self.conv3(out)
+        out = self.conv4(out)
+        out = self.conv5(out)
+        out = self.pool3(out)
+        return out
 
 class AttentionNetwork(torch.nn.Module):
     def __init__(self, opt):
         super(AttentionNetwork, self).__init__()
-        self.conv_block = ConvBlock(opt)
+        if opt.cnn_block == 'sketchanet':
+            cnn_block = SketchANet
+        else:
+            cnn_block = ConvBlock
+        self.conv_block = cnn_block(opt)
         self.attention_layer = AttentionLayer()
         self.gap = nn.AvgPool2d(kernel_size=7, stride=1, padding=0)
         self.fc6 = nn.Linear(256*7*7, 512)

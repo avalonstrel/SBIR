@@ -43,6 +43,8 @@ class BaseOptions():
         self.parser.add_argument('--max_dataset_size', type=int, default=float("inf"), help='Maximum number of samples allowed per dataset. If the dataset directory contains more than max_dataset_size, only a subset is loaded.')
         self.parser.add_argument('--margin', type=float, default=5.0, help='margin for triplet loss parameter')
         self.parser.add_argument('--distance_type', type=str, default='euclidean', help='distance function in final retrieval ranking')
+        self.parser.add_argument('--cnn_block', type=str, default='sketchanet', help='CNN Block')
+        
         #self.initialized = True
         
         #self.update()
