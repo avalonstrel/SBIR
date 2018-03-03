@@ -37,7 +37,7 @@ class CustomDatasetDataLoader():
         else:
             if not opt.retrieval_once:
                 batch_size = opt.batch_size
-            #batch_size = opt.batch_size
+            
             else:
                 batch_size = len(self.dataset)
         self.dataloader = torch.utils.data.DataLoader(
