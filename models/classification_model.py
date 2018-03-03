@@ -123,7 +123,6 @@ class ClassificationModel(BaseModel):
         #Cls Loss
         cls_loss = self.cls_loss(prediction, labels)
         
-        prediction = 
         self.update_record(self.result_record, 'total', cls_loss, prediction.size(0), prediction, labels)
 
         self.optimizer.zero_grad()
