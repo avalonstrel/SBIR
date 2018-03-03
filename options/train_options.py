@@ -23,6 +23,7 @@ class TrainOptions(BaseOptions):
         self.parser.add_argument('--start_epoch', type=int, default=0, help='Start epoch for continue training')
         self.parser.add_argument('--num_layers', type=int, default=4, help='The feature loss layers')
         self.parser.add_argument('--retrieval_now',action='store_true', help='Retrieval result when training?')
+        self.parser.add_argument('--retrieval_once',action='store_true', help='Retrieval result when training?')
         self.parser.add_argument('--random_crop', action='store_true', help='Random_crop on data')
         self.parser.add_argument('--flip', action='store_true', help='Flip on data')
         self.parser.add_argument('--no_densenet_pretrain', action='store_true', help='Whether use pretrained densenet')

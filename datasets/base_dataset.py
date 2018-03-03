@@ -35,7 +35,7 @@ class CustomDatasetDataLoader():
         if opt.phase == 'train':
             batch_size = opt.batch_size
         else:
-            if not opt.retrieval_now:
+            if not opt.retrieval_once:
                 batch_size = opt.batch_size
             #batch_size = opt.batch_size
             else:
