@@ -26,7 +26,7 @@ class ClassificationModel(BaseModel):
         self.cls_loss = torch.nn.CrossEntropyLoss()
         self.optimize_modules = [self.network, self.cls_network]
         #self.loss = torch.nn.DataParallel(self.loss)
-        self.result_record['total'] = self.copy_initialize_record(True)
+        self.result_record['total'] = self.record_initialize(True)
         self.test_result_record = self.copy_initialize_record(self.result_record)
         
         self.optimizer = torch.optim.Adam([{"params":module.parameters()} for module in self.optimize_modules], lr=self.opt.learning_rate, weight_decay=self.opt.weight_decay)
