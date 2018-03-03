@@ -30,12 +30,11 @@ class SketchyDataset(data.Dataset):
         
         self.fg_labels = []
         self.labels = []
-        if opt.model == 'cls_model' and mode == 'train':
-            start, end = 0, 10000
-        elif mode == "train":
-            start, end = 0, 90
+
+        if mode == "train":
+            start, end = 0, 95
         elif mode == 'test':
-            start, end = 90, 95
+            start, end = 95, 100
         photo_roots = [root+photo_type for photo_type in photo_types]
         print(photo_roots)
         for photo_root in photo_roots:

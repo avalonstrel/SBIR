@@ -32,12 +32,11 @@ class ImageNetEdgeMapDataset(data.Dataset):
         self.fg_labels = []
         self.labels = []
         tri_mode = mode
-        if opt.model == 'cls_model' and mode == 'train':
-            start, end = 0, 10000
-        elif mode == "train":
-            start, end = 0, 90
+
+        if mode == "train":
+            start, end = 0, 100
         elif mode == 'test':
-            start, end = 90, 95
+            start, end = 100, 105
             mode = 'train'
 
         #photo_roots = [root+photo_type for photo_type in photo_types]
