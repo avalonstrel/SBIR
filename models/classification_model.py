@@ -103,7 +103,7 @@ class ClassificationModel(BaseModel):
     def reset_test_features(self):
         self.test_features = {'edge':[], 'labels':[]}
 
-    def append_features(self, features, output0 labels):
+    def append_features(self, features, output0, labels):
         features['edge'].append(output0.data.cpu())
         features['labels'].append(labels.data.cpu())
         
