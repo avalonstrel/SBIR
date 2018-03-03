@@ -22,7 +22,7 @@ class ClassificationModel(BaseModel):
     def initialize(self):
         self.network = AttentionNetwork(self.opt)
         self.network = torch.nn.DataParallel(self.network)
-        self.cls_network = ClassificationNetwork(self.opt)
+        self.cls_network = ClassificationNetwork(self.opt.feat_size, self.opt.n_labels)
         self.cls_loss = torch.nn.CrossEntropyLoss()
         self.optimize_modules = [self.network, self.cls_network]
         #self.loss = torch.nn.DataParallel(self.loss)
