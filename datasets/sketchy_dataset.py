@@ -75,7 +75,7 @@ class SketchyDataset(data.Dataset):
             if self.opt.task == 'fg_sbir':
                 self.generate_triplet(pair_inclass_num,pair_outclass_num)
             elif self.opt.task == 'cate_sbir':
-                self.generate_cate_triplet(pair_inclass_num)
+                self.generate_cate_triplet(pair_inclass_num,pair_inclass_num)
         if mode == "test":
             self.fg_labels = []
             for i in range(len(self.photo_imgs)):
@@ -174,7 +174,7 @@ class SketchyDataset(data.Dataset):
         photo_neg_pil = self.load_image(photo_neg_pil)
         return sketch_pil,photo_pil,photo_neg_pil, label, fg_label,label
 
-    def generate_cate_triplet(self, pair_num):
+    def generate_cate_triplet(self, pair_inclass_num, pair_outclass_num):
         sketch_imgs, photo_neg_imgs, photo_imgs, fg_labels, labels = [],[],[],[],[]
 
         labels_dict = [[] for i in range(self.n_labels)]
@@ -191,14 +191,14 @@ class SketchyDataset(data.Dataset):
         for i, (sketch_img, photo_img, fg_label, label) in enumerate(zip(self.sketch_imgs, self.photo_imgs, self.fg_labels, self.labels)):
 
             
-            for l in labels_dict[label]:
-                if l != i:
-                    for j in range(pair_num):
+            for t, l in enumerate(labels_dict[label]):
+                if l != i and t < pair_inclass_num:
+                    for j in range(pair_outclss_num):
                         ind_label = np.random.randint(self.n_labels)
                         while ind_label == label:
 
                             ind_label = np.random.randint(self.n_labels)
-                        print(ind_label)
+                        #print(ind_label)
                         ind = np.random.randint(len(labels_dict[ind_label]))
                     
                         sketch_imgs.append(sketch_img)
