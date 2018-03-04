@@ -193,7 +193,7 @@ class SketchyDataset(data.Dataset):
             
             for t, l in enumerate(labels_dict[label]):
                 if l != i and t < pair_inclass_num:
-                    for j in range(pair_outclss_num):
+                    for j in range(pair_outclass_num):
                         ind_label = np.random.randint(self.n_labels)
                         while ind_label == label:
 
