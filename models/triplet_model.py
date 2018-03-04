@@ -64,8 +64,9 @@ class TripletModel(BaseModel):
 
         if self.opt.continue_train:
             if self.opt.load_only_feat_network:
-                self.load_CNN(self.opt.model_prefix, self.opt.start_epoch_label, self.opt.trained_model_path )
                 print(self.network.state_dict())
+                self.load_CNN(self.opt.model_prefix, self.opt.start_epoch_label, self.opt.trained_model_path )
+
                 
             else:
                 self.load_model(self.opt.start_epoch_label, self.opt.trained_model_path)
