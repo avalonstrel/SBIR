@@ -64,7 +64,8 @@ class TripletModel(BaseModel):
 
         if self.opt.continue_train:
             if self.opt.load_only_feat_network:
-                print(self.network.module.feat_extractor.state_dict())
+                self.network.module.feat_extractor = torch.nn.DataParallel(self.network.module.feat_extractor)
+                #print(self.network.module.feat_extractor.state_dict())
                 self.load_CNN(self.opt.model_prefix, self.opt.start_epoch_label, self.opt.trained_model_path )
 
                 
