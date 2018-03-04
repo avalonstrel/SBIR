@@ -21,7 +21,7 @@ class TripletModel(BaseModel):
 
     def initialize(self):
         self.network = TripletSiameseNetwork(self.opt)
-        self.network = torch.nn.DataParallel(self.network)
+        
         self.loss = self.get_loss(self.opt.loss_type[0])
         self.cls_loss = torch.nn.CrossEntropyLoss()
         self.attr_loss = torch.nn.BCEWithLogitsLoss()
@@ -77,7 +77,7 @@ class TripletModel(BaseModel):
                 
             else:
                 self.load_model(self.opt.start_epoch_label, self.opt.trained_model_path)
-
+        self.network = torch.nn.DataParallel(self.network)
     def reset_records(self):
         self.result_record = self.copy_initialize_record(self.result_record)
 
