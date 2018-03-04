@@ -20,7 +20,7 @@ class TrainOptions(BaseOptions):
         self.parser.add_argument('--continue_train', action='store_true', help='continue training: load the start epoch model')
         self.parser.add_argument('--trained_model_path', type=str,  help='Load which model to continue training')
         self.parser.add_argument('--start_epoch_label', type=str, default='latest', help='Start epoch for continue training')
-        self.parser.add_argument('--load_only_feat_model',action='store_true', help='Load only feat model')
+        self.parser.add_argument('--load_only_feat_network',action='store_true', help='Load only feat model')
         self.parser.add_argument('--model_prefix',type=str, default='AttentionClsNetwork', help='Retrieval result when training?')
         self.parser.add_argument('--start_epoch', type=int, default=0, help='Start epoch for continue training')
         self.parser.add_argument('--num_layers', type=int, default=4, help='The feature loss layers')
