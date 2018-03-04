@@ -21,7 +21,7 @@ class TripletModel(BaseModel):
 
     def initialize(self):
         self.network = TripletSiameseNetwork(self.opt)
-        
+        self.network = torch.nn.DataParallel(self.network)
         self.loss = self.get_loss(self.opt.loss_type[0])
         self.cls_loss = torch.nn.CrossEntropyLoss()
         self.attr_loss = torch.nn.BCEWithLogitsLoss()
@@ -70,8 +70,7 @@ class TripletModel(BaseModel):
                 
             else:
                 self.load_model(self.opt.start_epoch_label, self.opt.trained_model_path)
-        self.network = torch.nn.DataParallel(self.network)
-
+        
         if len(self.opt.gpu_ids) > 1:
             self.parallel()
             print('Model parallel...')
@@ -295,7 +294,7 @@ class TripletModel(BaseModel):
     Only Load CNN Model
     '''
     def load_CNN(self, model_prefix, epoch_label, load_path ):
-        self.load_network(self.network.feat_extractor, model_prefix , epoch_label, load_path=load_path)
+        self.load_network(self.network.module.feat_extractor, model_prefix , epoch_label, load_path=load_path)
     '''
     Load the model
     '''
