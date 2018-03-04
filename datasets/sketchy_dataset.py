@@ -196,9 +196,9 @@ class SketchyDataset(data.Dataset):
                     for j in range(pair_num):
                         ind_label = np.random.randint(self.n_labels)
                         while ind_label == label:
-                            print(ind_label)
-                            ind_label = np.random.randint(self.n_labels)
 
+                            ind_label = np.random.randint(self.n_labels)
+                        print(ind_label)
                         ind = np.random.randint(len(labels_dict[ind_label]))
                     
                         sketch_imgs.append(sketch_img)
