@@ -69,9 +69,14 @@ class TripletModel(BaseModel):
         elif self.opt.cuda:
             self.cuda()
             print('Modelcuda ing...')
-        if self.opt.continue_train:
-            self.load_model(self.opt.start_epoch_label, self.opt.trained_model_path)
 
+        if self.opt.continue_train:
+            if self.opt.load_only_feat_network:
+                self.load_CNN(self.model_prefix, self.opt.start_epoch_label, self.opt.trained_model_path )
+
+                
+            else:
+                self.load_model(self.opt.start_epoch_label, self.opt.trained_model_path)
 
     def reset_records(self):
         self.result_record = self.copy_initialize_record(self.result_record)
@@ -283,7 +288,11 @@ class TripletModel(BaseModel):
             self.save_network(self.loss.base_loss.linear, epoch_label)
         if self.opt.save_mode and is_save_feature:
             self.save_feature(self.opt.phase, epoch_label)
-
+    '''
+    Only Load CNN Model
+    '''
+    def load_CNN(self, model_prefix, epoch_label, load_path ):
+        self.load_network(self.network, model_prefix , epoch_label, load_path=load_path)
     '''
     Load the model
     '''
