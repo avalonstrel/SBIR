@@ -190,13 +190,13 @@ class SketchyDataset(data.Dataset):
 
         for i, (sketch_img, photo_img, fg_label, label) in enumerate(zip(self.sketch_imgs, self.photo_imgs, self.fg_labels, self.labels)):
 
-            num = len(labels_dict[label])
+            
             for l in labels_dict[label]:
                 if l != i:
                     for j in range(pair_num):
-                        ind_label = np.random.randint(num)
+                        ind_label = np.random.randint(self.n_labels)
                         while ind_label == label:
-                            ind_label = np.random.randint(num)
+                            ind_label = np.random.randint(self.n_labels)
 
                         ind = np.random.randint(len(labels_dict[ind_label]))
                     
