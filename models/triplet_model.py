@@ -61,14 +61,6 @@ class TripletModel(BaseModel):
         
         self.reset_features()
         self.reset_test_features()
-        if len(self.opt.gpu_ids) > 1:
-            self.parallel()
-            print('Model parallel...')
-            self.cuda()
-            print('Model cuda ing...')
-        elif self.opt.cuda:
-            self.cuda()
-            print('Modelcuda ing...')
 
         if self.opt.continue_train:
             if self.opt.load_only_feat_network:
@@ -78,6 +70,16 @@ class TripletModel(BaseModel):
             else:
                 self.load_model(self.opt.start_epoch_label, self.opt.trained_model_path)
         self.network = torch.nn.DataParallel(self.network)
+
+        if len(self.opt.gpu_ids) > 1:
+            self.parallel()
+            print('Model parallel...')
+            self.cuda()
+            print('Model cuda ing...')
+        elif self.opt.cuda:
+            self.cuda()
+            print('Modelcuda ing...')
+
     def reset_records(self):
         self.result_record = self.copy_initialize_record(self.result_record)
 
