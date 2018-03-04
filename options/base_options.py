@@ -44,6 +44,7 @@ class BaseOptions():
         self.parser.add_argument('--margin', type=float, default=5.0, help='margin for triplet loss parameter')
         self.parser.add_argument('--distance_type', type=str, default='euclidean', help='distance function in final retrieval ranking')
         self.parser.add_argument('--cnn_block', type=str, default='sketchanet', help='CNN Block')
+        self.parser.add_argument('--task', type=str, default='fg_sbit', help='Task Type')
         
         #self.initialized = True
         

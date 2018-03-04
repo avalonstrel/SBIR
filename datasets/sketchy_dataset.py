@@ -72,7 +72,10 @@ class SketchyDataset(data.Dataset):
         print("{} pairs loaded.".format(len(self.photo_imgs)))
         pair_inclass_num, pair_outclass_num = self.opt.pair_num
         if mode == "train" and not opt.model == 'cls_model' :
-            self.generate_triplet(pair_inclass_num,pair_outclass_num)
+            if self.opt.task == 'fg_sbir':
+                self.generate_triplet(pair_inclass_num,pair_outclass_num)
+            elif self.opt.task == 'cate_sbir':
+                self.generate_cate_triplet(pair_inclass_num)
         if mode == "test":
             self.fg_labels = []
             for i in range(len(self.photo_imgs)):
@@ -171,6 +174,41 @@ class SketchyDataset(data.Dataset):
         photo_neg_pil = self.load_image(photo_neg_pil)
         return sketch_pil,photo_pil,photo_neg_pil, label, fg_label,label
 
+    def generate_cate_triplet(self, pair_num):
+        sketch_imgs, photo_neg_imgs, photo_imgs, fg_labels, labels = [],[],[],[],[]
+
+        labels_dict = [[] for i in range(self.n_labels)]
+        for i, label in enumerate(self.labels):
+           # print(label)
+            labels_dict[label].append(i)
+        #fg_labels_dict = [[] for i in range(self.n_fg_labels)]
+        #for i, fg_label in enumerate(self.fg_labels):
+           # print(fg_label)
+            #fg_labels_dict[fg_label].append(i)
+            
+
+
+        for i, (sketch_img, photo_img, fg_label, label) in enumerate(zip(self.sketch_imgs, self.photo_imgs, self.fg_labels, self.labels)):
+
+            num = len(labels_dict[label])
+            for l in labels_dict[label]:
+                if l != i:
+                    for j in range(pair_num):
+                        ind_label = np.random.randint(num)
+                        while ind_label == label:
+                            ind_label = np.random.randint(num)
+
+                        ind = np.random.randint(len(labels_dict[ind_label]))
+                    
+                        sketch_imgs.append(sketch_img)
+                        photo_imgs.append(self.photo_imgs[l])
+                        photo_neg_imgs.append(self.photo_imgs[labels_dict[ind_label][ind]])
+                        fg_labels.append(fg_label)
+                        labels.append(label)
+
+        self.sketch_imgs, self.photo_neg_imgs, self.photo_imgs, self.fg_labels, self.labels = sketch_imgs, photo_neg_imgs, photo_imgs, fg_labels, labels
+
+           
 
     def generate_triplet(self, pair_inclass_num,pair_outclass_num=0):
         sketch_imgs, photo_neg_imgs, photo_imgs, fg_labels, labels = [],[],[],[],[]
