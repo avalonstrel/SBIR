@@ -292,7 +292,7 @@ class TripletModel(BaseModel):
     Only Load CNN Model
     '''
     def load_CNN(self, model_prefix, epoch_label, load_path ):
-        self.load_network(self.network, model_prefix , epoch_label, load_path=load_path)
+        self.load_network(self.network.feat_extractor, model_prefix , epoch_label, load_path=load_path)
     '''
     Load the model
     '''
