@@ -111,6 +111,7 @@ class AttentionNetwork(torch.nn.Module):
         conv_feature = self.conv_block(x)
         attention_feature = self.attention_layer(conv_feature)
         linear_input_feature = attention_feature.view(attention_feature.size(0), -1)
+        print(linear_input_feature.size())
         out = self.fc6(linear_input_feature)
         out = self.fc7(out)
         gap_feature = self.gap(attention_feature).view(attention_feature.size(0), -1)
