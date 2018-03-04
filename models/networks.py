@@ -106,12 +106,14 @@ class AttentionNetwork(torch.nn.Module):
         self.bn6 = nn.BatchNorm2d(512)
         self.fc7 = nn.Linear(512, 256)
         self.bn7 = nn.BatchNorm2d(256)
-        #self.bn7 = nn.BatchNorm2d(512)
+        
     def forward(self, x):
         conv_feature = self.conv_block(x)
         attention_feature = self.attention_layer(conv_feature)
         linear_input_feature = attention_feature.view(attention_feature.size(0), -1)
-        print(linear_input_feature.size())
+
+        #print(linear_input_feature.size())
+        
         out = self.fc6(linear_input_feature)
         out = self.fc7(out)
         gap_feature = self.gap(attention_feature).view(attention_feature.size(0), -1)
@@ -229,7 +231,6 @@ class SBIRSiameseNetwork(torch.nn.Module):
         output3_ori = self.forward_once(input3, self.feature_extractor_image)
         output1, output2, output3 = output1_ori , output2_ori, output3_ori
         #output1, output2, output3 = output1_ori[0] , output2_ori[0], output3_ori[0]
-         
         #output1, output2, output3 = self.batch_norm(output1), self.batch_norm(output2), self.batch_norm(output3)
         #output1, output2, output3 = self.dropout(output1), self.dropout(output2), self.dropout(output3)
         #output1, output2, output3 = F.relu(output1), F.relu(output2), F.relu(output3)

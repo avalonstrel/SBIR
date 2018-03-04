@@ -6,14 +6,13 @@ import os, re, json
 import scipy.io as sio
 from PIL import Image
 import cv2
+
 #SketchX dataset
 class SketchXDataset(data.Dataset):
     def __init__(self, opt):# root,thing_type="chairs",levels="cs", mode="train", flag="two_loss"):
         self.opt = opt
         # Parameters Setting
         root = opt.data_root
-
-         
         mode = opt.phase
         self.mode = mode
         sketch_root = os.path.join(root, mode, "sketches")
@@ -22,7 +21,6 @@ class SketchXDataset(data.Dataset):
         self.flag = opt.loss_flag
         self.levels = opt.sketch_levels
         transforms_list = []
-
         if self.opt.random_crop:
             transforms_list.append(transforms.Resize((256,256)))
             transforms_list.append(transforms.RandomCrop((self.opt.scale_size, self.opt.scale_size)))
@@ -190,7 +188,7 @@ class SketchXDataset(data.Dataset):
         #if self.transform is not None:
         image_pil = self.load_image(image_pil)
         image_neg_pil = self.load_image(image_neg_pil)
-        
-
+        #print(image_pil)
+        #print(sketch_pil.size())
         return sketch_pil, image_pil, image_neg_pil, attribute, fg_label, label
         
