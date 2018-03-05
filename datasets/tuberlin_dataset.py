@@ -27,14 +27,14 @@ class TUBerlinDataset(data.Dataset):
         self.sketch_imgs = []
         self.fg_labels = []
         self.labels = []
-
+        fg_label, label = 0, 0
         if mode == "train":
             start, end = 0, 95
         elif mode == 'test':
             start, end = 95, 100
 
         for cls_root, subFolders, files in os.walk(root):
-            photo_pat = re.compile("n.+\.JPEG")
+            photo_pat = re.compile("n.+\.png")
             photo_imgs = list(filter(lambda fname:photo_pat.match(fname), files))
             if len(photo_imgs) == 0:
                 print(cls_root)
