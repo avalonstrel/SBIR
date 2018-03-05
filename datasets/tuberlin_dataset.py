@@ -29,9 +29,9 @@ class TUBerlinDataset(data.Dataset):
         self.labels = []
         fg_label, label = 0, 0
         if mode == "train":
-            start, end = 0, 95
+            start, end = 0, 76
         elif mode == 'test':
-            start, end = 95, 100
+            start, end = 76, 100
 
         for cls_root, subFolders, files in os.walk(root):
             sketch_pat = re.compile(".+\.png")
