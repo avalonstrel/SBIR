@@ -61,15 +61,16 @@ class TripletModel(BaseModel):
         
         self.reset_features()
         self.reset_test_features()
-
+        self.network.module.feat_extractor = torch.nn.DataParallel(self.network.module.feat_extractor)
         if self.opt.continue_train:
             if self.opt.load_only_feat_network:
-                self.network.module.feat_extractor = torch.nn.DataParallel(self.network.module.feat_extractor)
+                #self.network.module.feat_extractor = torch.nn.DataParallel(self.network.module.feat_extractor)
                 #print(self.network.module.feat_extractor.state_dict())
                 self.load_CNN(self.opt.model_prefix, self.opt.start_epoch_label, self.opt.trained_model_path )
 
                 
             else:
+
                 self.load_model(self.opt.start_epoch_label, self.opt.trained_model_path)
         
         if len(self.opt.gpu_ids) > 1:
