@@ -34,7 +34,7 @@ class TUBerlinDataset(data.Dataset):
             start, end = 95, 100
 
         for cls_root, subFolders, files in os.walk(root):
-            sketch_pat = re.compile("n.+\.png")
+            sketch_pat = re.compile(".+\.png")
             sketch_imgs = list(filter(lambda fname:sketch_pat.match(fname), files))
             if len(sketch_imgs) == 0:
                 print(cls_root)
