@@ -50,7 +50,7 @@ class TUBerlinDataset(data.Dataset):
                 self.labels.append(label)
                 fg_label += 1
             label += 1
-        print("Total Sketchy:",label)
+        print("Total Sketch:",label)
         self.n_labels = label
         self.n_fg_labels = fg_label
         print("{} pairs loaded.".format(len(self.sketch_imgs)))
