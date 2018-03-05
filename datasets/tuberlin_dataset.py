@@ -34,16 +34,16 @@ class TUBerlinDataset(data.Dataset):
             start, end = 95, 100
 
         for cls_root, subFolders, files in os.walk(root):
-            photo_pat = re.compile("n.+\.png")
-            photo_imgs = list(filter(lambda fname:photo_pat.match(fname), files))
-            if len(photo_imgs) == 0:
+            sketch_pat = re.compile("n.+\.png")
+            sketch_imgs = list(filter(lambda fname:sketch_pat.match(fname), files))
+            if len(sketch_imgs) == 0:
                 print(cls_root)
                 continue
 
-            for i, photo_img in enumerate(photo_imgs, start=0):
+            for i, sketch_img in enumerate(sketch_imgs, start=0):
                 if i < start or i >= end:
                     continue
-                img_path = os.path.join(root, cls_root, photo_img)
+                img_path = os.path.join(root, cls_root, sketch_img)
                 self.sketch_imgs.append(img_path)
                 
                 self.fg_labels.append(fg_label)
@@ -53,9 +53,9 @@ class TUBerlinDataset(data.Dataset):
         print("Total Sketchy:",label)
         self.n_labels = label
         self.n_fg_labels = fg_label
-        print("{} pairs loaded.".format(len(self.photo_imgs)))
+        print("{} pairs loaded.".format(len(self.sketch_imgs)))
 
-        print("{} pairs loaded. After generate triplet".format(len(self.photo_imgs)))
+        print("{} pairs loaded. After generate triplet".format(len(self.sketch_imgs)))
 
     def load_sketch(self, pil):
         def show(mode, pil_numpy):
@@ -75,7 +75,7 @@ class TUBerlinDataset(data.Dataset):
 
 
     def __len__(self):
-        return len(self.photo_imgs)
+        return len(self.sketch_imgs)
 
     def __getitem__(self,index):
         sketch_img, fg_label, label =  self.sketch_imgs[index], self.fg_labels[index], self.labels[index]
