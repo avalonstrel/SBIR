@@ -16,6 +16,9 @@ def create_dataset(opt):
     elif name == 'imagenet':
         from .imagenet_edgemap_dataset import ImageNetEdgeMapDataset
         return ImageNetEdgeMapDataset(opt)
+    elif name == 'tuberlin':
+        from .tuberlin_dataset import TUBerlinDataset
+        return TUBerlinDataset(opt)
     return None
 
 
@@ -38,7 +41,7 @@ class CustomDatasetDataLoader():
             if not opt.retrieval_once:
                 batch_size = opt.batch_size
             
-            
+
             else:
                 batch_size = len(self.dataset)
         self.dataloader = torch.utils.data.DataLoader(
