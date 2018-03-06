@@ -226,10 +226,9 @@ class TripletModel(BaseModel):
         if self.opt.cuda:
             for i, item in enumerate(test_data):
                 item.cuda()
-        print(test_data)
 
         x0, x1, x2, attrs, fg_labels, labels = test_data
-        print(x0)
+        print(x0, x1)
         #Feature Extractor (4 dim in each paramters)
         output0, output1, output2 = self.network(x0, x1, x2)
         #print(output0.data[0], output1.data[0])
