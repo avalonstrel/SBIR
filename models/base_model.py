@@ -55,7 +55,9 @@ class BaseModel():
     def cuda(self):
         for i in range(len(self.optimize_modules)):
             self.optimize_modules[i].cuda()
-        
+    def cpu(self):
+        for i in range(len(self.optimize_modules)):
+            self.optimize_modules[i].cpu()
     # helper saving function that can be used by subclasses
     def save_network(self, network, network_label, epoch_label):
         save_filename = '%s_net_%s.pth.tar' % (epoch_label, network_label)

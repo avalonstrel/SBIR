@@ -214,10 +214,8 @@ class TripletModel(BaseModel):
     def test(self, test_data, retrieval_now=True):
 
         self.train(False)
+        self.cpu()
         #self.network.train(True)
-        if self.opt.cuda:
-            for i,item in enumerate(test_data):
-                test_data[i] = item.cuda()
         for i, item in enumerate(test_data):
             test_data[i] = Variable(item)
 
@@ -262,7 +260,7 @@ class TripletModel(BaseModel):
         #self.append_features(self.test_features, output0, output1, output2, labels)
         if retrieval_now:
             self.retrieval_evaluation(final_layer_data, loss, labels)
-
+        self.cuda()
         self.train(True)
 
     '''
