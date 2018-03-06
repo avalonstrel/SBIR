@@ -125,7 +125,7 @@ class MultiDenseNet(nn.Module):
         self.multi_feat_sizes = []
         # First convolution
         self.features_before = nn.Sequential(OrderedDict([
-            ('conv0', nn.Conv2d(3, num_init_features, kernel_size=7, stride=2, padding=3, bias=False, dilation=)),
+            ('conv0', nn.Conv2d(3, num_init_features, kernel_size=7, stride=2, padding=3, bias=False, dilation=3)),
             ('norm0', nn.BatchNorm2d(num_init_features)),
             ('relu0', nn.ReLU(inplace=True)),
             ('pool0', nn.MaxPool2d(kernel_size=3, stride=2, padding=1)),
