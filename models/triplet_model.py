@@ -201,7 +201,7 @@ class TripletModel(BaseModel):
             tmp = feat_list[0]
             for feat in feat_list[1:]:
                 tmp = torch.cat([tmp, feat], 0)
-            combined_features[key] = tmp
+            combined_features[key] = Vairabel(tmp)
         return combined_features
 
     def retrieval_evaluation(self, data, loss,  labels):
