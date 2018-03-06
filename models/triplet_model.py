@@ -72,8 +72,8 @@ class TripletModel(BaseModel):
             else:
 
                 self.load_model(self.opt.start_epoch_label, self.opt.trained_model_path)
-        
-        if len(self.opt.gpu_ids) > 1:
+        self.parallel = len(self.opt.gpu_ids) > 1
+        if self.parallel:
             self.parallel()
             print('Model parallel...')
             self.cuda()
@@ -216,6 +216,9 @@ class TripletModel(BaseModel):
         self.train(False)
         self.cpu()
         #self.network.train(True)
+        if self.parallel:
+            for i,item in enumerate(test_data):
+                test_data[i] = torch.nn.DataParallel(item)
         if self.opt.cuda:
             for i,item in enumerate(test_data):
                 test_data[i] = item.cuda()
