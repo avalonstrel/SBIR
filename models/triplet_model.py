@@ -224,7 +224,7 @@ class TripletModel(BaseModel):
                 test_data[i] = torch.nn.DataParallel(item)
         if self.opt.cuda:
             for i,item in enumerate(test_data):
-                test_data[i] = item.cuda()
+                item.cuda()
 
         x0, x1, x2, attrs, fg_labels, labels = test_data
 
