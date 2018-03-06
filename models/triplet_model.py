@@ -218,13 +218,15 @@ class TripletModel(BaseModel):
         #self.network.train(True)
         for i, item in enumerate(test_data):
             test_data[i] = Variable(item)
-
+        print(test_data)
         if self.parallel_flag:
-            for i,item in enumerate(test_data):
+            for i, item in enumerate(test_data):
                 test_data[i] = torch.nn.DataParallel(item)
+        print(test_data)
         if self.opt.cuda:
-            for i,item in enumerate(test_data):
+            for i, item in enumerate(test_data):
                 item.cuda()
+        print(test_data)
 
         x0, x1, x2, attrs, fg_labels, labels = test_data
         print(x0)
