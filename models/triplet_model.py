@@ -21,7 +21,7 @@ class TripletModel(BaseModel):
 
     def initialize(self):
         self.network = TripletSiameseNetwork(self.opt)
-        #self.network = torch.nn.DataParallel(self.network)
+        self.network = torch.nn.DataParallel(self.network)
         self.loss = self.get_loss(self.opt.loss_type[0])
         self.cls_loss = torch.nn.CrossEntropyLoss()
         self.attr_loss = torch.nn.BCEWithLogitsLoss()
@@ -216,6 +216,9 @@ class TripletModel(BaseModel):
         self.train(False)
         self.cpu()
         #self.network.train(True)
+        if self.opt.cuda:
+            for i,item in enumerate(test_data):
+                test_data[i] = item.cuda()
         for i, item in enumerate(test_data):
             test_data[i] = Variable(item)
 
