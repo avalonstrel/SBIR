@@ -179,6 +179,7 @@ class TripletModel(BaseModel):
             self.update_record(self.result_record, key, cls_loss[key], prediction.size(0), prediction, labels)
 
         #Attr Loss
+        #
         if 'attr' in self.opt.loss_type:
             predicted_attrs = self.attr_network(final_layer_data['combine'])
             attrs = attrs.float()
