@@ -25,7 +25,7 @@ class SketchXDataset(data.Dataset):
             transforms_list.append(transforms.Resize((256,256)))
             transforms_list.append(transforms.RandomCrop((self.opt.scale_size, self.opt.scale_size)))
         else:
-            transfors_list.append(transforms.Resize((self.opt.scale_size, self.opt.scale_size)))
+            transforms_list.append(transforms.Resize((self.opt.scale_size, self.opt.scale_size)))
         if self.opt.flip:
             transforms_list.append(transforms.RandomVerticalFlip())
         #transforms_list.append(transforms.Resize((self.opt.scale_size, self.opt.scale_size)))
