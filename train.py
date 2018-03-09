@@ -20,7 +20,7 @@ def train():
     model = create_model(opt)
     print(opt.model)
     model.train()
-
+    opt.save_to_file()
     total_steps = 0
     print('Start Training...')
     for epoch in range(opt.start_epoch, opt.start_epoch + opt.num_epoch):
