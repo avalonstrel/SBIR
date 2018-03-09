@@ -20,7 +20,11 @@ class ClassificationModel(BaseModel):
         return None
 
     def initialize(self):
-        self.network = AttentionNetwork(self.opt)
+        if self.opt.sketch_type == 'RGB':
+            num_input_features = 3
+        else:
+            num_input_features = 1
+        self.network = AttentionNetwork(self.opt, num_input_features)
         self.network = torch.nn.DataParallel(self.network)
         self.cls_network = ClassificationNetwork(self.opt.feat_size, self.opt.n_labels)
         self.cls_loss = torch.nn.CrossEntropyLoss()
