@@ -10,9 +10,10 @@ from models.base_model import create_model
 def train():
     print('Initialize Parameters...')
 
-    opt = TrainOptions()
-    opt.save_to_file()
-    opt = opt.parse()
+    options = TrainOptions()
+    
+    opt = options.parse()
+    options.save_to_file()
     print('Load data...')
     train_data_loader = CustomDatasetDataLoader(opt)
     opt.phase = 'test'
