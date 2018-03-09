@@ -9,7 +9,10 @@ from models.base_model import create_model
 
 def train():
     print('Initialize Parameters...')
-    opt = TrainOptions().parse()
+
+    opt = TrainOptions()
+    opt.save_to_file()
+    opt = opt.parse()
     print('Load data...')
     train_data_loader = CustomDatasetDataLoader(opt)
     opt.phase = 'test'
@@ -20,7 +23,7 @@ def train():
     model = create_model(opt)
     print(opt.model)
     model.train()
-    opt.save_to_file()
+
     total_steps = 0
     print('Start Training...')
     for epoch in range(opt.start_epoch, opt.start_epoch + opt.num_epoch):
