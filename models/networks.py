@@ -71,10 +71,12 @@ class ConvBlock(torch.nn.Module):
 class SketchANet(torch.nn.Module):
     def __init__(self, opt, num_input_features):
         super(SketchANet, self).__init__()
-"""        if opt.sketch_type == 'GRAY':
+        """        
+        if opt.sketch_type == 'GRAY':
             num_input_features = 1
         else:
-            num_input_features = 3"""
+            num_input_features = 3
+        """
         self.conv1 = ConvLayer(num_input_features, 64, kernel_size=15, stride=3, bias=False, is_bn=False )
         self.pool1 = nn.MaxPool2d(kernel_size=3, stride=2, padding=0)
         self.conv2 = ConvLayer(64, 128, kernel_size=5, stride=1, padding=0, is_bn=False)
@@ -149,7 +151,7 @@ class TripletHeterNetwork(torch.nn.Module):
     def forward_once(self, x, feat_model):
         out = feat_model(x)
         return out
-        
+
     def forward(self, x0, x1, x2):
         out0 = self.forward_once(x0, self.sketch_feat_model)
         out1 = self.forward_once(x1, self.image_feat_model)
