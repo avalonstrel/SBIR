@@ -23,10 +23,10 @@ class AttentionLayer(torch.nn.Module):
         return out
 
 class ConvLayer(torch.nn.Module):
-    def __init__(self, num_input_features, num_output_features, kernel_size, stride, bias=False, padding=0, is_relu=True, is_bn=True):
+    def __init__(self, num_input_features, num_output_features, kernel_size, stride, bias=False, padding=0, is_relu=True, is_bn=True, dilation=1):
         super(ConvLayer, self).__init__()
         self.conv = nn.Conv2d(num_input_features, num_output_features 
-                        , kernel_size=kernel_size, stride=stride, padding=padding,  bias=bias)
+                        , kernel_size=kernel_size, stride=stride, padding=padding,  bias=bias, dilation=dilation)
         self.bn = nn.BatchNorm2d(num_output_features)
         self.relu = nn.ReLU(inplace=True)
         self.is_relu = is_relu
@@ -38,7 +38,70 @@ class ConvLayer(torch.nn.Module):
         if self.is_relu:
             out = self.relu(out)
         return out
+   
+class DilatedConvBlock(torch.nn.Module):
+    def __init__(self, opt, num_input_features):
+        super(DilatedConvBlock, self).__init__()
+        self.conv1 = ConvLayer(num_input_features, 64, kernel_size=7, stride=3, bias=False, is_relu=opt.is_relu, is_bn=opt.is_bn, dilation=1)
+        #self.pool1 = nn.MaxPool2d(kernel_size=3, stride=2, padding=0)
+        self.conv2 = ConvLayer(64, 128, kernel_size=5, stride=1, padding=0, dilation=2)
+        #self.pool2 = nn.MaxPool2d(kernel_size=3, stride=2, padding=0)
+        self.conv3 = ConvLayer(128, 256, kernel_size=3, stride=1, padding=1, dilation=5)
+        self.conv4 = ConvLayer(256, 256, kernel_size=3, stride=1, padding=1)
+        self.conv5 = ConvLayer(256, 256, kernel_size=3, stride=1, padding=1, is_relu=False)
+        self.pool = nn.MaxPool2d(kernel_size=3, stride=2, padding=0)
+    def forward(self, x):
+        out = self.conv1(x)
+        out = self.conv2(out)
+        out = self.conv3(out)
+        out = self.conv4(out)
+        out = self.conv5(out)
+        out = self.pool(out)
+        print(out.size())
+        return out
+                
 
+class SpatialTransformerNetwork(torch.nn.Module):
+    def __init__(self, opt, num_input_features):
+        super(SpatialTransformerNetwork, self).__init__()
+        # Spatial transformer localization-network
+        self.localization = nn.Sequential(
+            nn.Conv2d(num_input_features, 8, kernel_size=7),
+            nn.MaxPool2d(2, stride=2),
+            nn.ReLU(True),
+            nn.Conv2d(8, 10, kernel_size=5),
+            nn.MaxPool2d(2, stride=2),
+            nn.ReLU(True)
+        )
+        
+        # Regressor for the 3 * 2 affine matrix
+        self.fc_loc = nn.Sequential(
+            nn.Linear(10 * 3 * 3, 32),
+            nn.ReLU(True),
+            nn.Linear(32, 3 * 2)
+        )
+
+        # Initialize the weights/bias with identity transformation
+        self.fc_loc[2].weight.data.fill_(0)
+        self.fc_loc[2].bias.data = torch.FloatTensor([1, 0, 0, 0, 1, 0])
+
+    # Spatial transformer network forward function
+    def forward(self, x):
+        xs = self.localization(x)
+        xs = xs.view(-1, 10 * 3 * 3)
+        theta = self.fc_loc(xs)
+        theta = theta.view(-1, 2, 3)
+
+        grid = F.affine_grid(theta, x.size())
+        x = F.grid_sample(x, grid)
+
+        return x
+
+"""
+class HybridDilatedConv(torch.nn.Module):
+    def __init__(self, opt, num_input_features):
+        super(HybridDilatedConv, self).__init__()
+"""
 class ConvBlock(torch.nn.Module):
     def __init__(self, opt, num_init_features):
         super(ConvBlock, self).__init__()
@@ -101,8 +164,10 @@ class AttentionNetwork(torch.nn.Module):
         super(AttentionNetwork, self).__init__()
         if opt.cnn_block == 'sketchanet':
             cnn_block = SketchANet
-        else:
+        elif opt.cnn_block == 'bn_cnn_block':
             cnn_block = ConvBlock
+        elif opt.cnn_block == 'dilated_cnn_block':
+            cnn_block = DilatedConvBlock
         self.conv_block = cnn_block(opt, num_input_features)
         self.attention_layer = AttentionLayer()
         self.gap = nn.AvgPool2d(kernel_size=7, stride=1, padding=0)
