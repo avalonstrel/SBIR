@@ -7,12 +7,13 @@ def create_model(opt):
     if name == 'denselosssiamese':
         from .denseloss_model import DenseLossModel
         return DenseLossModel(opt)
-    elif name == 'tripletsiamese':
+    elif name in ['tripletsiamese', 'tripletheter']:
         from .triplet_model import TripletModel 
         return TripletModel(opt)
     elif name == 'cls_model':
         from .classification_model import ClassificationModel
         return ClassificationModel(opt)
+
     return None
 
 
