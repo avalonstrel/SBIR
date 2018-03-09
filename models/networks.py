@@ -135,16 +135,16 @@ class TripletHeterNetwork(torch.nn.Module):
 
 
 
-    def get_feat_model(self, feat_model, read_type):
+    def get_feat_model(self, feature_model, read_type):
         if read_type == 'RGB':
             num_input_features = 3
         else:
             num_input_features = 1
         #copy_opt = Namespace(**vars(self.opt))
         feat_model = None
-        if feat_model == 'attention':
+        if feature_model == 'attention':
             feat_model = AttentionNetwork(self.opt, num_input_features)
-        elif feat_model == 'densenet169':
+        elif feature_model == 'densenet169':
             feat_model = models.densenet169(pretrained=not self.opt.no_densenet_pretrain)
             feat_model.classifier = nn.Linear(feat_model.classifier.in_features, self.opt.feat_size)
         return feat_model
