@@ -117,7 +117,7 @@ class ClassificationModel(BaseModel):
             batch_data[i] = Variable(item)
         
         x0, x1, x2, attrs, fg_labels, labels = batch_data
-
+        x0 = torch.cat([x0, x1], 0)
         #Feature Extractor (4 dim in each paramters)
         feature = self.network(x0)
         prediction = self.cls_network(feature)
