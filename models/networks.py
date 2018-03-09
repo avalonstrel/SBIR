@@ -130,8 +130,8 @@ class TripletHeterNetwork(torch.nn.Module):
     def __init__(self, opt):
         super(TripletHeterNetwork, self).__init__()
         self.opt = opt
-        self.sketch_feat_model = self.get_feat_model(opt.feat_model, opt.sketch_type)
-        self.image_feat_model = self.get_feat_model(opt.feat_model, opt.image_type)
+        self.sketch_feat_model = self.get_feat_model(opt.feature_model, opt.sketch_type)
+        self.image_feat_model = self.get_feat_model(opt.feature_model, opt.image_type)
 
 
 
