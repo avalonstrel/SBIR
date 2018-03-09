@@ -8,7 +8,7 @@ from util.evaluation import *
 from util.util import *
 from torch.autograd import Variable
 from torchvision import models
-class TripletModel(BaseModel):
+class TripletDiffModel(BaseModel):
 
     def name(self):
         return 'TripletModel'
@@ -20,10 +20,7 @@ class TripletModel(BaseModel):
         return None
 
     def initialize(self):
-        if self.opt.model == 'tripletsiamese':
-            self.network = TripletSiameseNetwork(self.opt)
-        elif self.opt.model == 'tripletheter':
-            self.network = TripletHeterNetwork(self.opt)
+        self.network = TripletSiameseNetwork(self.opt)
         self.network = torch.nn.DataParallel(self.network)
         self.loss = self.get_loss(self.opt.loss_type[0])
         self.cls_loss = torch.nn.CrossEntropyLoss()

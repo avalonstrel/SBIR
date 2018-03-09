@@ -40,12 +40,14 @@ class ConvLayer(torch.nn.Module):
         return out
 
 class ConvBlock(torch.nn.Module):
-    def __init__(self, opt):
+    def __init__(self, opt, num_init_features):
         super(ConvBlock, self).__init__()
+        """      
         if opt.sketch_type == 'GRAY':
             num_input_features = 1
         else:
             num_input_features = 3
+        """
         self.conv1 = ConvLayer(num_input_features, 64, kernel_size=15, stride=3, bias=False, is_relu=opt.is_relu, is_bn=opt.is_bn)
         self.pool1 = nn.MaxPool2d(kernel_size=3, stride=2, padding=0)
         self.conv2 = ConvLayer(64, 128, kernel_size=5, stride=1, padding=0)
@@ -65,13 +67,14 @@ class ConvBlock(torch.nn.Module):
         out = self.conv5(out)
         out = self.pool3(out)
         return out
+
 class SketchANet(torch.nn.Module):
-    def __init__(self, opt):
+    def __init__(self, opt, num_input_features):
         super(SketchANet, self).__init__()
-        if opt.sketch_type == 'GRAY':
+"""        if opt.sketch_type == 'GRAY':
             num_input_features = 1
         else:
-            num_input_features = 3
+            num_input_features = 3"""
         self.conv1 = ConvLayer(num_input_features, 64, kernel_size=15, stride=3, bias=False, is_bn=False )
         self.pool1 = nn.MaxPool2d(kernel_size=3, stride=2, padding=0)
         self.conv2 = ConvLayer(64, 128, kernel_size=5, stride=1, padding=0, is_bn=False)
@@ -92,13 +95,13 @@ class SketchANet(torch.nn.Module):
         return out
 
 class AttentionNetwork(torch.nn.Module):
-    def __init__(self, opt):
+    def __init__(self, opt, num_input_features):
         super(AttentionNetwork, self).__init__()
         if opt.cnn_block == 'sketchanet':
             cnn_block = SketchANet
         else:
             cnn_block = ConvBlock
-        self.conv_block = cnn_block(opt)
+        self.conv_block = cnn_block(opt, num_input_features)
         self.attention_layer = AttentionLayer()
         self.gap = nn.AvgPool2d(kernel_size=7, stride=1, padding=0)
         self.bn_attention = nn.BatchNorm2d(512)
@@ -121,6 +124,38 @@ class AttentionNetwork(torch.nn.Module):
         #out = self.bn7(out)
         return out
 
+class TripletHeterNetwork(torch.nn.Module):
+    def __init__(self, opt):
+        super(TripletHeterNetwork, self).__init__()
+        self.opt = opt
+        self.sketch_feat_model = self.get_feat_model(opt.feat_model, opt.sketch_type)
+        self.image_feat_model = self.get_feat_model(opt.feat_model, opt.image_type)
+
+
+
+    def get_feat_model(self, feat_model, read_type):
+        if read_type == 'RGB':
+            num_input_features = 3
+        else:
+            num_input_features = 1
+        #copy_opt = Namespace(**vars(self.opt))
+        feat_model = None
+        if feat_model == 'attention':
+            feat_model = AttentionNetwork(self.opt, num_input_features)
+        elif feat_model == 'densenet169':
+            feat_model = models.densenet169(pretrained=not self.opt.no_densenet_pretrain)
+            feat_model.classifier = nn.Linear(feat_model.classifier.in_features, self.opt.feat_size)
+        return feat_model
+    def forward_once(self, x, feat_model):
+        out = feat_model(x)
+        return out
+        
+    def forward(self, x0, x1, x2):
+        out0 = self.forward_once(x0, self.sketch_feat_model)
+        out1 = self.forward_once(x1, self.image_feat_model)
+        out2 = self.forward_once(x2, self.image_feat_model)
+        return out0, out1, out2
+
 '''
 Triplet Siamese Network, For SBIR
 '''
@@ -129,15 +164,19 @@ class TripletSiameseNetwork(torch.nn.Module):
         super(TripletSiameseNetwork, self).__init__()
         self.opt = opt
         self.feat_extractor = self.get_extractor(opt.feature_model)
-        self.bn = nn.BatchNorm1d(opt.feat_size)
+        #self.bn = nn.BatchNorm1d(opt.feat_size)
     def forward_once(self, x):
         out = self.feat_extractor(x)
-        out = self.bn(out)
+        #out = self.bn(out)
         return out  
     def get_extractor(self, feature_model):
         feature_extractor = None
+        if opt.sketch_type == 'GRAY':
+            num_input_features = 1
+        else:
+            num_input_features = 3
         if feature_model == 'attention':
-            feature_extractor = AttentionNetwork(self.opt)
+            feature_extractor = AttentionNetwork(self.opt, num_input_features)
         elif feature_model == 'densenet169':
             feature_extractor = models.densenet169(pretrained=not self.opt.no_densenet_pretrain)
             feature_extractor.classifier = nn.Linear(feature_extractor.classifier.in_features, self.opt.feat_size)
