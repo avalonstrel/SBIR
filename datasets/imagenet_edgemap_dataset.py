@@ -1,7 +1,7 @@
 from torch.utils import data
 import numpy as np
 from torchvision import transforms
-from util.util import to_rgb
+from util.util import to_rgb, load_bndbox
 import os, re
 from PIL import Image
 import json
@@ -12,7 +12,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
     def __init__(self,  opt): #augment_types=[""], levels="cs", mode="train",flag="two_loss", train_split=20,  pair_inclass_num=5,pair_outclass_num=0,edge_map=True):
         # parameters setting
         self.opt = opt
-        root = opt.data_root
+        self.root = opt.data_root
         photo_types = opt.sketchy_photo_types
         sketch_types = opt.sketchy_sketch_types
         mode = opt.phase
@@ -31,6 +31,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
         #self.transform_fun = transforms.Compose([transforms.ToTensor()])
         self.fg_labels = []
         self.labels = []
+        self.bndboxes = []
         tri_mode = mode
 
         if mode == "train":
@@ -41,24 +42,31 @@ class ImageNetEdgeMapDataset(data.Dataset):
 
         #photo_roots = [root+photo_type for photo_type in photo_types]
         #print(photo_roots)
-        root = os.path.join(root, mode)
+        root = os.path.join(self.root, mode)
+        annotation_root = os.path.join(self.root, 'Annotation')
         fg_label, label = 0, 0
 
         for cls_root, subFolders, files in os.walk(root):
             photo_pat = re.compile("n.+\.JPEG")
             photo_imgs = list(filter(lambda fname:photo_pat.match(fname), files))
-            if len(photo_imgs) == 0:
+            annotation_pre_path = os.path.join(annotation_path, cls_root)
+            if len(photo_imgs) == 0 or not os.path.exists(annotation_pre_path):
                 print(cls_root)
                 continue
 
             for i, photo_img in enumerate(photo_imgs, start=0):
                 if i < start or i >= end:
                     continue
+                photo_label = photo_img[:(len(photo_img)-5)]
                 img_path = os.path.join(root, cls_root, photo_img)
+                annotation_path = os.path.join(annotation_path, cls_root, 'Annotation', cls_root, photo_label + '.xml')
+                if not os.path.exists(annotation_path):
+                    continue
                 self.photo_imgs.append(img_path)
                 self.photo_neg_imgs.append(img_path)
                 self.fg_labels.append(fg_label)
                 self.labels.append(label)
+                self.bndboxes.append(annotation_path)
                 fg_label += 1
             label += 1
         print('Total ImageNet Class:{} Total Num:{}'.format(label, fg_label))
@@ -71,7 +79,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
 
         print("{} pairs loaded. After generate triplet".format(len(self.photo_imgs)))
 
-    def transform(self, pil):
+    def transform(self, pil, bndbox):
 
         #print(np.array(pil).shape)
         if self.opt.image_type == 'GRAY':
@@ -79,6 +87,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
         else:
             pil = pil.convert('RGB')
         pil_numpy = np.array(pil)
+        pil_numpy = self.crop(pil_numpy, bndbox)
         #pil_numpy = cv2.resize(pil_numpy,(self.opt.scale_size,self.opt.scale_size))
 
         #if self.opt.image_type == 'GRAY':
@@ -89,9 +98,13 @@ class ImageNetEdgeMapDataset(data.Dataset):
 
         return pil_numpy
 
-    def load_sketch(self, pil):
+    def crop(self, pil_numpy, bndbox):
+        return pil_numpy[bndbox['xmin']:bndbox['xmax'],bndbox['ymax']:bndbox['ymax'],:]
+
+    def load_sketch(self, pil, bndbox):
         pil = pil.convert('L')
         pil_numpy = np.array(pil)
+        pil_numpy = self.crop(pil_numpy, bndbox)
         edge_map = cv2.Canny(pil_numpy, 100, 200)
         #edge_map = cv2.resize(edge_map,(self.opt.scale_size,self.opt.scale_size))
         if self.opt.sketch_type == 'RGB':
@@ -108,11 +121,13 @@ class ImageNetEdgeMapDataset(data.Dataset):
 
     def __getitem__(self,index):
         photo_img,photo_neg_img,fg_label,label = self.photo_imgs[index], self.photo_neg_imgs[index], self.fg_labels[index], self.labels[index]
+        bndbox_path = self.bndbox[index]
+        bndbox = load_bndbox(bndbox_path)
         photo_pil,photo_neg_pil = Image.open(photo_img), Image.open(photo_neg_img)
         #if self.transform is not None:
-        sketch_pil = self.load_sketch(photo_pil)
-        photo_pil = self.transform(photo_pil)
-        photo_neg_pil = self.transform(photo_neg_pil)
+        sketch_pil = self.load_sketch(photo_pil, bndbox)
+        photo_pil = self.transform(photo_pil, bndbox)
+        photo_neg_pil = self.transform(photo_neg_pil, bndbox)
         #print(sketch_pil.size(), photo_pil.size())
         #print(label, fg_label)
         return sketch_pil, photo_pil, photo_neg_pil, label, fg_label, label

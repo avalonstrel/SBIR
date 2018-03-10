@@ -4,6 +4,7 @@ import torchvision.models as models
 import numpy as np
 from .mydensenet import MultiDenseNet
 import torch.nn as nn
+
 def save_feature(state, filename):
     torch.save(state, filename)
 
@@ -73,7 +74,7 @@ class SpatialTransformerNetwork(torch.nn.Module):
             nn.MaxPool2d(2, stride=2),
             nn.ReLU(True)
         )
-        
+
         # Regressor for the 3 * 2 affine matrix
         self.fc_loc = nn.Sequential(
             nn.Linear(10 * 3 * 3, 32),
