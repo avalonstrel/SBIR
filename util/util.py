@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 def load_bndbox(filename):
     with open(filename, 'r') as reader:
         xml = reader.read()
-    soup = BeautifulSoup(xml)
+    soup = BeautifulSoup(xml, 'xml')
     #bndbox = [int(soup.bndbox.xmin.string), ]
     bndbox = {}
     for tag in soup.bndbox:
