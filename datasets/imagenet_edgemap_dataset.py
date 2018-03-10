@@ -37,9 +37,10 @@ class ImageNetEdgeMapDataset(data.Dataset):
         tri_mode = mode
 
         if mode == "train":
-            start, end = 0, 100
+            start, end = 0, 1000
         elif mode == 'test':
-            start, end = 100, 105
+            start, end = 1000, 10000
+            
             mode = 'train'
 
         #photo_roots = [root+photo_type for photo_type in photo_types]
