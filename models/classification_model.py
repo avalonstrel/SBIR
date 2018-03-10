@@ -121,8 +121,8 @@ class ClassificationModel(BaseModel):
             batch_data[i] = Variable(item)
         
         x0, x1, x2, attrs, fg_labels, labels = batch_data
-        x0 = torch.cat([x0, x1], 0)
-        labels = torch.cat([labels, labels], 0)
+        #x0 = torch.cat([x0, x1], 0)
+        #labels = torch.cat([labels, labels], 0)
         #print(x0.size())
         #Feature Extractor (4 dim in each paramters)
         feature = self.network(x0)
@@ -160,8 +160,8 @@ class ClassificationModel(BaseModel):
 
 
         x0, x1, x2, attrs, fg_labels, labels = test_data
-        x0 = torch.cat([x0, x1], 0)
-        labels = torch.cat([labels, labels], 0)
+        #x0 = torch.cat([x0, x1], 0)
+        #labels = torch.cat([labels, labels], 0)
         #Feature Extractor (4 dim in each paramters)
         feature = self.network(x0)
         prediction = self.cls_network(feature)
