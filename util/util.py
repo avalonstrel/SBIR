@@ -1,6 +1,6 @@
 import os
 import numpy as np
-
+from bs4 import BeautifulSoup
 
 def load_bndbox(filename):
     with open(filename, 'r') as reader:
