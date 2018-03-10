@@ -105,7 +105,10 @@ class ImageNetEdgeMapDataset(data.Dataset):
         return pil_numpy
 
     def crop(self, pil_numpy, bndbox):
-        return pil_numpy[bndbox['ymin']:bndbox['ymax'],bndbox['xmax']:bndbox['xmax'],:]
+        if len(pil_numpy.shape) == 3:
+            return pil_numpy[bndbox['ymin']:bndbox['ymax'],bndbox['xmax']:bndbox['xmax'],:]
+        elif len(pil_numpy.shape) == 2:
+            return pil_numpy[bndbox['ymin']:bndbox['ymax'],bndbox['xmax']:bndbox['xmax']]
 
     def load_sketch(self, pil, bndbox):
         pil = pil.convert('L')
