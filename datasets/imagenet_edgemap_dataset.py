@@ -40,7 +40,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
             start, end = 0, 1000
         elif mode == 'test':
             start, end = 1000, 10000
-            
+
             mode = 'train'
 
         #photo_roots = [root+photo_type for photo_type in photo_types]
@@ -52,7 +52,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
         for cls_root, subFolders, files in os.walk(root):
             photo_pat = re.compile("n.+\.JPEG")
             photo_imgs = list(filter(lambda fname:photo_pat.match(fname), files))
-            annotation_pre_path = os.path.join(annotation_path, cls_root)
+            annotation_pre_path = os.path.join(annotation_root, cls_root)
             if len(photo_imgs) == 0 or not os.path.exists(annotation_pre_path):
                 print(cls_root)
                 continue
