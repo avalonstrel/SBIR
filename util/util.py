@@ -8,7 +8,7 @@ def load_bndbox(filename):
     soup = BeautifulSoup(xml)
     #bndbox = [int(soup.bndbox.xmin.string), ]
     for tag in soup.bndbox:
-        if tag.string != '':
+        if tag.string != '\n':
             bndbox[tag.name] = int(tag.string)
     return bndbox
 def accs_message(accs):
