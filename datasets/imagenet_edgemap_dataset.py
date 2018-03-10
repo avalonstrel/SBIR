@@ -105,7 +105,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
         return pil_numpy
 
     def crop(self, pil_numpy, bndbox):
-        print(pil_numpy.shape)
+        #print(pil_numpy.shape)
 
         if len(pil_numpy.shape) == 3:
             return pil_numpy[bndbox['ymin']:bndbox['ymax'],bndbox['xmin']:bndbox['xmax'],:]
@@ -115,11 +115,11 @@ class ImageNetEdgeMapDataset(data.Dataset):
     def load_sketch(self, pil, bndbox):
         pil = pil.convert('L')
         pil_numpy = np.array(pil)
-        print(pil_numpy.shape)
+        #print(pil_numpy.shape)
         pil_numpy = self.crop(pil_numpy, bndbox)
-        print(pil_numpy.shape)
+        #print(pil_numpy.shape)
         edge_map = cv2.Canny(pil_numpy, 0, 200)
-        print(edge_map.shape)
+        #print(edge_map.shape)
         #edge_map = cv2.resize(edge_map,(self.opt.scale_size,self.opt.scale_size))
         if self.opt.sketch_type == 'RGB':
             edge_map = to_rgb(edge_map)
