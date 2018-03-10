@@ -37,9 +37,9 @@ class ImageNetEdgeMapDataset(data.Dataset):
         tri_mode = mode
 
         if mode == "train":
-            start, end = 0, 1000
+            start, end = 0, 1200
         elif mode == 'test':
-            start, end = 1000, 10000
+            start, end = 1200, 10000
 
             mode = 'train'
 
@@ -106,7 +106,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
 
     def crop(self, pil_numpy, bndbox):
         print(pil_numpy.shape)
-        
+
         if len(pil_numpy.shape) == 3:
             return pil_numpy[bndbox['ymin']:bndbox['ymax'],bndbox['xmax']:bndbox['xmax'],:]
         elif len(pil_numpy.shape) == 2:
@@ -115,6 +115,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
     def load_sketch(self, pil, bndbox):
         pil = pil.convert('L')
         pil_numpy = np.array(pil)
+        print(pil_numpy.shape)
         pil_numpy = self.crop(pil_numpy, bndbox)
         edge_map = cv2.Canny(pil_numpy, 0, 200)
         #edge_map = cv2.resize(edge_map,(self.opt.scale_size,self.opt.scale_size))
