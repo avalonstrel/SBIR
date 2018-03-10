@@ -127,7 +127,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
 
     def __getitem__(self,index):
         photo_img,photo_neg_img,fg_label,label = self.photo_imgs[index], self.photo_neg_imgs[index], self.fg_labels[index], self.labels[index]
-        bndbox_path = self.bndbox[index]
+        bndbox_path = self.bndboxes[index]
         bndbox = load_bndbox(bndbox_path)
         photo_pil,photo_neg_pil = Image.open(photo_img), Image.open(photo_neg_img)
         #if self.transform is not None:
