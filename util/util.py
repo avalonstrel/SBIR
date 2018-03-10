@@ -7,6 +7,7 @@ def load_bndbox(filename):
         xml = reader.read()
     soup = BeautifulSoup(xml)
     #bndbox = [int(soup.bndbox.xmin.string), ]
+    bndbox = {}
     for tag in soup.bndbox:
         if tag.string != '\n':
             bndbox[tag.name] = int(tag.string)
