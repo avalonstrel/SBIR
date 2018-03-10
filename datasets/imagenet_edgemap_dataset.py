@@ -108,9 +108,9 @@ class ImageNetEdgeMapDataset(data.Dataset):
         print(pil_numpy.shape)
 
         if len(pil_numpy.shape) == 3:
-            return pil_numpy[bndbox['ymin']:bndbox['ymax'],bndbox['xmax']:bndbox['xmax'],:]
+            return pil_numpy[bndbox['ymin']:bndbox['ymax'],bndbox['xmin']:bndbox['xmax'],:]
         elif len(pil_numpy.shape) == 2:
-            return pil_numpy[bndbox['ymin']:bndbox['ymax'],bndbox['xmax']:bndbox['xmax']]
+            return pil_numpy[bndbox['ymin']:bndbox['ymax'],bndbox['xmin']:bndbox['xmax']]
 
     def load_sketch(self, pil, bndbox):
         pil = pil.convert('L')
