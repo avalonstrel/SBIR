@@ -1,6 +1,16 @@
 import os
 import numpy as np
 
+
+def load_bndbox(filename):
+    with open(filename, 'r') as reader:
+        xml = reader.read()
+    soup = BeautifulSoup(xml)
+    bndbox = {}
+    for tag in soup.bndbox:
+        if tag.string != '':
+            bndbox[tag.name] = int(tag.string)
+    return bndbox
 def accs_message(accs):
     if  isinstance(accs, dict):
         return 'top {}:{}'.format(tuple(accs.keys()), tuple(str(acc.avg)[:4] for acc in accs.values()))
