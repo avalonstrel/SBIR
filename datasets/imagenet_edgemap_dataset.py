@@ -62,7 +62,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
                     continue
                 photo_label = photo_img[:(len(photo_img)-5)]
                 img_path = os.path.join(root, cls_root, photo_img)
-                annotation_path = os.path.join(annotation_path, cls_root, 'Annotation', cls_root, photo_label + '.xml')
+                annotation_path = os.path.join(annotation_root, cls_root, 'Annotation', cls_root, photo_label + '.xml')
                 if not os.path.exists(annotation_path):
                     continue
                 self.photo_imgs.append(img_path)
