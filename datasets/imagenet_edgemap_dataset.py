@@ -140,9 +140,10 @@ class ImageNetEdgeMapDataset(data.Dataset):
             photo_pil = Image.open(photo_img)
             pil_numpy = np.array(photo_pil)
             bndbox = load_bndbox(bndbox_path)
-            pil_numpy = self.crop(pil_numpy, bndbox)
+            if bndbox['ymax'] < pil_numpy.shape[0] and bndbox['xmax'] < pil_numpy.shape[1]:
+            #pil_numpy = self.crop(pil_numpy, bndbox)
             #print(pil_numpy.shape)
-            if pil_numpy.shape[0] > 0 and pil_numpy.shape[1] > 0:#np.all(np.array(pil_numpy.shape) > 0):
+            #if pil_numpy.shape[0] > 0 and pil_numpy.shape[1] > 0:#np.all(np.array(pil_numpy.shape) > 0):
                 photo_imgs.append(photo_img)
                 photo_neg_imgs.append(photo_neg_img)
                 fg_labels.append(fg_label)
