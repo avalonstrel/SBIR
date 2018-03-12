@@ -66,14 +66,14 @@ class ImageNetEdgeMapDataset(data.Dataset):
                 #print(annotation_root, cls_label)
                 annotation_path = os.path.join(annotation_root, cls_label, 'Annotation', cls_label, photo_label + '.xml')
                 #print(annotation_path)
-                if not os.path.exists(annotation_path):
-                    continue
-                self.photo_imgs.append(img_path)
-                self.photo_neg_imgs.append(img_path)
-                self.fg_labels.append(fg_label)
-                self.labels.append(label)
-                self.bndboxes.append(annotation_path)
-                fg_label += 1
+                if os.path.exists(annotation_path) and os.path.exists(img_path):
+
+                    self.photo_imgs.append(img_path)
+                    self.photo_neg_imgs.append(img_path)
+                    self.fg_labels.append(fg_label)
+                    self.labels.append(label)
+                    self.bndboxes.append(annotation_path)
+                    fg_label += 1
             label += 1
         self.filter_bndbox()
         print('Total ImageNet Class:{} Total Num:{}'.format(label, fg_label))
