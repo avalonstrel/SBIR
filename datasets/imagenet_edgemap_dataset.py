@@ -75,6 +75,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
                 self.bndboxes.append(annotation_path)
                 fg_label += 1
             label += 1
+        self.filter_bndbox()
         print('Total ImageNet Class:{} Total Num:{}'.format(label, fg_label))
         self.n_labels = label
         self.n_fg_labels = fg_label
@@ -132,6 +133,21 @@ class ImageNetEdgeMapDataset(data.Dataset):
         return edge_map
     def __len__(self):
         return len(self.photo_imgs)
+
+    def filter_bndbox(self):
+        photo_imgs, photo_neg_imgs, fg_labels, labels, bndboxes = [], [], [], [], []
+        for photo_img, photo_neg_img, fg_label, label, bndbox_path in zip(self.photo_imgs, self.photo_neg_imgs, self.fg_labels, self.labels, self.bndboxes):
+            photo_pil = Image.open(photo_img)
+            pil_numpy = np.array(photo_pil)
+            bndbox = load_bndbox(bndbox_path)
+            pil_numpy = self.crop(pil_numpy, bndbox)
+            if np.every(pil_numpy > 0):
+                photo_imgs.append(photo_img)
+                photo_neg_img.append(photo_img)
+                fg_labels.append(fg_label)
+                labels.append(label)
+                bndboxes.append(bndbox_path)
+        self.photo_imgs, self.photo_neg_imgs, self.fg_labels, self.labels, self.bndboxes = photo_imgs, photo_neg_imgs, fg_labels, labels, bndboxes
 
     def __getitem__(self,index):
         photo_img,photo_neg_img,fg_label,label = self.photo_imgs[index], self.photo_neg_imgs[index], self.fg_labels[index], self.labels[index]
