@@ -83,7 +83,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
         save_filename = "imagenet_image_list.pkl"
         pickle.dump({'photo_imgs':self.photo_imgs, 'photo_neg_imgs':self.photo_neg_imgs, 
             'fg_labels':self.fg_labels, 'labels':self.labels, 'bndboxes':self.bndboxes,
-            'n_labels':self.n_labels, 'n_fg_labels':n_fg_labels},open(save_filename, 'w'))
+            'n_labels':self.n_labels, 'n_fg_labels':self.n_fg_labels},open(save_filename, 'w'))
         pair_inclass_num, pair_outclass_num = self.opt.pair_num
 
         if tri_mode == "train" and not self.opt.model == 'cls_model':
