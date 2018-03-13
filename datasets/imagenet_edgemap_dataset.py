@@ -6,7 +6,7 @@ import os, re
 from PIL import Image
 import json
 import cv2
-
+import pickle  
 """Sketch Dataset"""
 class ImageNetEdgeMapDataset(data.Dataset):
     def __init__(self,  opt): #augment_types=[""], levels="cs", mode="train",flag="two_loss", train_split=20,  pair_inclass_num=5,pair_outclass_num=0,edge_map=True):
@@ -76,9 +76,14 @@ class ImageNetEdgeMapDataset(data.Dataset):
                     fg_label += 1
             label += 1
         self.filter_bndbox()
+
         print('Total ImageNet Class:{} Total Num:{}'.format(label, fg_label))
         self.n_labels = label
         self.n_fg_labels = fg_label
+        save_filename = "imagenet_image_list.pkl"
+        pickle.dump({'photo_imgs':self.photo_imgs, 'photo_neg_imgs':self.photo_neg_imgs, 
+            'fg_labels':self.fg_labels, 'labels':self.labels, 'bndboxes':self.bndboxes
+            'n_labels':self.n_labels, 'n_fg_labels':n_fg_labels},open(save_filename, 'w'))
         pair_inclass_num, pair_outclass_num = self.opt.pair_num
 
         if tri_mode == "train" and not self.opt.model == 'cls_model':
