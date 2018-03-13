@@ -8,11 +8,12 @@ def load_bndbox(filename):
     soup = BeautifulSoup(xml, 'xml')
     #bndbox = [int(soup.bndbox.xmin.string), ]
     bndbox = {}
-    if len(soup.bndbox) > 4:
-        print('BND', soup.bndbox)
+
     for tag in soup.bndbox:
         if tag.string != '\n':
             bndbox[tag.name] = int(tag.string)
+    if len(bndbox) > 4:
+        print('BND', bndbox)
     return bndbox
 def accs_message(accs):
     if  isinstance(accs, dict):
