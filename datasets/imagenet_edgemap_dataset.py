@@ -128,7 +128,10 @@ class ImageNetEdgeMapDataset(data.Dataset):
             return pil_numpy[bndbox['ymin']:bndbox['ymax'], bndbox['xmin']:bndbox['xmax']]
 
     def load_sketch(self, pil, bndbox):
-        pil = pil.convert('L')
+        if self.opt.sketch_type == 'RGB':
+            pil = pil.convert('RGB')
+        else:
+            pil = pil.convert('L')
         pil_numpy = np.array(pil)
         # print(pil_numpy.shape)
         pil_numpy = self.crop(pil_numpy, bndbox)
