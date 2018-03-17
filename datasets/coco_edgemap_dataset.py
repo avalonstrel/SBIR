@@ -36,8 +36,8 @@ class CoCoEdgeMapDataset(data.Dataset):
 
         self.creat_index(annotation_root)
         for i, img_id in enumerate(self.anns.keys()):
-            self.photo_imgs.append(self.id2path(img_id))
-            self.photo_neg_imgs.append(self.id2path(img_id))
+            self.photo_imgs.append(self.id2path(img_id, root))
+            self.photo_neg_imgs.append(self.id2path(img_id, root))
             self.fg_labels.append(i)
             self.labels.append(self.cats[img_id])
             self.bndboxes.append(self.anns[img_id]['bbox'])
