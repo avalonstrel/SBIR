@@ -92,7 +92,7 @@ class CoCoEdgeMapDataset(data.Dataset):
         if 'annotations' in annotations:
             for ann in annotations['annotations']:
                 imgToAnns[ann['image_id']].append(ann)
-                anns[ann['id']] = ann
+                anns[ann['image_id']] = ann
             print('annotations load done')
         if 'images' in annotations:
             for img in annotations['images']:
@@ -100,7 +100,7 @@ class CoCoEdgeMapDataset(data.Dataset):
             print('images load done')    
         if 'categories' in annotations:
             for cat in annotations['categories']:
-                cats[cat['id']] = cat
+                cats[cat['image_id']] = cat
             print('cats load done')
         if 'annotations' in annotations and 'categories' in annotations:
             for ann in annotations['annotations']:
@@ -110,7 +110,7 @@ class CoCoEdgeMapDataset(data.Dataset):
 
         self.anns = anns
         self.cats = cats
-        print(self.anns, self.cats)
+        #print(self.anns, self.cats)
         self.catToImgs = catToImgs
         self.imgToAnns = imgToAnns
 
