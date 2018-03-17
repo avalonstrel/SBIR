@@ -138,7 +138,7 @@ class CoCoEdgeMapDataset(data.Dataset):
         return pil_numpy
 
     def filter_bndbox(self):
-        
+
         photo_imgs, photo_neg_imgs, fg_labels, labels, bndboxes = [], [], [], [], []
         for photo_img, photo_neg_img, fg_label, label, bndbox in zip(self.photo_imgs, self.photo_neg_imgs, self.fg_labels, self.labels, self.bndboxes):
             photo_pil = Image.open(photo_img)
@@ -178,11 +178,14 @@ class CoCoEdgeMapDataset(data.Dataset):
             pil = pil.convert('L')
         pil_numpy = np.array(pil)
         # print(pil_numpy.shape)
+        pil_numpy_ori = pil_numpy
         pil_numpy = self.crop(pil_numpy, bndbox)
-        
+            
         # print(pil_numpy.shape)
         if not self.opt.sketch_type == 'RGB':
             pil_numpy = cv2.Canny(pil_numpy, 0, 200)
+        if pil_numpy is None:
+            print(pil_numpy_ori.shape)
         # print(pil_numpy.shape)
         #pil_numpy = cv2.resize(pil_numpy,(self.opt.scale_size,self.opt.scale_size))
         # if self.opt.sketch_type == 'RGB':
