@@ -138,9 +138,9 @@ class CoCoEdgeMapDataset(data.Dataset):
         # print(pil_numpy.shape)
         x1, x2, y1, y2 = [bb[0], bb[0]+bb[2], bb[1], bb[1]+bb[3]]
         if len(pil_numpy.shape) == 3:
-            return pil_numpy[bndbox[y1]:bndbox[y2], bndbox[x1]:bndbox[x2], :]
+            return pil_numpy[y1:y2, x1:x2, :]
         elif len(pil_numpy.shape) == 2:
-            return pil_numpy[bndbox[y1]:bndbox[y2], bndbox[x1]:bndbox[x2]]
+            return pil_numpy[y1:y2, x1:x2]
 
     def load_sketch(self, pil, bndbox):
         pil = pil.convert('L')
