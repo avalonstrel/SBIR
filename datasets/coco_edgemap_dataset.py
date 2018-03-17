@@ -150,18 +150,18 @@ class CoCoEdgeMapDataset(data.Dataset):
         pil_numpy = self.crop(pil_numpy, bndbox)
         # print(pil_numpy.shape)
         if not self.opt.sketch_type == 'RGB':
-            edge_map = cv2.Canny(pil_numpy, 0, 200)
-        # print(edge_map.shape)
-        #edge_map = cv2.resize(edge_map,(self.opt.scale_size,self.opt.scale_size))
+            pil_numpy = cv2.Canny(pil_numpy, 0, 200)
+        # print(pil_numpy.shape)
+        #pil_numpy = cv2.resize(pil_numpy,(self.opt.scale_size,self.opt.scale_size))
         # if self.opt.sketch_type == 'RGB':
-        #    edge_map = to_rgb(edge_map)
+        #    pil_numpy = to_rgb(pil_numpy)
         # elif self.opt.sketch_type == 'GRAY':
-        #    edge_map = edge_map.reshape(edge_map.shape + (1,))
+        #    pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
         if self.transform_fun is not None:
-            edge_map = Image.fromarray(edge_map)
-            edge_map = self.transform_fun(edge_map)
+            pil_numpy = Image.fromarray(pil_numpy)
+            pil_numpy = self.transform_fun(pil_numpy)
 
-        return edge_map
+        return pil_numpy
 
     def __len__(self):
         return len(self.photo_imgs)
