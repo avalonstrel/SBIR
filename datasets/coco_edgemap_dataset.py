@@ -8,6 +8,7 @@ from PIL import Image
 import json
 import cv2
 import pickle
+import time
 """Sketch Dataset"""
 
 
@@ -25,10 +26,10 @@ class CoCoEdgeMapDataset(data.Dataset):
         self.fg_labels = []
         self.labels = []
         self.bndboxes = []
-        tri_mode = mode
+
         if mode == 'test':
             mode = 'val'      
-              
+
         root = os.path.join(self.root, mode + '2017')
         annotation_root = os.path.join(self.opt.annotation_root, 'instance_'+mode+"2017.json")
 
