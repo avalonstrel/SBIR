@@ -157,8 +157,15 @@ class CoCoEdgeMapDataset(data.Dataset):
     def crop(self, pil_numpy, bb):
         # print(pil_numpy.shape)
         x1, x2, y1, y2 = [bb[0], bb[0]+bb[2], bb[1], bb[1]+bb[3]]
+
+        x1, x2, y1, y2 = int(x1), int(x2), int(y1), int(y2)
         #print(x1,x2,y1,y2, pil_numpy.shape)
+        if x2 == pil_numpy.shape[1]:
+            x2 = x2 - 1
+        if y2 == pil_numpy.shape[0]:
+            y2 = y2 - 1
         if len(pil_numpy.shape) == 3:
+
             return pil_numpy[y1:y2, x1:x2, :]
         elif len(pil_numpy.shape) == 2:
             return pil_numpy[y1:y2, x1:x2]
