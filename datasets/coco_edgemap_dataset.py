@@ -45,6 +45,8 @@ class CoCoEdgeMapDataset(data.Dataset):
         self.n_labels = len(self.catToImgs)
         self.n_fg_labels = len(self.fg_labels)
 
+
+        self.filter_bndbox()
         print('Total COCO Class:{} Total Num:{}'.format(self.n_labels, self.n_fg_labels))
 
 
@@ -135,10 +137,27 @@ class CoCoEdgeMapDataset(data.Dataset):
 
         return pil_numpy
 
+    def filter_bndbox(self):
+        photo_imgs, photo_neg_imgs, fg_labels, labels, bndboxes = [], [], [], [], []
+        for photo_img, photo_neg_img, fg_label, label, bndbox in zip(self.photo_imgs, self.photo_neg_imgs, self.fg_labels, self.labels, self.bndboxes):
+            photo_pil = Image.open(photo_img)
+            photo_pil = photo_pil.convert('L')
+            pil_numpy = np.array(photo_pil)
+
+            # if bndbox['ymax'] < pil_numpy.shape[0] - 1  and bndbox['xmax'] < pil_numpy.shape[1] - 1 and bndbox['ymax'] - bndbox['ymin'] > 1 and bndbox['xmax'] - bndbox['xmin'] > 1 :
+            pil_numpy = self.crop(pil_numpy, bndbox)
+            # print(pil_numpy.shape)
+            # np.all(np.array(pil_numpy.shape) > 0):
+            if pil_numpy.shape[0] > 0 and pil_numpy.shape[1] > 0:
+                photo_imgs.append(photo_img)
+                photo_neg_imgs.append(photo_neg_img)
+                fg_labels.append(fg_label)
+                labels.append(label)
+                bndboxes.append(bndbox)
     def crop(self, pil_numpy, bb):
         # print(pil_numpy.shape)
         x1, x2, y1, y2 = [bb[0], bb[0]+bb[2], bb[1], bb[1]+bb[3]]
-        print(x1,x2,y1,y2, pil_numpy.shape)
+        #print(x1,x2,y1,y2, pil_numpy.shape)
         if len(pil_numpy.shape) == 3:
             return pil_numpy[y1:y2, x1:x2, :]
         elif len(pil_numpy.shape) == 2:
@@ -152,6 +171,7 @@ class CoCoEdgeMapDataset(data.Dataset):
         pil_numpy = np.array(pil)
         # print(pil_numpy.shape)
         pil_numpy = self.crop(pil_numpy, bndbox)
+        if pil_numpy.shape[0] or 
         # print(pil_numpy.shape)
         if not self.opt.sketch_type == 'RGB':
             pil_numpy = cv2.Canny(pil_numpy, 0, 200)
