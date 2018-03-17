@@ -79,7 +79,7 @@ class CoCoEdgeMapDataset(data.Dataset):
         self.test_transform_fun = transforms.Compose([transforms.Resize(
             (self.opt.scale_size, self.opt.scale_size)), transforms.ToTensor()])
 
-    def creat_index(self, annotation_path):
+    def creat_index(self, annotation_file):
         print('loading annotations into memory...')
         tic = time.time()
         annotations = json.load(open(annotation_file, 'r'))
