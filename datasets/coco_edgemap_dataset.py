@@ -9,6 +9,7 @@ import json
 import cv2
 import pickle
 import time
+from collections import defaultdict
 """Sketch Dataset"""
 
 
