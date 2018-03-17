@@ -31,7 +31,7 @@ class CoCoEdgeMapDataset(data.Dataset):
             mode = 'val'      
 
         root = os.path.join(self.root, mode + '2017')
-        annotation_root = os.path.join(self.opt.annotation_root, 'instance_'+mode+"2017.json")
+        annotation_root = os.path.join(self.opt.annotation_root, 'instances_'+mode+"2017.json")
 
         self.creat_index(annotation_root)
         for i, img_id in enumerate(self.anns.keys()):
