@@ -171,7 +171,7 @@ class CoCoEdgeMapDataset(data.Dataset):
         pil_numpy = np.array(pil)
         # print(pil_numpy.shape)
         pil_numpy = self.crop(pil_numpy, bndbox)
-        if pil_numpy.shape[0] or 
+        
         # print(pil_numpy.shape)
         if not self.opt.sketch_type == 'RGB':
             pil_numpy = cv2.Canny(pil_numpy, 0, 200)
