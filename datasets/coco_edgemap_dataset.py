@@ -60,7 +60,7 @@ class CoCoEdgeMapDataset(data.Dataset):
         print("{} pairs loaded. After generate triplet".format(len(self.photo_imgs)))
 
     def id2path(self, img_id, root):
-        path = os.path.join(root, '0' * (12 - len(str(img_id))) + str(img_id) + '.png')
+        path = os.path.join(root, '0' * (12 - len(str(img_id))) + str(img_id) + '.jpg')
         return path
 
     def creat_transform(self):
