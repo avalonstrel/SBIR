@@ -19,6 +19,9 @@ def create_dataset(opt):
     elif name == 'tuberlin':
         from .tuberlin_dataset import TUBerlinDataset
         return TUBerlinDataset(opt)
+    elif name == 'coco':
+        from .coco_edgemap_dataset import CoCoEdgeMapDataset
+        return CoCoEdgeMapDataset(opt)
     return None
 
 
