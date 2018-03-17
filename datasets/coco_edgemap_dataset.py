@@ -27,7 +27,7 @@ class CoCoEdgeMapDataset(data.Dataset):
         self.fg_labels = []
         self.labels = []
         self.bndboxes = []
-
+        tri_mode = mode
         if mode == 'test':
             mode = 'val'      
 
