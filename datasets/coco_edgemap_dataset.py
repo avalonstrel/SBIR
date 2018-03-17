@@ -138,6 +138,7 @@ class CoCoEdgeMapDataset(data.Dataset):
         return pil_numpy
 
     def filter_bndbox(self):
+        
         photo_imgs, photo_neg_imgs, fg_labels, labels, bndboxes = [], [], [], [], []
         for photo_img, photo_neg_img, fg_label, label, bndbox in zip(self.photo_imgs, self.photo_neg_imgs, self.fg_labels, self.labels, self.bndboxes):
             photo_pil = Image.open(photo_img)
