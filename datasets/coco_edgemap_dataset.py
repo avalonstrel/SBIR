@@ -26,15 +26,12 @@ class CoCoEdgeMapDataset(data.Dataset):
         self.labels = []
         self.bndboxes = []
         tri_mode = mode
-
-        if mode == "train":
-            start, end = 0, 1200
-        elif mode == 'test':
-            start, end = 1200, 10000
-
-        
+        if mode == 'test':
+            mode = 'val'      
+              
         root = os.path.join(self.root, mode + '2017')
-        annotation_root = self.opt.annotation_root
+        annotation_root = os.path.join(self.opt.annotation_root, 'instance_'+mode+"2017.json")
+
         self.creat_index(annotation_root)
         for i, img_id in enumerate(self.anns.keys()):
             self.photo_imgs.append(self.id2path(img_id))
