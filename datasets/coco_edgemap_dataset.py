@@ -110,7 +110,7 @@ class CoCoEdgeMapDataset(data.Dataset):
 
         self.anns = anns
         self.cats = cats
-        print(lself.anns, self.cats)
+        print(self.anns, self.cats)
         self.catToImgs = catToImgs
         self.imgToAnns = imgToAnns
 
