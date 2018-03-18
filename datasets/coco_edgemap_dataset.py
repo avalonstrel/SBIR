@@ -157,6 +157,7 @@ class CoCoEdgeMapDataset(data.Dataset):
                     fg_labels.append(fg_label)
                     labels.append(label)
                     bndboxes.append(bndbox)
+        self.photo_imgs, self.photo_neg_imgs, self.fg_labels, self.labels, self.bndboxes = photo_imgs, photo_neg_imgs, fg_labels, labels, bndboxes
     def crop(self, pil_numpy, bb):
         # print(pil_numpy.shape)
         x1, x2, y1, y2 = [bb[0], bb[0]+bb[2], bb[1], bb[1]+bb[3]]
