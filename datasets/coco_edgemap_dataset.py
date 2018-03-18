@@ -147,14 +147,16 @@ class CoCoEdgeMapDataset(data.Dataset):
 
             # if bndbox['ymax'] < pil_numpy.shape[0] - 1  and bndbox['xmax'] < pil_numpy.shape[1] - 1 and bndbox['ymax'] - bndbox['ymin'] > 1 and bndbox['xmax'] - bndbox['xmin'] > 1 :
             pil_numpy = self.crop(pil_numpy, bndbox)
+            pil_numpy = cv2.Canny(pil_numpy, 0, 200)
             # print(pil_numpy.shape)
             # np.all(np.array(pil_numpy.shape) > 0):
-            if pil_numpy.shape[0] > 0 and pil_numpy.shape[1] > 0:
-                photo_imgs.append(photo_img)
-                photo_neg_imgs.append(photo_neg_img)
-                fg_labels.append(fg_label)
-                labels.append(label)
-                bndboxes.append(bndbox)
+            if pil_numpy is not None:
+                if pil_numpy.shape[0] > 0 and pil_numpy.shape[1] > 0 :
+                    photo_imgs.append(photo_img)
+                    photo_neg_imgs.append(photo_neg_img)
+                    fg_labels.append(fg_label)
+                    labels.append(label)
+                    bndboxes.append(bndbox)
     def crop(self, pil_numpy, bb):
         # print(pil_numpy.shape)
         x1, x2, y1, y2 = [bb[0], bb[0]+bb[2], bb[1], bb[1]+bb[3]]
