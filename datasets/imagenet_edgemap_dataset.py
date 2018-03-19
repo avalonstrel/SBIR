@@ -61,7 +61,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
             self.photo_neg_imgs = data['photo_neg_imgs']
             self.fg_labels = data['fg_labels']
             self.labels = data['labels']
-            self.bndboxes = data['self.bndboxes']
+            self.bndboxes = data['bndboxes']
             self.n_labels = data['n_labels']
             self.n_fg_labels = data['n_fg_labels']
         else:
@@ -103,7 +103,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
             pickle.dump({'photo_imgs': self.photo_imgs, 'photo_neg_imgs': self.photo_neg_imgs,
                          'fg_labels': self.fg_labels, 'labels': self.labels, 'bndboxes': self.bndboxes,
                          'n_labels': self.n_labels, 'n_fg_labels': self.n_fg_labels}, open(save_filename, 'wb'))
-            
+
         pair_inclass_num, pair_outclass_num = self.opt.pair_num
         print('Total ImageNet Class:{} Total Num:{}'.format(self.n_label, self.n_fg_label))
         if tri_mode == "train" and not self.opt.model == 'cls_model':
