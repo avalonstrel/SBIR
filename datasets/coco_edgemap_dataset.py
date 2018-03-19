@@ -29,32 +29,46 @@ class CoCoEdgeMapDataset(data.Dataset):
         self.bndboxes = []
         tri_mode = mode
         if mode == 'test':
-            mode = 'val'      
+            mode = 'val'  
+        save_filename = mode+"_coco_image_list.pkl"   
+        if os.path.exists(save_filename):
+            data = pickle.load(open(save_filename, 'rb'))
+            self.photo_imgs = data['photo_imgs']
+            self.photo_neg_imgs = data['photo_neg_imgs']
+            self.fg_labels = data['fg_labels']
+            self.labels = data['labels']
+            self.bndboxes = data['bndboxes']
+            self.n_labels = data['n_labels']
+            self.n_fg_labels = data['n_fg_labels'] 
+        else:
+            root = os.path.join(self.root, mode + '2017')
+            annotation_root = os.path.join(self.opt.annotation_root, 'instances_'+mode+"2017.json")
 
-        root = os.path.join(self.root, mode + '2017')
-        annotation_root = os.path.join(self.opt.annotation_root, 'instances_'+mode+"2017.json")
-
-        self.creat_index(annotation_root)
-        self.creat_transform()
-        for i, img_id in enumerate(self.anns.keys()):
-            self.photo_imgs.append(self.id2path(img_id, root))
-            self.photo_neg_imgs.append(self.id2path(img_id, root))
-            self.fg_labels.append(i)
-            self.labels.append(self.cats[img_id])
-            self.bndboxes.append(self.anns[img_id]['bbox'])
-        self.n_labels = len(self.catToImgs)
-        self.n_fg_labels = len(self.fg_labels)
+            self.creat_index(annotation_root)
+            self.creat_transform()
+            for i, img_id in enumerate(self.anns.keys()):
+                self.photo_imgs.append(self.id2path(img_id, root))
+                self.photo_neg_imgs.append(self.id2path(img_id, root))
+                self.fg_labels.append(i)
+                self.labels.append(self.cats[img_id])
+                self.bndboxes.append(self.anns[img_id]['bbox'])
+            self.n_labels = len(self.catToImgs)
+            self.n_fg_labels = len(self.fg_labels)
 
 
-        self.filter_bndbox()
+            self.filter_bndbox()
+            pickle.dump({'photo_imgs': self.photo_imgs, 'photo_neg_imgs': self.photo_neg_imgs,
+                     'fg_labels': self.fg_labels, 'labels': self.labels, 'bndboxes': self.bndboxes,
+                     'n_labels': self.n_labels, 'n_fg_labels': self.n_fg_labels}, open(save_filename, 'wb'))
+
+
+            
         print('Total COCO Class:{} Total Num:{}'.format(self.n_labels, self.n_fg_labels))
 
 
 
-        save_filename = mode+"coco_image_list.pkl"
-        pickle.dump({'photo_imgs': self.photo_imgs, 'photo_neg_imgs': self.photo_neg_imgs,
-                     'fg_labels': self.fg_labels, 'labels': self.labels, 'bndboxes': self.bndboxes,
-                     'n_labels': self.n_labels, 'n_fg_labels': self.n_fg_labels}, open(save_filename, 'wb'))
+        
+        
         pair_inclass_num, pair_outclass_num = self.opt.pair_num
 
         if tri_mode == "train" and not self.opt.model == 'cls_model':
