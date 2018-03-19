@@ -55,7 +55,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
         root = os.path.join(self.root, mode)
         annotation_root = os.path.join(self.root, 'Annotation')
         fg_label, label = 0, 0
-        if os.path.exists(mode+"imagenet_image_list.pkl"):
+        if os.path.exists(tri_mode+"_imagenet_image_list.pkl"):
             data = pickle.load(open(mode+"imagenet_image_list.pkl", 'rb'))
             self.photo_imgs = data['photo_imgs']
             self.photo_neg_imgs = data['photo_neg_imgs']
@@ -99,7 +99,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
             self.n_labels = label
             self.n_fg_labels = fg_label
                 
-            save_filename = mode+"imagenet_image_list.pkl"
+            save_filename = tri_mode+"_imagenet_image_list.pkl"
             pickle.dump({'photo_imgs': self.photo_imgs, 'photo_neg_imgs': self.photo_neg_imgs,
                          'fg_labels': self.fg_labels, 'labels': self.labels, 'bndboxes': self.bndboxes,
                          'n_labels': self.n_labels, 'n_fg_labels': self.n_fg_labels}, open(save_filename, 'wb'))
