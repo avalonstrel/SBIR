@@ -105,7 +105,7 @@ class ImageNetEdgeMapDataset(data.Dataset):
                          'n_labels': self.n_labels, 'n_fg_labels': self.n_fg_labels}, open(save_filename, 'wb'))
 
         pair_inclass_num, pair_outclass_num = self.opt.pair_num
-        print('Total ImageNet Class:{} Total Num:{}'.format(self.n_label, self.n_fg_label))
+        print('Total ImageNet Class:{} Total Num:{}'.format(self.n_labels, self.n_fg_labels))
         if tri_mode == "train" and not self.opt.model == 'cls_model':
             self.generate_triplet(pair_inclass_num, pair_outclass_num)
 
