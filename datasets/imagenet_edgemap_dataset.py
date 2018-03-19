@@ -55,47 +55,57 @@ class ImageNetEdgeMapDataset(data.Dataset):
         root = os.path.join(self.root, mode)
         annotation_root = os.path.join(self.root, 'Annotation')
         fg_label, label = 0, 0
-
-        for cls_root, subFolders, files in os.walk(root):
-            photo_pat = re.compile("n.+\.JPEG")
-            photo_imgs = list(
-                filter(lambda fname: photo_pat.match(fname), files))
-            annotation_pre_path = os.path.join(annotation_root, cls_root)
-            if len(photo_imgs) == 0 or not os.path.exists(annotation_pre_path):
-                print(cls_root)
-                continue
-
-            for i, photo_img in enumerate(photo_imgs, start=0):
-                if i < start or i >= end:
+        if os.path.exists(mode+"imagenet_image_list.pkl"):
+            data = pickle.load(open(mode+"imagenet_image_list.pkl", 'rb'))
+            self.photo_imgs = data['photo_imgs']
+            self.photo_neg_imgs = data['photo_neg_imgs']
+            self.fg_labels = data['fg_labels']
+            self.labels = data['labels']
+            self.bndboxes = data['self.bndboxes']
+            self.n_labels = data['n_labels']
+            self.n_fg_labels = data['n_fg_labels']
+        else:
+            for cls_root, subFolders, files in os.walk(root):
+                photo_pat = re.compile("n.+\.JPEG")
+                photo_imgs = list(
+                    filter(lambda fname: photo_pat.match(fname), files))
+                annotation_pre_path = os.path.join(annotation_root, cls_root)
+                if len(photo_imgs) == 0 or not os.path.exists(annotation_pre_path):
+                    print(cls_root)
                     continue
-                photo_label = photo_img[:(len(photo_img)-5)]
-                img_path = os.path.join(root, cls_root, photo_img)
-                cls_label = cls_root[len(cls_root)-9:]
-                #print(annotation_root, cls_label)
-                annotation_path = os.path.join(
-                    annotation_root, cls_label, 'Annotation', cls_label, photo_label + '.xml')
-                # print(annotation_path)
-                if os.path.exists(annotation_path) and os.path.exists(img_path):
 
-                    self.photo_imgs.append(img_path)
-                    self.photo_neg_imgs.append(img_path)
-                    self.fg_labels.append(fg_label)
-                    self.labels.append(label)
-                    self.bndboxes.append(annotation_path)
-                    fg_label += 1
-            label += 1
-        self.filter_bndbox()
+                for i, photo_img in enumerate(photo_imgs, start=0):
+                    if i < start or i >= end:
+                        continue
+                    photo_label = photo_img[:(len(photo_img)-5)]
+                    img_path = os.path.join(root, cls_root, photo_img)
+                    cls_label = cls_root[len(cls_root)-9:]
+                    #print(annotation_root, cls_label)
+                    annotation_path = os.path.join(
+                        annotation_root, cls_label, 'Annotation', cls_label, photo_label + '.xml')
+                    # print(annotation_path)
+                    if os.path.exists(annotation_path) and os.path.exists(img_path):
 
-        print('Total ImageNet Class:{} Total Num:{}'.format(label, fg_label))
-        self.n_labels = label
-        self.n_fg_labels = fg_label
+                        self.photo_imgs.append(img_path)
+                        self.photo_neg_imgs.append(img_path)
+                        self.fg_labels.append(fg_label)
+                        self.labels.append(label)
+                        self.bndboxes.append(annotation_path)
+                        fg_label += 1
+                label += 1
+            self.filter_bndbox()
+
         
-        save_filename = mode+"imagenet_image_list.pkl"
-        pickle.dump({'photo_imgs': self.photo_imgs, 'photo_neg_imgs': self.photo_neg_imgs,
-                     'fg_labels': self.fg_labels, 'labels': self.labels, 'bndboxes': self.bndboxes,
-                     'n_labels': self.n_labels, 'n_fg_labels': self.n_fg_labels}, open(save_filename, 'wb'))
+            self.n_labels = label
+            self.n_fg_labels = fg_label
+                
+            save_filename = mode+"imagenet_image_list.pkl"
+            pickle.dump({'photo_imgs': self.photo_imgs, 'photo_neg_imgs': self.photo_neg_imgs,
+                         'fg_labels': self.fg_labels, 'labels': self.labels, 'bndboxes': self.bndboxes,
+                         'n_labels': self.n_labels, 'n_fg_labels': self.n_fg_labels}, open(save_filename, 'wb'))
+            
         pair_inclass_num, pair_outclass_num = self.opt.pair_num
-
+        print('Total ImageNet Class:{} Total Num:{}'.format(self.n_label, self.n_fg_label))
         if tri_mode == "train" and not self.opt.model == 'cls_model':
             self.generate_triplet(pair_inclass_num, pair_outclass_num)
 
