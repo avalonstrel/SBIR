@@ -46,7 +46,7 @@ class ClassificationModel(BaseModel):
         elif self.opt.cuda:
             self.cuda()
             print('Model cuda ing...')
-        if self.opt.phase == 'test' or self.opt.continue_train or :
+        if self.opt.phase == 'test' or self.opt.continue_train :
             self.load_model(self.opt.start_epoch_label, self.opt.trained_model_path)
 
 
