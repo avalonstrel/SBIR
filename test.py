@@ -21,12 +21,12 @@ def test():
         model.retrieval_evaluation(model.test_features, model.test_result_record['total']['loss_value'].avg, model.test_features['labels'])
     print('Test Result:{}'.format(model.generate_message(model.test_result_record)))
     val_end_time = time.time()
-    print('Validation Epoch: {} [{}/{} ({:.2f}%)] Time:{:.6f} \t{}'.format(epoch, 
-                                                                    now_size, data_loader_size, now_size / data_loader_size * 100.0, 
+    print('Validation Epoch: Time:{:.6f} \t{}'.format('Final', 
+                                                                     
                                                                     val_end_time - val_start_time,
                                                                     model.generate_message(model.test_result_record)))
 
     model.reset_test_features()
     model.reset_test_records()
-    
+
 test()
