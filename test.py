@@ -21,8 +21,8 @@ def test():
         model.retrieval_evaluation(model.test_features, model.test_result_record['total']['loss_value'].avg, model.test_features['labels'])
     print('Test Result:{}'.format(model.generate_message(model.test_result_record)))
     val_end_time = time.time()
-    print('Validation Epoch: Time:{:.6f} \t{}'.format('Final', 
-                                                                     
+    print('Validation Final Time:{:.6f} \t{}'.format(
+                                             
                                                                     val_end_time - val_start_time,
                                                                     model.generate_message(model.test_result_record)))
 
