@@ -11,7 +11,8 @@ class BaseOptions():
     def initialize(self):
         self.parser.add_argument('--data_root', type=str,  help='path to sketch image pair dataset should have corresponding parser')
         self.parser.add_argument('--annotation_root', type=str, default='/home/lhy/datasets/coco2017/annotations',  help='path to annotation_root')
-
+        self.parser.add_argument('--retrieval_now',action='store_true', help='Retrieval result when training?')
+        self.parser.add_argument('--retrieval_once',action='store_true', help='Retrieval result one time?')
         self.parser.add_argument('--print_freq', type=int, default=10, help='frequency of showing training results on console')
         self.parser.add_argument('--print_val_freq', type=int, default=10000, help='frequency of showing training results on console')
 
