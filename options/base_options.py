@@ -15,7 +15,8 @@ class BaseOptions():
         self.parser.add_argument('--retrieval_once',action='store_true', help='Retrieval result one time?')
         self.parser.add_argument('--print_freq', type=int, default=10, help='frequency of showing training results on console')
         self.parser.add_argument('--print_val_freq', type=int, default=10000, help='frequency of showing training results on console')
-
+        self.parser.add_argument('--n_labels', type=int,required=True,  help='the number of classes')
+        self.parser.add_argument('--n_attrs', type=int,required=True,  help='the number of attribute')
         self.parser.add_argument('--sketch_root', type=str, help='path to sketch dataset should be paired as image data by use number')
         self.parser.add_argument('--image_root', type=str, help='path to image dataset should be paried as sketch data by number')
         self.parser.add_argument('--gpu_ids', type=str, default='0', help='gpu_ids e.g. 0 | 0,1 | 1,2,3')

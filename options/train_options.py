@@ -5,8 +5,7 @@ class TrainOptions(BaseOptions):
         BaseOptions.initialize(self)
         self.parser.add_argument('--learning_rate', type=float, default=0.0002, help='learning rate for training')
         self.parser.add_argument('--num_epoch', type=int,required=True, help='the number of epoch for training')
-        self.parser.add_argument('--n_labels', type=int,required=True,  help='the number of classes')
-        self.parser.add_argument('--n_attrs', type=int,required=True,  help='the number of attribute')
+
         self.parser.add_argument('--weight_decay', type=float , default=0.005, help='weight decay rate for regularization')
 
         self.parser.add_argument('--loss_type', type=str, default='triplet|combine_cls|attr,three_loss', help='The loss for training')        
