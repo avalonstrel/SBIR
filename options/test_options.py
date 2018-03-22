@@ -2,7 +2,7 @@ from .base_options import BaseOptions
 
 class TestOptions(BaseOptions):
     def initialize(self):
-        BaseOptions.initialze(self)
+        BaseOptions.initialize(self)
         self.parser.add_argument('--results_dir', type=str, default='./results/', help='saves results here.')
         self.parser.add_argument('--trained_model', type=str, required=True, help='Load which model to test')
         self.parser.add_argument('--loss_type', type=str, default='triplet|cls|attr,three_loss', help='The loss for training')        
