@@ -3,10 +3,8 @@ from .base_options import BaseOptions
 class TrainOptions(BaseOptions):
     def initialize(self):
         BaseOptions.initialize(self)
-        self.parser.add_argument('--learning_rate', type=float, default=0.0002, help='learning rate for training')
         self.parser.add_argument('--num_epoch', type=int,required=True, help='the number of epoch for training')
 
-        self.parser.add_argument('--weight_decay', type=float , default=0.005, help='weight decay rate for regularization')
 
         self.parser.add_argument('--loss_type', type=str, default='triplet|combine_cls|attr,three_loss', help='The loss for training')        
         self.parser.add_argument('--loss_rate', type=str, default='3.0,0.5,0', help='The loss rate for different loss')
