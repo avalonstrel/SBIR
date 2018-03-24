@@ -1,5 +1,5 @@
 import os
-root = '/home/Toolkit/holy-edge/hed/imagenet_train'
+root = '/home/lhy/Toolkit/holy-edge/hed/imagenet_train'
 save_root = '/home/lhy/ILSVRC2012_HED'
 for _, _, files in os.walk(root):
 	for file in files:
