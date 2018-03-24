@@ -1,5 +1,5 @@
 import os
-root = 'imagenet_train'
+root = '/home/Toolkit/holy-edge/hed/imagenet_train'
 save_root = '/home/lhy/ILSVRC2012_HED'
 for _, _, files in os.walk(root):
 	for file in files:
@@ -9,5 +9,5 @@ for _, _, files in os.walk(root):
 		if not os.path.exists(cls_root): 
 			os.system('mkdir '+ cls_root)
 		os.system('cp {} {}'.format(os.path.join(root, file),cls_root))
-		
+
 
