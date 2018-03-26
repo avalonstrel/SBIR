@@ -2,19 +2,25 @@ import os
 import numpy as np
 from bs4 import BeautifulSoup
 
-def load_bndbox(filename):
+def load_bndboxs_size(filename):
     with open(filename, 'r') as reader:
         xml = reader.read()
     soup = BeautifulSoup(xml, 'xml')
-    #bndbox = [int(soup.bndbox.xmin.string), ]
-    bndbox = {}
+    size = {}
+    for tag in soup.size:
+        if tag.string != "\n":
+            size[tag] = int(tag.string)
+    objects = soup.find_all('object')
+    bndboxs = []
+    for obj in objects:
+        bndbox = {}
+        for tag in obj.bndbox:
+            if tag.string != '\n':
+                bndbox[tag.name] = int(tag.string)
+        bndboxs.append(bndbox)
+    
+    return bndboxs, size
 
-    for tag in soup.bndbox:
-        if tag.string != '\n':
-            bndbox[tag.name] = int(tag.string)
-    if len(bndbox) > 4:
-        print('BND', bndbox)
-    return bndbox
 def accs_message(accs):
     if  isinstance(accs, dict):
         return 'top {}:{}'.format(tuple(accs.keys()), tuple(str(acc.avg)[:4] for acc in accs.values()))
