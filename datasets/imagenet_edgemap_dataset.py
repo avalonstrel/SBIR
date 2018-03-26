@@ -46,13 +46,12 @@ class ImageNetEdgeMapDataset(data.Dataset):
             start, end = 1200, 10000
             mode = 'train'
 
-        #photo_roots = [root+photo_type for photo_type in photo_types]
-        # print(photo_roots)
         root = os.path.join(self.root, mode)
         annotation_root = os.path.join(self.root, 'Annotation')
         fg_label, label = 0, 0
-        if os.path.exists(tri_mode+"_imagenet_image_list.pkl"):
-            data = pickle.load(open(tri_mode+"imagenet_image_list.pkl", 'rb'))
+        save_filename = tri_mode+"_imagenet_edge_list.pkl"
+        if os.path.exists(save_filename):
+            data = pickle.load(open(save_filename, 'rb'))
             self.photo_imgs = data['photo_imgs']
             self.photo_neg_imgs = data['photo_neg_imgs']
             self.fg_labels = data['fg_labels']
@@ -76,10 +75,9 @@ class ImageNetEdgeMapDataset(data.Dataset):
                     photo_label = photo_img[:(len(photo_img)-5)]
                     img_path = os.path.join(root, cls_root, photo_img)
                     cls_label = cls_root[len(cls_root)-9:]
-                    #print(annotation_root, cls_label)
+                    
                     annotation_path = os.path.join(
                         annotation_root, cls_label, 'Annotation', cls_label, photo_label + '.xml')
-                    # print(annotation_path)
                     if os.path.exists(annotation_path) and os.path.exists(img_path):
 
                         self.photo_imgs.append(img_path)
@@ -89,13 +87,9 @@ class ImageNetEdgeMapDataset(data.Dataset):
                         self.bndboxes.append(annotation_path)
                         fg_label += 1
                 label += 1
-            self.filter_bndbox()
-
-        
+            self.filter_bndbox()        
             self.n_labels = label
             self.n_fg_labels = fg_label
-                
-            save_filename = tri_mode+"_imagenet_image_list.pkl"
             pickle.dump({'photo_imgs': self.photo_imgs, 'photo_neg_imgs': self.photo_neg_imgs,
                          'fg_labels': self.fg_labels, 'labels': self.labels, 'bndboxes': self.bndboxes,
                          'n_labels': self.n_labels, 'n_fg_labels': self.n_fg_labels}, open(save_filename, 'wb'))
@@ -166,25 +160,25 @@ class ImageNetEdgeMapDataset(data.Dataset):
             photo_pil = Image.open(photo_img)
             photo_pil = photo_pil.convert('L')
             pil_numpy = np.array(photo_pil)
-            bndbox, size = load_bndboxs_size(bndbox_path)
+            bndboxs, size = load_bndboxs_size(bndbox_path)
 
             # if bndbox['ymax'] < pil_numpy.shape[0] - 1  and bndbox['xmax'] < pil_numpy.shape[1] - 1 and bndbox['ymax'] - bndbox['ymin'] > 1 and bndbox['xmax'] - bndbox['xmin'] > 1 :
-            pil_numpy = self.crop(pil_numpy, bndbox)
-            # print(pil_numpy.shape)
-            # np.all(np.array(pil_numpy.shape) > 0):
-            if pil_numpy.shape[0] > 0 and pil_numpy.shape[1] > 0:
-                photo_imgs.append(photo_img)
-                photo_neg_imgs.append(photo_neg_img)
-                fg_labels.append(fg_label)
-                labels.append(label)
-                bndboxes.append(bndbox_path)
+            for bndbox in bndboxes:
+                pil_numpy = self.crop(pil_numpy, bndbox)
+                # print(pil_numpy.shape)
+                # np.all(np.array(pil_numpy.shape) > 0):
+                if pil_numpy.shape[0] > 0 and pil_numpy.shape[1] > 0:
+                    photo_imgs.append(photo_img)
+                    photo_neg_imgs.append(photo_neg_img)
+                    fg_labels.append(fg_label)
+                    labels.append(label)
+                    bndboxes.append(bndbox)
         self.photo_imgs, self.photo_neg_imgs, self.fg_labels, self.labels, self.bndboxes = photo_imgs, photo_neg_imgs, fg_labels, labels, bndboxes
 
     def __getitem__(self, index):
         photo_img, photo_neg_img, fg_label, label = self.photo_imgs[
             index], self.photo_neg_imgs[index], self.fg_labels[index], self.labels[index]
-        bndbox_path = self.bndboxes[index]
-        bndbox, size = load_bndboxs_size(bndbox_path)
+        bndbox = self.bndboxes[index]
         photo_pil, photo_neg_pil = Image.open(
             photo_img), Image.open(photo_neg_img)
         # if self.transform is not None:

@@ -74,10 +74,10 @@ class ImageNetHEDDataset(data.Dataset):
                 for i, photo_img in enumerate(photo_imgs, start=0):
                     if i < start or i >= end:
                         continue
-                    photo_label = photo_img[:(len(photo_img)-5)]
+                    photo_label = photo_img[:(len(photo_img)-8)]
                     img_path = os.path.join(root, cls_root, photo_img)
                     cls_label = cls_root[len(cls_root)-9:]
-                    #print(annotation_root, cls_label)
+                    
                     annotation_path = os.path.join(
                         annotation_root, cls_label, 'Annotation', cls_label, photo_label + '.xml')
                     # print(annotation_path)
@@ -163,18 +163,16 @@ class ImageNetHEDDataset(data.Dataset):
             pil_numpy = np.array(photo_pil)
             new_size['width'] = pil_numpy.shape[1]
             new_size['height'] = pil_numpy.shape[0]
-            bndbox, ori_size = load_bndboxs_size(bndbox_path)
-            bndbox = self.resize_bndbox(bndbox, ori_size, new_size)
-            # if bndbox['ymax'] < pil_numpy.shape[0] - 1  and bndbox['xmax'] < pil_numpy.shape[1] - 1 and bndbox['ymax'] - bndbox['ymin'] > 1 and bndbox['xmax'] - bndbox['xmin'] > 1 :
-            pil_numpy = self.crop(pil_numpy, bndbox)
-            # print(pil_numpy.shape)
-            # np.all(np.array(pil_numpy.shape) > 0):
-            if pil_numpy.shape[0] > 0 and pil_numpy.shape[1] > 0:
-                photo_imgs.append(photo_img)
-                photo_neg_imgs.append(photo_neg_img)
-                fg_labels.append(fg_label)
-                labels.append(label)
-                bndboxes.append(bndbox)
+            bndboxs, ori_size = load_bndboxs_size(bndbox_path)
+            for bndbox in bndboxs:
+                bndbox = self.resize_bndbox(bndbox, ori_size, new_size)
+                pil_numpy = self.crop(pil_numpy, bndbox)
+                if pil_numpy.shape[0] > 0 and pil_numpy.shape[1] > 0:
+                    photo_imgs.append(photo_img)
+                    photo_neg_imgs.append(photo_neg_img)
+                    fg_labels.append(fg_label)
+                    labels.append(label)
+                    bndboxes.append(bndbox)
         self.photo_imgs, self.photo_neg_imgs, self.fg_labels, self.labels, self.bndboxes = photo_imgs, photo_neg_imgs, fg_labels, labels, bndboxes
 
     def __getitem__(self, index):
@@ -183,12 +181,10 @@ class ImageNetHEDDataset(data.Dataset):
         bndbox = self.bndboxes[index]
         photo_pil, photo_neg_pil = Image.open(
             photo_img), Image.open(photo_neg_img)
-        # if self.transform is not None:
-        sketch_pil = self.load_sketch(photo_pil, bndbox)
+        sketch_pil = self.transform(photo_pil, bndbox)
         photo_pil = self.transform(photo_pil, bndbox)
         photo_neg_pil = self.transform(photo_neg_pil, bndbox)
-        #print(sketch_pil.size(), photo_pil.size())
-        #print(label, fg_label)
+
         return sketch_pil, photo_pil, photo_neg_pil, label, fg_label, label
 
     def generate_triplet(self, pair_inclass_num, pair_outclass_num=0):
