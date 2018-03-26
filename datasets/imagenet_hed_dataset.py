@@ -52,7 +52,7 @@ class ImageNetHEDDataset(data.Dataset):
         annotation_root = os.path.join(self.root, 'Annotation')
         fg_label, label = 0, 0
         save_filename = tri_mode+"_imagenet_hed_list.pkl"
-        if os.path.exists():
+        if os.path.exists(save_filename):
             data = pickle.load(open(save_filename, 'rb'))
             self.photo_imgs = data['photo_imgs']
             self.photo_neg_imgs = data['photo_neg_imgs']
