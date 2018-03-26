@@ -30,7 +30,8 @@ class CoCoEdgeMapDataset(data.Dataset):
         tri_mode = mode
         if mode == 'test':
             mode = 'val'  
-        save_filename = mode+"_coco_image_list.pkl"   
+        save_filename = mode+"_coco_image_list.pkl"  
+        self.creat_transform() 
         if os.path.exists(save_filename):
             data = pickle.load(open(save_filename, 'rb'))
             self.photo_imgs = data['photo_imgs']
@@ -45,7 +46,7 @@ class CoCoEdgeMapDataset(data.Dataset):
             annotation_root = os.path.join(self.opt.annotation_root, 'instances_'+mode+"2017.json")
 
             self.creat_index(annotation_root)
-            self.creat_transform()
+            
             for i, img_id in enumerate(self.anns.keys()):
                 self.photo_imgs.append(self.id2path(img_id, root))
                 self.photo_neg_imgs.append(self.id2path(img_id, root))
