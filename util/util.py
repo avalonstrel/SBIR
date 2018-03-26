@@ -9,7 +9,7 @@ def load_bndboxs_size(filename):
     size = {}
     for tag in soup.size:
         if tag.string != "\n":
-            size[tag] = int(tag.string)
+            size[tag.name] = int(tag.string)
     objects = soup.find_all('object')
     bndboxs = []
     for obj in objects:
