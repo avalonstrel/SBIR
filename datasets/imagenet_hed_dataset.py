@@ -149,7 +149,7 @@ class ImageNetHEDDataset(data.Dataset):
 
     def resize_bndbox(self, ori_bndbox, ori_size, new_size):
         new_bndbox = {}
-        print(ori_size, new_size)
+        #print(ori_size, new_size)
         for key, val in ori_bndbox.items():
             if key[0] == 'x':
                 new_bndbox[key] = ori_bndbox[key] * new_size['width'] / ori_size['width']
