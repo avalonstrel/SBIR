@@ -16,6 +16,9 @@ def create_dataset(opt):
     elif name == 'imagenet':
         from .imagenet_edgemap_dataset import ImageNetEdgeMapDataset
         return ImageNetEdgeMapDataset(opt)
+    elif name == 'imagenet_hed':
+        from .imagenet_hed_dataset import ImageNetHEDDataset
+        return ImageNetEdgeMapDataset(opt)
     elif name == 'tuberlin':
         from .tuberlin_dataset import TUBerlinDataset
         return TUBerlinDataset(opt)
