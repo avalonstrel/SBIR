@@ -161,6 +161,7 @@ class ImageNetHEDDataset(data.Dataset):
             photo_pil = Image.open(photo_img)
             photo_pil = photo_pil.convert('L')
             pil_numpy = np.array(photo_pil)
+            new_size = {}
             new_size['width'] = pil_numpy.shape[1]
             new_size['height'] = pil_numpy.shape[0]
             bndboxs, ori_size = load_bndboxs_size(bndbox_path)
