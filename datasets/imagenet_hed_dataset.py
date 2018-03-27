@@ -43,8 +43,8 @@ class ImageNetHEDDataset(data.Dataset):
         if mode == "train":
             start, end = 0, 1200
         elif mode == 'test':
-            start, end = 1200, 10000
-            mode = 'train'
+            start, end = 0, 1200
+            #mode = 'train'
 
         # photo_roots = [root+photo_type for photo_type in photo_types]
         # print(photo_roots)
@@ -93,7 +93,7 @@ class ImageNetHEDDataset(data.Dataset):
             self.filter_bndbox()
         
             self.n_labels = label
-            self.n_fg_labels = fg_label
+            self.n_fg_labels = len(self.photo_imgs)
             pickle.dump({'photo_imgs': self.photo_imgs, 'photo_neg_imgs': self.photo_neg_imgs,
                          'fg_labels': self.fg_labels, 'labels': self.labels, 'bndboxes': self.bndboxes,
                          'n_labels': self.n_labels, 'n_fg_labels': self.n_fg_labels}, open(save_filename, 'wb'))
