@@ -52,7 +52,9 @@ class ImageNetHEDDataset(data.Dataset):
         annotation_root = os.path.join(self.root, 'Annotation')
         fg_label, label = 0, 0
         save_filename = tri_mode+"_imagenet_hed_list.pkl"
-        self.cls_name2id = {}
+        
+        if os.path.exists('cls_name2id.pkl'):
+            self.cls_name2id = pickle.load(open('cls_name2id.pkl', 'rb'))
         if os.path.exists(save_filename):
             data = pickle.load(open(save_filename, 'rb'))
             self.photo_imgs = data['photo_imgs']
@@ -62,14 +64,15 @@ class ImageNetHEDDataset(data.Dataset):
             self.bndboxes = data['bndboxes']
             self.n_labels = data['n_labels']
             self.n_fg_labels = data['n_fg_labels']
-
-            for photo_img, label in zip(self.photo_imgs,self.labels):
-                name_ind = photo_img.rfind('/')
-                cls_name = photo_img[name_ind+1:]
-                #n04554684
-                cls_name = cls_name[:9]
-                self.cls_name2id[cls_name] = label
-            pickle.dump(self.cls_name2id, open('cls_name2id.pkl', 'wb'))
+            if tri_mode == 'train':
+                self.cls_name2id = {}
+                for photo_img, label in zip(self.photo_imgs,self.labels):
+                    name_ind = photo_img.rfind('/')
+                    cls_name = photo_img[name_ind+1:]
+                    #n04554684
+                    cls_name = cls_name[:9]
+                    self.cls_name2id[cls_name] = label
+                pickle.dump(self.cls_name2id, open('cls_name2id.pkl', 'wb'))
         else:
             for cls_root, subFolders, files in os.walk(root):
                 photo_pat = re.compile("n.+_000\.png")
@@ -99,6 +102,7 @@ class ImageNetHEDDataset(data.Dataset):
                         self.bndboxes.append(annotation_path)
                         fg_label += 1
                 label += 1
+
             self.filter_bndbox()
         
             self.n_labels = label
@@ -106,7 +110,15 @@ class ImageNetHEDDataset(data.Dataset):
             pickle.dump({'photo_imgs': self.photo_imgs, 'photo_neg_imgs': self.photo_neg_imgs,
                          'fg_labels': self.fg_labels, 'labels': self.labels, 'bndboxes': self.bndboxes,
                          'n_labels': self.n_labels, 'n_fg_labels': self.n_fg_labels}, open(save_filename, 'wb'))
-
+        max_label = 0
+        for  i, photo_img in enumerate(self.photo_imgs):
+            name_ind = photo_img.rfind('/')
+            cls_name = photo_img[name_ind+1:]
+            #n04554684
+            cls_name = cls_name[:9]
+            self.labels[i] = self.cls_name2id[cls_name]
+            max_label = max(self.labels[i], max_label)
+        self.n_labels = max_label+1
         pair_inclass_num, pair_outclass_num = self.opt.pair_num
         print('Total ImageNet Class:{} Total Num:{}'.format(self.n_labels, self.n_fg_labels))
         if tri_mode == "train" and not self.opt.model == 'cls_model':
