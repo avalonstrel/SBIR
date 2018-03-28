@@ -239,7 +239,7 @@ class TripletSiameseNetwork(torch.nn.Module):
         return out  
     def get_extractor(self, feature_model):
         feature_extractor = None
-        if opt.sketch_type == 'GRAY':
+        if self.opt.sketch_type == 'GRAY':
             num_input_features = 1
         else:
             num_input_features = 3
