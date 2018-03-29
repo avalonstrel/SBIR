@@ -135,11 +135,8 @@ class HairStyleDataset(data.Dataset):
         #if self.transform is not None:
         hair_pil = self.transform(hair_pil, "image")
         hair_neg_pil = self.transform(hair_neg_pil, "image")
-        if self.flag == "two_loss":
-            return sketch_pil,hair_pil,hair_neg_pil,fg_label,label
-        elif self.flag == "three_loss":
 
-            return sketch_pil,hair_pil,hair_neg_pil,attribute, fg_label,label
+        return sketch_pil,hair_pil,hair_neg_pil,attribute, fg_label,label
 
     def generate_triplet(self, pair_inclass_num, pair_outclass_num=0):
         sketch_imgs, hair_neg_imgs, hair_imgs,attributes, fg_labels, labels = [],[],[],[],[],[]
