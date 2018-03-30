@@ -25,7 +25,7 @@ class TripletModel(BaseModel):
         elif self.opt.model == 'tripletheter':
             self.network = TripletHeterNetwork(self.opt)
         #self.network = torch.nn.DataParallel(self.network)
-        self.network.module.feat_extractor = torch.nn.DataParallel(self.network.module.feat_extractor)
+        self.network.feat_extractor = torch.nn.DataParallel(self.network.feat_extractor)
         self.loss = self.get_loss(self.opt.loss_type[0])
         self.cls_loss = torch.nn.CrossEntropyLoss()
         self.attr_loss = torch.nn.BCEWithLogitsLoss()
