@@ -24,8 +24,8 @@ class TripletModel(BaseModel):
             self.network = TripletSiameseNetwork(self.opt)
         elif self.opt.model == 'tripletheter':
             self.network = TripletHeterNetwork(self.opt)
-        self.network = torch.nn.DataParallel(self.network)
-        #self.network.feat_extractor = torch.nn.DataParallel(self.network.feat_extractor)
+        #self.network = torch.nn.DataParallel(self.network)
+        self.network.feat_extractor = torch.nn.DataParallel(self.network.feat_extractor)
         self.loss = self.get_loss(self.opt.loss_type[0])
         self.cls_loss = torch.nn.CrossEntropyLoss()
         self.attr_loss = torch.nn.BCEWithLogitsLoss()
@@ -69,7 +69,7 @@ class TripletModel(BaseModel):
         if self.opt.continue_train:
             if self.opt.load_only_feat_network:
                 try:
-                    self.network.module.feat_extractor = torch.nn.DataParallel(self.network.module.feat_extractor)
+                    #self.network.feat_extractor = torch.nn.DataParallel(self.network.module.feat_extractor)
                     #print(self.network.module.feat_extractor.state_dict())
                     self.load_CNN(self.opt.model_prefix, self.opt.start_epoch_label, self.opt.trained_model_path )
                 except:
@@ -313,7 +313,7 @@ class TripletModel(BaseModel):
     '''
     def load_CNN(self, model_prefix, epoch_label, load_path ):
 
-        self.load_network(self.network.module.feat_extractor, model_prefix , epoch_label, load_path=load_path)
+        self.load_network(self.network.feat_extractor, model_prefix , epoch_label, load_path=load_path)
     '''
     Load the model
     '''
