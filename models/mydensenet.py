@@ -158,6 +158,7 @@ class DenseNet(nn.Module):
                 m.bias.data.zero_()
 
     def forward(self, x):
+        print(x.size())
         features = self.features(x)
         out = F.relu(features, inplace=True)
         out = F.avg_pool2d(out, kernel_size=7, stride=1).view(features.size(0), -1)
