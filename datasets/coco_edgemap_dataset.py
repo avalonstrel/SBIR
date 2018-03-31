@@ -27,6 +27,7 @@ class CoCoEdgeMapDataset(data.Dataset):
         self.fg_labels = []
         self.labels = []
         self.bndboxes = []
+        #self.sizes = []
         tri_mode = mode
         if mode == 'test':
             mode = 'val'  
@@ -41,6 +42,7 @@ class CoCoEdgeMapDataset(data.Dataset):
             self.bndboxes = data['bndboxes']
             self.n_labels = data['n_labels']
             self.n_fg_labels = data['n_fg_labels'] 
+            #self.sizes = data['sizes']
         else:
             root = os.path.join(self.root, mode + '2017')
             annotation_root = os.path.join(self.opt.annotation_root, 'instances_'+mode+"2017.json")
@@ -53,6 +55,7 @@ class CoCoEdgeMapDataset(data.Dataset):
                 self.fg_labels.append(i)
                 self.labels.append(self.cats[img_id])
                 self.bndboxes.append(self.anns[img_id]['bbox'])
+
             self.n_labels = len(self.catToImgs)
             self.n_fg_labels = len(self.fg_labels)
 
@@ -60,7 +63,7 @@ class CoCoEdgeMapDataset(data.Dataset):
             self.filter_bndbox()
             pickle.dump({'photo_imgs': self.photo_imgs, 'photo_neg_imgs': self.photo_neg_imgs,
                      'fg_labels': self.fg_labels, 'labels': self.labels, 'bndboxes': self.bndboxes,
-                     'n_labels': self.n_labels, 'n_fg_labels': self.n_fg_labels}, open(save_filename, 'wb'))
+                     'n_labels': self.n_labels, 'n_fg_labels': self.n_fg_labels, 'sizes':self.sizes}, open(save_filename, 'wb'))
 
 
             
