@@ -254,6 +254,7 @@ class TripletSiameseNetwork(torch.nn.Module):
         elif feature_model == 'denseblock':
             feature_extractor = models.DenseNet(num_init_features=64, growth_rate=32,block_config=(6,))
             feature_extractor.classifier = nn.Linear(feature_extractor.classifier.in_features, self.opt.feat_size)
+            print(feature_extractor.classifier.in_features)
         return feature_extractor
 
     def forward(self, x0, x1, x2):
