@@ -326,8 +326,9 @@ class AngleClassificationNetwork(torch.nn.Module):
 class SphereNetwork(torch.nn.Module):
     def __init__(self, opt):
         super(SphereNetwork, self).__init__()
-        self.feat_extractor = self.get_extractor(self.opt.feature_model)
         self.opt = opt
+        self.feat_extractor = self.get_extractor(self.opt.feature_model)
+        
         #self.angle_linear = AngleLinear(self.opt.feat_size, self.opt.n_fg_labels)
 
     def forward(self, x):
