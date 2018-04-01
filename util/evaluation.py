@@ -20,6 +20,44 @@ class AverageMeter(object):
         self.count += n
         self.avg = self.sum / self.count
 
+def retrieval_cosine_evaluation(output0, output1, category_labels, topk=(1,5),need_cpu=True):
+    if need_cpu:
+        output0 = output0.data.cpu()
+        output1 = output1.data.cpu()
+    diff = torch.zeros(output0.size(0),output0.size(0))
+    def distance(x,y):
+        return -torch.nn.functional.cosine_similarity(x,y)
+    for i in range(output0.size(0)):
+        for j in range(output0.size(0)):
+            diff[i,j] = distance(output0[i], output1[j])
+    #diff = output0 - output1
+    #dist_sq = torch.sum(torch.pow(diff, 2), -1)
+    #dist = -torch.sqrt(dist_sq)
+    #predictions = dist.cpu().numpy()
+    predictions = diff.numpy()
+    
+    category_labels = category_labels.cpu().data.numpy()
+    correct = 0.0
+    correct_fg = {}
+    for top in topk:
+        correct_fg[top] = 0
+    #category_labels = np.argmax(category_labels,1)
+    total = predictions.shape[0]
+    maxk = max(topk)
+    for i, prediction in enumerate(predictions):
+        #print("prediction:{}, {}".format(np.argmax(prediction), prediction),"category:",category_labels[i],"predict category:",category_labels[np.argmax(prediction)])
+        if category_labels[i] == category_labels[np.argmax(prediction)]:
+            correct += 1
+        maxk_indices = prediction.argsort()[-maxk:][::-1]
+        for top in topk:
+            if i in maxk_indices[:top]:
+                correct_fg[top] += 1
+    #print(correct, total)
+    for top in topk:
+        correct_fg[top] /= total * 0.01
+        #print("top",top,correct_fg[top], correct_fg[top])
+    return correct / total * 100.0, correct_fg
+
 
 def retrieval_evaluation(output0, output1, category_labels, topk=(1,5),need_cpu=True):
     if need_cpu:

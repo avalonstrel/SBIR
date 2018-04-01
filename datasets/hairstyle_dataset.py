@@ -94,6 +94,8 @@ class HairStyleDataset(data.Dataset):
     def __len__(self):
         return len(self.hair_imgs)
 
+
+
     def transform(self, pil, mode="sketch"):
         def show(mode, pil_numpy):
             print(mode, ",".join([str(i) for i in pil_numpy.flatten() if i != 0]))
@@ -111,7 +113,7 @@ class HairStyleDataset(data.Dataset):
             pil_numpy = to_rgb(pil_numpy[:,:,3])
             #pil_numpy = np.tile(pil_numpy[:,:,3],3).reshape(pil_numpy.shape[0:2]+(-1,))
             #pil_numpy[:,:,2] = 0
-        if self.opt.image_type == 'GRAY':
+        if self.opt.image_type == 'EDGE':
             gray_pil = Image.fromarray(pil_numpy)
             pil_numpy = np.array(gray_pil.convert('L'))
         pil_numpy = cv2.resize(pil_numpy,(self.opt.scale_size,self.opt.scale_size))
