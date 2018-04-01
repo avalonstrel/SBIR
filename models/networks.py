@@ -303,7 +303,7 @@ class AngleLinear(torch.nn.Module):
 
         if self.phiflag:
             cos_m_theta = self.mlambda[self.m](cos_theta)
-            theta = Variable(cos_theta.data.acos())
+            theta = torch.autograd.Variable(cos_theta.data.acos())
             k = (self.m*theta/3.14159265).floor()
             n_one = k*0.0 - 1
             phi_theta = (n_one**k) * cos_m_theta - 2*k
