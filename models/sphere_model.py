@@ -15,7 +15,7 @@ class SphereModel(BaseModel):
         return 'SphereModel'
 
     def initialize(self):
-        self.network = SphereModel(self.opt)
+        self.network = SphereNetwork(self.opt)
         #self.network = torch.nn.DataParallel(self.network)
         self.network.feat_extractor = torch.nn.DataParallel(self.network.feat_extractor)
         self.cls_network = AngleClassificationNetwork(self.opt)
