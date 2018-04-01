@@ -13,8 +13,12 @@ class HairStyleDataset(data.Dataset):
         self.opt = opt
         self.root = opt.data_root
         self.flag = opt.loss_flag
-        self.edge_map = opt.edge_map
+        if opt.image_type == 'EDGE':
+            self.edge_map = True
+        else:
+            self.edge_map = False
         self.levels = opt.sketch_levels
+
         self.attributes = []
         self.attributes_dict, self.attribute_size = load_attribute("/home/lhy/datasets/hairstyle_attribute.txt")
         self.transform_fun = transforms.Compose([transforms.ToTensor()])
