@@ -234,7 +234,6 @@ class TripletSiameseNetwork(torch.nn.Module):
         self.feat_extractor = self.get_extractor(opt.feature_model)
         self.bn = nn.BatchNorm1d(opt.feat_size)
     def forward_once(self, x):
-        print(x.size())
         out = self.feat_extractor(x)
         out = self.bn(out)
         return out  
