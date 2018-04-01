@@ -260,6 +260,7 @@ class TripletModel(BaseModel):
         for key, i in self.feat_map.items():
             final_layer_data[key] = final_layer_data[key].cuda()
             prediction = self.cls_network[i](final_layer_data[key])
+            print(prediction, labels)
             cls_loss[key] = self.cls_loss(prediction, labels)
             loss += cls_loss[key] * self.opt.loss_rate[2]
             
