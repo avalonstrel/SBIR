@@ -316,7 +316,7 @@ class AngleLinear(torch.nn.Module):
         phi_theta = phi_theta * xlen.view(-1,1)
         output = (cos_theta,phi_theta)
         return output # size=(B,Classnum,2)
-class AngleClassificationNetwork(torch.nn.module):
+class AngleClassificationNetwork(torch.nn.Module):
     def __init__(self, opt):
         super(AngleClassificationNetwork, self).__init__()
         self.angle_linear = AngleLinear(self.opt.feat_size, self.opt.n_fg_labels)
