@@ -335,7 +335,7 @@ class SphereNetwork(torch.nn.Module):
     def forward(self, x):
         out = self.feat_extractor(x)
         #al_out = self.angle_linear(out)
-        return al_out
+        return out
 
     def get_extractor(self, feature_model):
         feature_extractor = None
