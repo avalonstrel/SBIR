@@ -264,13 +264,19 @@ class TripletSiameseNetwork(torch.nn.Module):
 
         return out0, out1, out2
 
+def myphi(x,m):
+    x = x * m
+    return 1-x**2/math.factorial(2)+x**4/math.factorial(4)-x**6/math.factorial(6) + \
+            x**8/math.factorial(8) - x**9/math.factorial(9)
+
+
 
 class AngleLinear(torch.nn.Module):
     def __init__(self, in_features, out_features, m = 4, phiflag=True):
         super(AngleLinear, self).__init__()
         self.in_features = in_features
         self.out_features = out_features
-        self.weight = Parameter(torch.Tensor(in_features,out_features))
+        self.weight = torch.nn.Parameter(torch.Tensor(in_features,out_features))
         self.weight.data.uniform_(-1, 1).renorm_(2,1,1e-5).mul_(1e5)
         self.phiflag = phiflag
         self.m = m
@@ -315,7 +321,7 @@ class SphereNetwork(torch.nn.Module):
     def __init__(self, opt):
         super(SphereNetwork, self).__init__()
         self.feat_extractor = self.get_extractor(self.opt.feature_model)
-        self.angle_linear = AngleLinear(self.opt.feat_size, self.n_labels)
+        self.angle_linear = AngleLinear(self.opt.feat_size, self.opt.n_fg_labels)
 
     def forward(self, x):
         out = self.feat_extractor(x)
