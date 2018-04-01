@@ -234,6 +234,7 @@ class TripletSiameseNetwork(torch.nn.Module):
         self.feat_extractor = self.get_extractor(opt.feature_model)
         self.bn = nn.BatchNorm1d(opt.feat_size)
     def forward_once(self, x):
+        print(x.size())
         out = self.feat_extractor(x)
         out = self.bn(out)
         return out  
@@ -263,6 +264,84 @@ class TripletSiameseNetwork(torch.nn.Module):
         out2 = self.forward_once(x2)
 
         return out0, out1, out2
+
+
+class AngleLinear(torch.nn.Module):
+    def __init__(self, in_features, out_features, m = 4, phiflag=True):
+        super(AngleLinear, self).__init__()
+        self.in_features = in_features
+        self.out_features = out_features
+        self.weight = Parameter(torch.Tensor(in_features,out_features))
+        self.weight.data.uniform_(-1, 1).renorm_(2,1,1e-5).mul_(1e5)
+        self.phiflag = phiflag
+        self.m = m
+        self.mlambda = [
+            lambda x: x**0,
+            lambda x: x**1,
+            lambda x: 2*x**2-1,
+            lambda x: 4*x**3-3*x,
+            lambda x: 8*x**4-8*x**2+1,
+            lambda x: 16*x**5-20*x**3+5*x
+        ]
+
+    def forward(self, input):
+        x = input   # size=(B,F)    F is feature len
+        w = self.weight # size=(F,Classnum) F=in_features Classnum=out_features
+
+        ww = w.renorm(2,1,1e-5).mul(1e5)
+        xlen = x.pow(2).sum(1).pow(0.5) # size=B
+        wlen = ww.pow(2).sum(0).pow(0.5) # size=Classnum
+
+        cos_theta = x.mm(ww) # size=(B,Classnum)
+        cos_theta = cos_theta / xlen.view(-1,1) / wlen.view(1,-1)
+        cos_theta = cos_theta.clamp(-1,1)
+
+        if self.phiflag:
+            cos_m_theta = self.mlambda[self.m](cos_theta)
+            theta = Variable(cos_theta.data.acos())
+            k = (self.m*theta/3.14159265).floor()
+            n_one = k*0.0 - 1
+            phi_theta = (n_one**k) * cos_m_theta - 2*k
+        else:
+            theta = cos_theta.acos()
+            phi_theta = myphi(theta,self.m)
+            phi_theta = phi_theta.clamp(-1*self.m,1)
+
+        cos_theta = cos_theta * xlen.view(-1,1)
+        phi_theta = phi_theta * xlen.view(-1,1)
+        output = (cos_theta,phi_theta)
+        return output # size=(B,Classnum,2)
+
+class SphereNetwork(torch.nn.Module):
+    def __init__(self, opt):
+        super(SphereNetwork, self).__init__()
+        self.feat_extractor = self.get_extractor(self.opt.feature_model)
+        self.angle_linear = AngleLinear(self.opt.feat_size, self.n_labels)
+
+    def forward(self, x):
+        out = self.feat_extractor(x)
+        al_out = self.angle_linear(out)
+        return al_out
+
+    def get_extractor(self, feature_model):
+        feature_extractor = None
+        if self.opt.sketch_type == 'GRAY':
+            num_input_features = 1
+        else:
+            num_input_features = 3
+        if feature_model == 'attention':
+            feature_extractor = AttentionNetwork(self.opt, num_input_features)
+        elif feature_model == 'densenet169':
+            feature_extractor = models.densenet169(pretrained=not self.opt.no_densenet_pretrain)
+            feature_extractor.classifier = nn.Linear(feature_extractor.classifier.in_features, self.opt.feat_size)
+        elif feature_model == 'densenet121':
+            feature_extractor = models.densenet121(pretrained=not self.opt.no_densenet_pretrain)
+            feature_extractor.classifier = nn.Linear(feature_extractor.classifier.in_features, self.opt.feat_size)
+        elif feature_model == 'denseblock':
+            feature_extractor = DenseNet(num_init_features=64, growth_rate=32,block_config=(6,6,12,12))
+            feature_extractor.classifier = nn.Linear(feature_extractor.classifier.in_features, self.opt.feat_size)
+            print(feature_extractor.classifier.in_features)
+        return feature_extractor
 
 class DenseSBIRNetwork(torch.nn.Module):
     def __init__(self, opt):
