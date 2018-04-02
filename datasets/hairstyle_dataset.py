@@ -6,7 +6,7 @@ import os, re
 from PIL import Image
 import json
 import cv2 
-"""Sketch Dataset"""
+"""Hairstyle Dataset"""
 class HairStyleDataset(data.Dataset):
     def __init__(self,  opt): #augment_types=[""], levels="cs", mode="train",flag="two_loss", train_split=20,  pair_inclass_num=5,pair_outclass_num=0,edge_map=True):
         # parameters setting
@@ -79,9 +79,10 @@ class HairStyleDataset(data.Dataset):
             label += 1
         self.ori_photo_imgs  = self.photo_imgs
         self.ori_sketch_imgs = self.sketch_imgs
-        print("Total :",label)
         self.n_labels = label
         self.n_fg_labels = fg_label
+        self.query_what = self.opt.query_what
+        print("Total Sketchy Class:{}, fg class: {}".format(label, fg_label))
         print("FG TOTAL:",fg_label,len(self.photo_imgs))
         print("{} images loaded.".format(len(self.photo_imgs)))
         self.labels_dict = {i:[] for i in range(self.n_labels)}
@@ -91,15 +92,34 @@ class HairStyleDataset(data.Dataset):
         for i, fg_label in enumerate(self.fg_labels):
             self.fg_labels_dict[fg_label].append(i)
 
-        pair_inclass_num, pair_outclass_num = opt.pair_num
-        if mode == "train":
-            self.generate_triplet(pair_inclass_num,pair_outclass_num)
-
+        if self.query_what == "image":
+            self.query_image()
+        elif self.query_what == "sketch":
+            self.query_sketch()  
+        print("FG TOTAL:",fg_label,len(self.query_imgs))
+        print("{} images loaded.".format(len(self.query_imgs))) 
 
     def __len__(self):
         return len(self.photo_imgs)
 
-
+    def generate_triplet_all(self):
+        pair_inclass_num, pair_outclass_num = self.opt.pair_num        
+        if self.opt.phase == "train":
+            self.generate_triplet(pair_inclass_num,pair_outclass_num)
+    def query_image(self):
+        self.query_imgs = self.ori_sketch_imgs
+        self.search_imgs = self.ori_photo_imgs
+        self.search_neg_imgs = self.ori_photo_imgs.copy()
+        self.generate_triplet_all()
+        self.load_search = self.load_image
+        self.load_query = self.load_sketch
+    def query_sketch(self):
+        self.query_imgs = self.ori_photo_imgs
+        self.search_imgs = self.ori_sketch_imgs
+        self.search_neg_imgs = self.ori_sketch_imgs.copy()
+        self.generate_triplet_all()
+        self.load_query = self.load_image
+        self.load_search = self.load_sketch
 
     def transform(self, pil, mode="sketch"):
         def show(mode, pil_numpy):
@@ -129,28 +149,28 @@ class HairStyleDataset(data.Dataset):
 
     def __getitem__(self,index):
         #print(len(self.attributes),"photo",len(self.photo_imgs),"ind:",index)
-        photo_img,sketch_img,photo_neg_img,fg_label,label,attribute = self.photo_imgs[index], self.sketch_imgs[index], self.photo_neg_imgs[index], self.fg_labels[index], self.labels[index], self.attributes[index]
+        search_img,query_img,search_neg_img,fg_label,label,attribute = self.search_imgs[index], self.query_imgs[index], self.search_neg_imgs[index], self.fg_labels[index], self.labels[index], self.attributes[index]
         open_type = "L" if self.edge_map else "RGB"
 
         if self.levels == "stack":
-            sketch_s_pil, sketch_c_pil = self.transform(Image.open(sketch_img[0])), self.transform(Image.open(sketch_img[1]))
-            sketch_s_pil[:,:,1] = sketch_c_pil[:,:,0]
-            sketch_pil = sketch_s_pil
+            query_s_pil, query_c_pil = self.transform(Image.open(query_img[0])), self.transform(Image.open(query_img[1]))
+            query_s_pil[:,:,1] = query_c_pil[:,:,0]
+            query_pil = query_s_pil
         else:
-            sketch_pil = Image.open(sketch_img)
-            #print("sketch", np.array(sketch_pil).shape)
-            sketch_pil = self.transform(sketch_pil)
+            query_pil = Image.open(query_img)
+            #print("query", np.array(query_pil).shape)
+            query_pil = self.transform(query_pil)
 
-        photo_pil, photo_neg_pil = Image.open(photo_img).convert(open_type),  Image.open(photo_neg_img).convert(open_type)
-        #print("photo", np.array(photo_pil).shape)
+        search_pil, search_neg_pil = Image.open(search_img).convert(open_type),  Image.open(search_neg_img).convert(open_type)
+        #print("search", np.array(search_pil).shape)
         #if self.transform is not None:
-        photo_pil = self.transform(photo_pil, "image")
-        photo_neg_pil = self.transform(photo_neg_pil, "image")
+        search_pil = self.transform(search_pil, "image")
+        search_neg_pil = self.transform(search_neg_pil, "image")
 
-        return sketch_pil,photo_pil,photo_neg_pil,attribute, fg_label,label
+        return query_pil,search_pil,search_neg_pil,attribute, fg_label,label
 
     def generate_triplet(self, pair_inclass_num, pair_outclass_num=0):
-        sketch_imgs, photo_neg_imgs, photo_imgs,attributes, fg_labels, labels = [],[],[],[],[],[]
+        query_imgs, search_neg_imgs, search_imgs,attributes, fg_labels, labels = [],[],[],[],[],[]
 
         labels_dict = [[] for i in range(self.n_labels)]
         for i, label in enumerate(self.labels):
@@ -159,7 +179,7 @@ class HairStyleDataset(data.Dataset):
         for i, fg_label in enumerate(self.fg_labels):
             fg_labels_dict[fg_label].append(i)
 
-        for i, (sketch_img, photo_img, fg_label, label,attribute) in enumerate(zip(self.sketch_imgs, self.photo_imgs, self.fg_labels, self.labels, self.attributes)):
+        for i, (query_img, search_img, fg_label, label,attribute) in enumerate(zip(self.query_imgs, self.search_imgs, self.fg_labels, self.labels, self.attributes)):
             num = len(labels_dict[label])
             inds = [labels_dict[label].index(i)]
             for j in range(pair_inclass_num):
@@ -167,29 +187,29 @@ class HairStyleDataset(data.Dataset):
                 while ind in inds or ind in fg_labels_dict[fg_label]:
                     ind = np.random.randint(num)
                 inds.append(ind)
-                sketch_imgs.append(sketch_img)
-                photo_neg_imgs.append(self.photo_imgs[labels_dict[label][ind]])
-                photo_imgs.append(photo_img)
+                query_imgs.append(query_img)
+                search_neg_imgs.append(self.search_imgs[labels_dict[label][ind]])
+                search_imgs.append(search_img)
                 fg_labels.append(fg_label)
                 attributes.append(attribute)
                 labels.append(label)
-        num = len(self.photo_imgs)
-        for i, (sketch_img, photo_img, fg_label, label,attribute) in enumerate(zip(self.sketch_imgs, self.photo_imgs, self.fg_labels, self.labels,self.attributes)):
+        num = len(self.search_imgs)
+        for i, (query_img, search_img, fg_label, label,attribute) in enumerate(zip(self.query_imgs, self.search_imgs, self.fg_labels, self.labels,self.attributes)):
             inds = [labels_dict[label].index(i)]
             for j in range(pair_outclass_num):
                 ind = np.random.randint(num)
                 while ind in inds or ind in fg_labels_dict[fg_label] or ind in labels_dict[label]:
                     ind = np.random.randint(num)
                 inds.append(ind)
-                sketch_imgs.append(sketch_img)
-                photo_neg_imgs.append(self.photo_imgs[ind])
-                photo_imgs.append(photo_img)
+                query_imgs.append(query_img)
+                search_neg_imgs.append(self.search_imgs[ind])
+                search_imgs.append(search_img)
                 fg_labels.append(fg_label)
                 attributes.append(attribute)
                 labels.append(label)
 
 
-        self.sketch_imgs, self.photo_neg_imgs, self.photo_imgs, self.fg_labels, self.labels, self.attributes = sketch_imgs, photo_neg_imgs, photo_imgs, fg_labels, labels, attributes
+        self.query_imgs, self.search_neg_imgs, self.search_imgs, self.fg_labels, self.labels, self.attributes = query_imgs, search_neg_imgs, search_imgs, fg_labels, labels, attributes
 
 def load_attribute(path):
     with open(path) as reader:

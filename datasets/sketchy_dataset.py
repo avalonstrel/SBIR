@@ -100,11 +100,15 @@ class SketchyDataset(data.Dataset):
         self.search_imgs = self.ori_photo_imgs
         self.search_neg_imgs = self.ori_photo_imgs.copy()
         self.generate_triplet_all()
+        self.load_search = self.load_image
+        self.load_query = self.load_sketch
     def query_sketch(self):
         self.query_imgs = self.ori_photo_imgs
         self.search_imgs = self.ori_sketch_imgs
         self.search_neg_imgs = self.ori_sketch_imgs.copy()
         self.generate_triplet_all()
+        self.load_query = self.load_image
+        self.load_search = self.load_sketch
     def load_image(self, pil):
         def show(mode, pil_numpy):
             print(mode, len(",".join([str(i) for i in pil_numpy.flatten() if i != 0])))
@@ -139,23 +143,11 @@ class SketchyDataset(data.Dataset):
         pil = pil.convert('L')
         pil_numpy = np.array(pil)
 
-        #print('sketch before{}'.format(pil_numpy.shape))
-        #print(pil_numpy.shape)
-        #show('sketch_before', pil_numpy)
-        #if len(pil_numpy.shape) == 2:
-        #    pil_numpy = pil_numpy
-        #elif pil_numpy.shape[2] == 4:
-        #    pil_numpy = pil_numpy[:,:,3]
+
 
         if self.opt.sketch_type == 'RGB':
             pil_numpy = to_rgb(pil_numpy)   
-        #elif self.opt.sketch_type == 'GRAY':
-        #    pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
-        #print('sketch{}'.format(pil_numpy.shape))
-        #show('sketch', pil_numpy)
-        #pil_numpy = cv2.resize(pil_numpy, (self.opt.scale_size, self.opt.scale_size))
-        #if self.opt.sketch_type == 'GRAY':
-        #    pil_numpy = pil_numpy.reshape(pil_numpy.shape[:2])
+
         transform_fun = self.transform_fun if self.mode == 'train' else self.test_transform_fun
         if transform_fun is not None:
             pil = Image.fromarray(pil_numpy)
@@ -187,13 +179,13 @@ class SketchyDataset(data.Dataset):
         return len(self.photo_imgs)
 
     def __getitem__(self,index):
-        photo_img,sketch_img,photo_neg_img,fg_label,label = self.photo_imgs[index], self.sketch_imgs[index], self.photo_neg_imgs[index], self.fg_labels[index], self.labels[index]
-        photo_pil,sketch_pil,photo_neg_pil = Image.open(photo_img), Image.open(sketch_img), Image.open(photo_neg_img)
+        search_img,query_img,search_neg_img,fg_label,label = self.search_imgs[index], self.query_imgs[index], self.search_neg_imgs[index], self.fg_labels[index], self.labels[index]
+        search_pil,query_pil,search_neg_pil = Image.open(search_img), Image.open(query_img), Image.open(search_neg_img)
         #if self.transform is not None:
-        photo_pil = self.load_image(photo_pil)
-        sketch_pil = self.load_sketch(sketch_pil)
-        photo_neg_pil = self.load_image(photo_neg_pil)
-        return sketch_pil,photo_pil,photo_neg_pil, label, fg_label,label
+        search_pil = self.load_search(search_pil)
+        query_pil = self.load_query(query_pil)
+        search_neg_pil = self.load_search(search_neg_pil)
+        return query_pil,search_pil,search_neg_pil, label, fg_label,label
 
     def generate_cate_triplet(self, pair_inclass_num, pair_outclass_num):
         query_imgs, search_imgs, search_neg_imgs, fg_labels, labels = [],[],[],[],[]
