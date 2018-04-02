@@ -79,7 +79,7 @@ class CustomDatasetDataLoader():
                 batch_size=batch_size,
                 shuffle=not opt.serial_batches,
                 num_workers=int(opt.n_threads))        
-        if opt.neg_flag == "moderate":
+        if opt.loss_type[0] == "moderate_triplet":
             self.batch_sampler = ModerateNegativeBatchSampler(self.dataset.labels_dict)
 
 
