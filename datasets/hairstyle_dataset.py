@@ -47,7 +47,7 @@ class HairStyleDataset(data.Dataset):
             photo_pat = re.compile("cropped_\w+.*\d+.*\.jpg")
             photo_imgs = list(filter(lambda fname:photo_pat.match(fname),files))
             if len(photo_imgs) == 0:
-                print(root)
+                #print(root)
                 continue
             sketch_imgs=[]
             cls_name = root[root.rfind('/')+1:]
@@ -111,16 +111,13 @@ class HairStyleDataset(data.Dataset):
         self.search_imgs = self.ori_photo_imgs
         self.search_neg_imgs = self.ori_photo_imgs.copy()
         self.generate_triplet_all()
-        # self.load_search = self.load_image
-        # self.load_query = self.load_sketch
+        print("Query is Sketch Search Image")
     def query_sketch(self):
         self.query_imgs = self.ori_photo_imgs
         self.search_imgs = self.ori_sketch_imgs
         self.search_neg_imgs = self.ori_sketch_imgs.copy()
         self.generate_triplet_all()
-        # self.load_query = self.load_image
-        # self.load_search = self.load_sketch
-
+        print("Query is Image Search Search")
     def transform(self, pil, mode="sketch"):
         def show(mode, pil_numpy):
             print(mode, ",".join([str(i) for i in pil_numpy.flatten() if i != 0]))
