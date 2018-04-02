@@ -18,7 +18,6 @@ class HairStyleDataset(data.Dataset):
         else:
             self.edge_map = False
         self.levels = opt.sketch_levels
-
         self.attributes = []
         self.attributes_dict, self.attribute_size = load_attribute("/home/lhy/datasets/hairstyle_attribute.txt")
         self.transform_fun = transforms.Compose([transforms.ToTensor()])
@@ -100,7 +99,7 @@ class HairStyleDataset(data.Dataset):
         print("{} images loaded.".format(len(self.query_imgs))) 
 
     def __len__(self):
-        return len(self.photo_imgs)
+        return len(self.query_imgs)
 
     def generate_triplet_all(self):
         pair_inclass_num, pair_outclass_num = self.opt.pair_num        
