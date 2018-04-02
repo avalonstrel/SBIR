@@ -3,6 +3,7 @@ from torch.utils import data
 
 
 def create_dataset(opt):
+    
     name = opt.dataset_type
     if name == 'hairstyle':
         from .hairstyle_dataset import HairStyleDataset

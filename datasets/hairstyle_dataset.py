@@ -111,15 +111,15 @@ class HairStyleDataset(data.Dataset):
         self.search_imgs = self.ori_photo_imgs
         self.search_neg_imgs = self.ori_photo_imgs.copy()
         self.generate_triplet_all()
-        self.load_search = self.load_image
-        self.load_query = self.load_sketch
+        # self.load_search = self.load_image
+        # self.load_query = self.load_sketch
     def query_sketch(self):
         self.query_imgs = self.ori_photo_imgs
         self.search_imgs = self.ori_sketch_imgs
         self.search_neg_imgs = self.ori_sketch_imgs.copy()
         self.generate_triplet_all()
-        self.load_query = self.load_image
-        self.load_search = self.load_sketch
+        # self.load_query = self.load_image
+        # self.load_search = self.load_sketch
 
     def transform(self, pil, mode="sketch"):
         def show(mode, pil_numpy):
