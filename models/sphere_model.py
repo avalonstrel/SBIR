@@ -104,9 +104,9 @@ class SphereModel(BaseModel):
     #def message(self):
     #   return self.message
     def reset_features(self):
-        self.features = {'sketch':[], 'image':[], 'neg_image':[], 'labels':[]}
+        self.features = {'sketch':[], 'image':[],  'labels':[]}
     def reset_test_features(self):
-        self.test_features = {'sketch':[], 'image':[], 'neg_image':[], 'labels':[]}
+        self.test_features = {'sketch':[], 'image':[],  'labels':[]}
     def append_features(self, features, output0, output1, labels):
         features['sketch'].append(output0.data.cpu())
         features['image'].append(output1.data.cpu())
@@ -201,7 +201,7 @@ class SphereModel(BaseModel):
     def save_feature(self, mode, epoch_label):
         feature_dir = os.path.join(self.save_dir, 'feature')
         mkdir(feature_dir)
-        save_filename = 'TripletSBIRNetwork_{}_{}.pth.tar'.format(mode, epoch_label)
+        save_filename = 'SphereNetwork_{}_{}.pth.tar'.format(mode, epoch_label)
         save_path = os.path.join(feature_dir, save_filename)
         if mode == 'train':
             torch.save(self.features, save_path)
@@ -213,13 +213,9 @@ class SphereModel(BaseModel):
     Save the model
     '''
     def save_model(self,  epoch_label, is_save_feature=False):
-        self.save_network(self.network, 'TripletSBIRNetwork' , epoch_label)
-        for key, i in self.feat_map.items():
-            self.save_network(self.cls_network[i], key + '_Cls', epoch_label)
-        if 'attr' in self.opt.loss_type:
-            self.save_network(self.attr_network, 'attr', epoch_label)
-        if 'holef' in self.opt.distance_type:
-            self.save_network(self.loss.base_loss.linear, epoch_label)
+        self.save_network(self.network, 'SphereNetwork' , epoch_label)
+        
+        self.save_network(self.cls_network[i], 'AngleCls', epoch_label)
         if self.opt.save_mode and is_save_feature:
             self.save_feature(self.opt.phase, epoch_label)
     '''
@@ -233,10 +229,6 @@ class SphereModel(BaseModel):
     '''
     def load_model(self,  epoch_label, load_path):
         self.load_network(self.network, 'TripletSBIRNetwork' , epoch_label, load_path=load_path)
-        for key, i in self.feat_map.items():
-            self.load_network(self.cls_network[i], key + '_Cls', epoch_label)
-        if 'attr' in self.opt.loss_type:
-            self.load_network(self.attr_network, 'attr', epoch_label, load_path=load_path)
-        if 'holef' in self.opt.distance_type:
-            self.load_network(self.loss.base_loss.linear, epoch_label, load_path=load_path)
+        
+        self.load_network(self.cls_network[i], 'AngleCls', epoch_label)
 
