@@ -103,7 +103,7 @@ class HairStyleDataset(data.Dataset):
 
     def generate_triplet_all(self):
         pair_inclass_num, pair_outclass_num = self.opt.pair_num        
-        if self.opt.phase == "train":
+        if self.opt.phase == "train" and not self.opt.neg_flag == "moderate":
             self.generate_triplet(pair_inclass_num,pair_outclass_num)
     def query_image(self):
         self.query_imgs = self.ori_sketch_imgs

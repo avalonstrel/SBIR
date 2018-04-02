@@ -18,6 +18,8 @@ class TripletModel(BaseModel):
             return torch.nn.TripletMarginLoss(self.opt.margin)
         elif loss_type == 'holef':
             return HOLEFLoss(self.opt)
+        elif loss_type == 'moderate_triplet':
+            return ModerateTripletNegativeLoss(self.opt)
         return None
 
     def initialize(self):
