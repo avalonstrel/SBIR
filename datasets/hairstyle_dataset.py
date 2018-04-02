@@ -35,7 +35,10 @@ class HairStyleDataset(data.Dataset):
 
         label = 0
         fg_label = 0
-
+        if mode == "train":
+            start, end = 0, 3
+        elif mode == 'test':
+            start, end = 28, 30
         if self.levels == "stack":
             self.levels = "s"
 
@@ -50,7 +53,7 @@ class HairStyleDataset(data.Dataset):
             cls_name = root[root.rfind('/')+1:]
             for i, photo_img in enumerate(photo_imgs):
                 digit = re.findall("\d+",photo_img)[0]
-                if (mode == "train" and i < train_split) or (mode == "test" and i >= train_split):
+                if i >= start and i < end :
                     for level in self.levels:
                         for augment_type in augment_types:
 
