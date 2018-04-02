@@ -5,6 +5,46 @@ import numpy as np
 import torch.nn.functional as F
 
 
+class ModerateTripletNegativeLoss(torch.nn.Module):
+    """
+    Moderate Hardest Triplet Loss
+    """
+    def __init__(self,opt):
+        super(ModerateTripletNegativeLoss, self).__init__()
+        # margin=1.0, P=8, K=4
+        self.margin = self.opt.margin
+        self.P = self.opt.P
+        self.K = self.opt.K
+        self.pset = []
+        for p in range(self.P):
+            pos_interval = torch.arange(p*self.K, (p+1)*self.K).type(torch.LongTensor)
+            mask = torch.zeros(self.P * self.K).type(torch.LongTensor)
+
+            mask[pos_interval] = 1
+            self.pset.append((mask, 1-mask))
+
+    def compute_dist(self, o0, o1):
+        o0 = o0.unsqueeze(0)
+        o1 = o1.unsqueeze(1)
+        diff = o0 - o1
+        dist_sq = torch.sum(torch.pow(diff, 2), -1)
+        dist = torch.sqrt(dist_sq)
+        return dist
+
+    def forward(self, x0, x1, x2):
+        loss = torch.autograd.Variable(torch.zeros(1).cuda())
+
+        for p1, p2 in self.pset:
+            p1, p2 = p1.cuda(), p2.cuda()
+            o0, o1, o2 = x0[p1], x1[p1], x1[p2]
+            dist_01 = self.compute_dist(o0, o1)
+            dist_02 = self.compute_dist(o0, o2)
+            mdist = self.margin + torch.max(dist_01, 1)[0] - torch.min(dist_02, 1)[0]
+            loss_ = torch.sum(torch.clamp(mdist,min=0.0))
+            loss = loss + loss_
+        return loss / 2.0 / self.P /self.K
+
+
 class AngleLoss(torch.nn.Module):
     def __init__(self, gamma=0):
         super(AngleLoss, self).__init__()

@@ -16,6 +16,7 @@ def create_model(opt):
     elif name == 'sphere_model':
         from .sphere_model import SphereModel
         return SphereModel(opt)
+
     return None
 
 

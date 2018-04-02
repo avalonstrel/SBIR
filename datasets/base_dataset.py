@@ -3,7 +3,7 @@ from torch.utils import data
 
 
 def create_dataset(opt):
-    
+
     name = opt.dataset_type
     if name == 'hairstyle':
         from .hairstyle_dataset import HairStyleDataset
@@ -53,6 +53,7 @@ class ModerateNegativeBatchSampler(data.sampler.Sampler):
         return int(1.0* self.num // (self.P * self.K))
 
 
+
 class CustomDatasetDataLoader():
     def __init__(self, opt):
         self.opt = opt
@@ -74,10 +75,13 @@ class CustomDatasetDataLoader():
             else:
                 batch_size = len(self.dataset)
         self.dataloader = torch.utils.data.DataLoader(
-            self.dataset,
-            batch_size=batch_size,
-            shuffle=not opt.serial_batches,
-            num_workers=int(opt.n_threads))
+                self.dataset,
+                batch_size=batch_size,
+                shuffle=not opt.serial_batches,
+                num_workers=int(opt.n_threads))        
+        if opt.neg_flag == "moderate":
+            self.batch_sampler = ModerateNegativeBatchSampler(self.dataset.labels_dict)
+
 
     def load_data(self):
         return self

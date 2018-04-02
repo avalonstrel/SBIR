@@ -23,6 +23,7 @@ class BaseOptions():
         self.parser.add_argument('--image_root', type=str, help='path to image dataset should be paried as sketch data by number')
         self.parser.add_argument('--gpu_ids', type=str, default='0', help='gpu_ids e.g. 0 | 0,1 | 1,2,3')
         self.parser.add_argument('--phase', type=str, required=True, help='phase train, test, val')
+        self.parser.add_argument('--neg_flag', type=str, default="Linear", help='how to sample')
         self.parser.add_argument('--batch_size', type=int, default=50, help='batch size for training')
         self.parser.add_argument('--topk', type=str, default='1,5,10', help='the option for retrieval result, shoe top k result')
         self.parser.add_argument('--pair_num', type=str, default='5,5', help='pair number for generating triplet training data')
@@ -53,6 +54,8 @@ class BaseOptions():
         self.parser.add_argument('--task', type=str, default='fg_sbir', help='Task Type')
         self.parser.add_argument('--weight_decay', type=float , default=0.005, help='weight decay rate for regularization')
         self.parser.add_argument('--learning_rate', type=float, default=0.0002, help='learning rate for training')
+        self.parser.add_argument('--P', type=int,default=8, help='Moderate P') 
+        self.parser.add_argument('--K', type=int,default=4, help='Moderate K')       
         
         #self.initialized = True
         
