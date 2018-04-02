@@ -27,7 +27,29 @@ def create_dataset(opt):
         return CoCoEdgeMapDataset(opt)
     return None
 
+class ModerateNegativeBatchSampler(data.sampler.Sampler):
+    """
+    A sampler for moderate negative sampling in batch form
+    """
+    def __init__(self, labels_dict):
+        self.labels_dict = labels_dict
+        self.P = 8
+        self.K = 4
+        self.num = np.sum([len(self.labels_dict[label]) for label in self.labels_dict])
+        print('num',self.num,int(1.0* self.num // (self.P * self.K)))
+    def __iter__(self):
+        for idx in range(len(self)):
+            labels_set = np.random.choice(len(self.labels_dict), size=self.P, replace=False)
+            indices = []
+            for label in labels_set:
+                label_num = len(self.labels_dict[label])
+                label_inds = np.random.choice(label_num, size=self.K, replace=False)
+                indices.extend([self.labels_dict[label][i] for i in label_inds])
+            #print(indices)
+            yield indices
 
+    def __len__(self):
+        return int(1.0* self.num // (self.P * self.K))
 
 
 class CustomDatasetDataLoader():

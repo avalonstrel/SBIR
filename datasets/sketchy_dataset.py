@@ -26,8 +26,8 @@ class SketchyDataset(data.Dataset):
         self.transform_fun = transforms.Compose(transforms_list)
         self.test_transform_fun = transforms.Compose([transforms.Resize((self.opt.scale_size, self.opt.scale_size)), transforms.ToTensor()])
 
-        self.photo_imgs = []
         self.sketch_imgs = []
+        self.photo_imgs = []
         self.photo_neg_imgs = []
         
         self.fg_labels = []
@@ -68,6 +68,13 @@ class SketchyDataset(data.Dataset):
                                 break
                     fg_label += 1
                 label += 1
+        self.ori_photo_imgs  = self.photo_imgs
+        self.ori_sketch_imgs = self.sketch_imgs
+        self.query_what = self.opt.query_what
+        if self.query_what == "image":
+            self.query_image()
+        elif self.query_what == "sketch":
+            self.query_sketch()
         print("Total Sketchy Class:{}, fg class: {}".format(label, fg_label))
         self.n_labels = label
         self.n_fg_labels = fg_label
@@ -85,7 +92,14 @@ class SketchyDataset(data.Dataset):
 
 
         print("{} pairs loaded. After generate triplet".format(len(self.photo_imgs)))
-
+    def query_image(self):
+        self.query_imgs = self.ori_sketch_imgs
+        self.search_imgs = self.ori_photo_imgs
+        self.search_neg_imgs = self.ori_photo_imgs.copy()
+    def query_sketch(self):
+        self.query_imgs = self.ori_photo_imgs
+        self.search_imgs = self.ori_sketch_imgs
+        self.search_neg_imgs = self.ori_sketch_imgs.copy()
     def load_image(self, pil):
         def show(mode, pil_numpy):
             print(mode, len(",".join([str(i) for i in pil_numpy.flatten() if i != 0])))
@@ -177,20 +191,13 @@ class SketchyDataset(data.Dataset):
         return sketch_pil,photo_pil,photo_neg_pil, label, fg_label,label
 
     def generate_cate_triplet(self, pair_inclass_num, pair_outclass_num):
-        sketch_imgs, photo_neg_imgs, photo_imgs, fg_labels, labels = [],[],[],[],[]
+        query_imgs, search_imgs, search_neg_imgs, fg_labels, labels = [],[],[],[],[]
 
         labels_dict = [[] for i in range(self.n_labels)]
         for i, label in enumerate(self.labels):
-           # print(label)
             labels_dict[label].append(i)
-        #fg_labels_dict = [[] for i in range(self.n_fg_labels)]
-        #for i, fg_label in enumerate(self.fg_labels):
-           # print(fg_label)
-            #fg_labels_dict[fg_label].append(i)
-            
 
-
-        for i, (sketch_img, photo_img, fg_label, label) in enumerate(zip(self.sketch_imgs, self.photo_imgs, self.fg_labels, self.labels)):
+        for i, (query_img, search_img, fg_label, label) in enumerate(zip(self.query_imgs, self.search_imgs, self.fg_labels, self.labels)):
 
             
             for t, l in enumerate(labels_dict[label]):
@@ -203,18 +210,18 @@ class SketchyDataset(data.Dataset):
                         #print(ind_label)
                         ind = np.random.randint(len(labels_dict[ind_label]))
                     
-                        sketch_imgs.append(sketch_img)
-                        photo_imgs.append(self.photo_imgs[l])
-                        photo_neg_imgs.append(self.photo_imgs[labels_dict[ind_label][ind]])
+                        query_imgs.append(query_img)
+                        search_imgs.append(self.search_imgs[l])
+                        search_neg_imgs.append(self.search_imgs[labels_dict[ind_label][ind]])
                         fg_labels.append(fg_label)
                         labels.append(label)
 
-        self.sketch_imgs, self.photo_neg_imgs, self.photo_imgs, self.fg_labels, self.labels = sketch_imgs, photo_neg_imgs, photo_imgs, fg_labels, labels
+        self.query_imgs, self.search_neg_imgs, self.search_imgs, self.fg_labels, self.labels = query_imgs, search_neg_imgs, search_imgs, fg_labels, labels
 
            
 
     def generate_triplet(self, pair_inclass_num,pair_outclass_num=0):
-        sketch_imgs, photo_neg_imgs, photo_imgs, fg_labels, labels = [],[],[],[],[]
+        sketch_imgs, search_neg_imgs, search_imgs, fg_labels, labels = [],[],[],[],[]
 
         labels_dict = [[] for i in range(self.n_labels)]
         for i, label in enumerate(self.labels):
@@ -225,7 +232,7 @@ class SketchyDataset(data.Dataset):
            # print(fg_label)
             fg_labels_dict[fg_label].append(i)
 
-        for i, (sketch_img, photo_img, fg_label, label) in enumerate(zip(self.sketch_imgs, self.photo_imgs, self.fg_labels, self.labels)):
+        for i, (sketch_img, search_img, fg_label, label) in enumerate(zip(self.sketch_imgs, self.search_imgs, self.fg_labels, self.labels)):
             num = len(labels_dict[label])
             inds = [labels_dict[label].index(i)]
             for j in range(pair_inclass_num):
@@ -234,13 +241,13 @@ class SketchyDataset(data.Dataset):
                     ind = np.random.randint(num)
                 inds.append(ind)
                 sketch_imgs.append(sketch_img)
-                photo_neg_imgs.append(self.photo_imgs[labels_dict[label][ind]])
-                photo_imgs.append(photo_img)
+                search_neg_imgs.append(self.search_imgs[labels_dict[label][ind]])
+                search_imgs.append(search_img)
                 fg_labels.append(fg_label)
                 labels.append(label)
 
-        num = len(self.photo_imgs)
-        for i, (sketch_img, photo_img, fg_label, label) in enumerate(zip(self.sketch_imgs, self.photo_imgs, self.fg_labels, self.labels)):
+        num = len(self.search_imgs)
+        for i, (sketch_img, search_img, fg_label, label) in enumerate(zip(self.sketch_imgs, self.search_imgs, self.fg_labels, self.labels)):
             inds = [i]
             for j in range(pair_outclass_num):
                 ind = np.random.randint(num)
@@ -248,9 +255,9 @@ class SketchyDataset(data.Dataset):
                     ind = np.random.randint(num)
                 inds.append(ind)
                 sketch_imgs.append(sketch_img)
-                photo_neg_imgs.append(self.photo_imgs[ind])
-                photo_imgs.append(photo_img)
+                search_neg_imgs.append(self.search_imgs[ind])
+                search_imgs.append(search_img)
                 fg_labels.append(fg_label)
                 labels.append(label)
 
-        self.sketch_imgs, self.photo_neg_imgs, self.photo_imgs, self.fg_labels, self.labels = sketch_imgs, photo_neg_imgs, photo_imgs, fg_labels, labels
+        self.sketch_imgs, self.search_neg_imgs, self.search_imgs, self.fg_labels, self.labels = sketch_imgs, search_neg_imgs, search_imgs, fg_labels, labels

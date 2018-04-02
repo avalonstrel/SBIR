@@ -13,7 +13,7 @@ class DualTripletModel(BaseModel):
 
     def name(self):
         return 'DualTripletModel'
-        
+
     def get_loss(self, loss_type):
         if loss_type == 'triplet':
             return torch.nn.TripletMarginLoss(self.opt.margin)
@@ -78,8 +78,6 @@ class DualTripletModel(BaseModel):
                     #self.network.module.feat_extractor = torch.nn.DataParallel(self.network.module.feat_extractor)
                     #print(self.network.module.feat_extractor.state_dict())
                     self.load_CNN(self.opt.model_prefix, self.opt.start_epoch_label, self.opt.trained_model_path )
-
-                
             else:
 
                 self.load_model(self.opt.start_epoch_label, self.opt.trained_model_path)
@@ -226,32 +224,21 @@ class DualTripletModel(BaseModel):
     def test(self, test_data, retrieval_now=True):
 
         self.train(False)
-        #self.cpu()
-        #self.network.train(True)
+
         for i, item in enumerate(test_data):
             test_data[i] = Variable(item)
-        #print(test_data)
-        #if self.parallel_flag:
-        #    for i, item in enumerate(test_data):
-        #       test_data[i] = torch.nn.DataParallel(item)
-        #print(test_data)
+
         if self.opt.cuda:
             for i, item in enumerate(test_data):
                 item.cuda()
 
         x0, x1, x2, attrs, fg_labels, labels = test_data
-        #print(x0, x1)
+        
         #Feature Extractor (4 dim in each paramters)
         output0, output1, output2 = self.network(x0, x1, x2)
-        #print(output0.data[0], output1.data[0])
 
-        #num_feat = len(output0)
-        #self.features =  {'sketch':output0, 'image':output1, 'neg_image':output2}#output0, output1, output2]
-        
-        #Dense Loss
-        #print(num_feat)
         loss = self.loss(output0, output1, output2)
-        #print(loss.data[0])
+
         #Cls Loss
         final_layer_data = {'sketch':output0, 
                             'image':output1, 
@@ -289,7 +276,7 @@ class DualTripletModel(BaseModel):
     def save_feature(self, mode, epoch_label):
         feature_dir = os.path.join(self.save_dir, 'feature')
         mkdir(feature_dir)
-        save_filename = 'TripletSBIRNetwork_{}_{}.pth.tar'.format(mode, epoch_label)
+        save_filename = 'DualTripletSBIRNetwork_{}_{}.pth.tar'.format(mode, epoch_label)
         save_path = os.path.join(feature_dir, save_filename)
         if mode == 'train':
             torch.save(self.features, save_path)
@@ -301,7 +288,7 @@ class DualTripletModel(BaseModel):
     Save the model
     '''
     def save_model(self,  epoch_label, is_save_feature=False):
-        self.save_network(self.network, 'TripletSBIRNetwork' , epoch_label)
+        self.save_network(self.network, 'DualTripletSBIRNetwork' , epoch_label)
         for key, i in self.feat_map.items():
             self.save_network(self.cls_network[i], key + '_Cls', epoch_label)
         if 'attr' in self.opt.loss_type:
@@ -320,7 +307,7 @@ class DualTripletModel(BaseModel):
     Load the model
     '''
     def load_model(self,  epoch_label, load_path):
-        self.load_network(self.network, 'TripletSBIRNetwork' , epoch_label, load_path=load_path)
+        self.load_network(self.network, 'DualTripletSBIRNetwork' , epoch_label, load_path=load_path)
         for key, i in self.feat_map.items():
             self.load_network(self.cls_network[i], key + '_Cls', epoch_label)
         if 'attr' in self.opt.loss_type:
