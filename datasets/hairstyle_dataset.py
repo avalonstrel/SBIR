@@ -20,7 +20,7 @@ class HairStyleDataset(data.Dataset):
         self.levels = opt.sketch_levels
 
         self.attributes = []
-        self.attributes_dict, self.attribute_size = load_attribute("/home/lhy/datasets/photostyle_attribute.txt")
+        self.attributes_dict, self.attribute_size = load_attribute("/home/lhy/datasets/hairstyle_attribute.txt")
         self.transform_fun = transforms.Compose([transforms.ToTensor()])
         train_split = 20
         mode = opt.phase
