@@ -72,7 +72,7 @@ class SketchXDataset(data.Dataset):
                 ind = int(digit)
                 self.sketch_imgs[ind] = os.path.join(sketch_root, sketch_img)
                 self.image_imgs[ind] = image_img #os.path.join(image_root, image_img)
-
+        
         print("{} images loaded.".format(len(self.image_imgs)))
         
         # For generate triplet

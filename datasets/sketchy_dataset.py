@@ -68,23 +68,19 @@ class SketchyDataset(data.Dataset):
                                 break
                     fg_label += 1
                 label += 1
+        self.n_labels = label
+        self.n_fg_labels = fg_label
         self.ori_photo_imgs  = self.photo_imgs
         self.ori_sketch_imgs = self.sketch_imgs
         self.query_what = self.opt.query_what
+
+
+        print("Total Sketchy Class:{}, fg class: {}".format(label, fg_label))
         if self.query_what == "image":
             self.query_image()
         elif self.query_what == "sketch":
-            self.query_sketch()
-        print("Total Sketchy Class:{}, fg class: {}".format(label, fg_label))
-        self.n_labels = label
-        self.n_fg_labels = fg_label
+            self.query_sketch()        
         print("{} pairs loaded.".format(len(self.photo_imgs)))
-        pair_inclass_num, pair_outclass_num = self.opt.pair_num
-        if mode == "train" and not opt.model == 'cls_model' :
-            if self.opt.task == 'fg_sbir':
-                self.generate_triplet(pair_inclass_num,pair_outclass_num)
-            elif self.opt.task == 'cate_sbir':
-                self.generate_cate_triplet(pair_inclass_num,pair_inclass_num)
         if mode == "test":
             self.fg_labels = []
             for i in range(len(self.photo_imgs)):
@@ -92,14 +88,23 @@ class SketchyDataset(data.Dataset):
 
 
         print("{} pairs loaded. After generate triplet".format(len(self.photo_imgs)))
+    def generate_triplet_all(self):
+        pair_inclass_num, pair_outclass_num = self.opt.pair_num
+        if self.phase == "train" and not self.opt.model == 'cls_model' :
+            if self.opt.task == 'fg_sbir':
+                self.generate_triplet(pair_inclass_num,pair_outclass_num)
+            elif self.opt.task == 'cate_sbir':
+                self.generate_cate_triplet(pair_inclass_num,pair_inclass_num)        
     def query_image(self):
         self.query_imgs = self.ori_sketch_imgs
         self.search_imgs = self.ori_photo_imgs
         self.search_neg_imgs = self.ori_photo_imgs.copy()
+        self.generate_triplet_all()
     def query_sketch(self):
         self.query_imgs = self.ori_photo_imgs
         self.search_imgs = self.ori_sketch_imgs
         self.search_neg_imgs = self.ori_sketch_imgs.copy()
+        self.generate_triplet_all()
     def load_image(self, pil):
         def show(mode, pil_numpy):
             print(mode, len(",".join([str(i) for i in pil_numpy.flatten() if i != 0])))

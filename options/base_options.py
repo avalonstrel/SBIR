@@ -17,6 +17,7 @@ class BaseOptions():
         self.parser.add_argument('--print_val_freq', type=int, default=10000, help='frequency of showing training results on console')
         self.parser.add_argument('--n_labels', type=int,required=True,  help='the number of classes')
         self.parser.add_argument('--n_fg_labels', type=int,required=True,  help='the number of classes')
+        self.parser.add_argument('--query_what', type=str, default='image',  help='query what')
         self.parser.add_argument('--n_attrs', type=int,required=True,  help='the number of attribute')
         self.parser.add_argument('--sketch_root', type=str, help='path to sketch dataset should be paired as image data by use number')
         self.parser.add_argument('--image_root', type=str, help='path to image dataset should be paried as sketch data by number')
