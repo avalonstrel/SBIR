@@ -36,9 +36,9 @@ class HairStyleDataset(data.Dataset):
         label = 0
         fg_label = 0
         if mode == "train":
-            start, end = 0, 3
+            start, end = 0, 20
         elif mode == 'test':
-            start, end = 28, 30
+            start, end = 20, 30
         if self.levels == "stack":
             self.levels = "s"
 
