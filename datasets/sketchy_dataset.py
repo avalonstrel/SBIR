@@ -68,7 +68,7 @@ class SketchyDataset(data.Dataset):
                                 break
                     fg_label += 1
                 label += 1
-        print("Total Sketchy:",label)
+        print("Total Sketchy Class:{}, fg class: {}".format(label, fg_label))
         self.n_labels = label
         self.n_fg_labels = fg_label
         print("{} pairs loaded.".format(len(self.photo_imgs)))
