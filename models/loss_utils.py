@@ -29,7 +29,7 @@ class AngleLoss(torch.nn.Module):
         output[index] -= cos_theta[index]*(1.0+0)/(1+self.lamb)
         output[index] += phi_theta[index]*(1.0+0)/(1+self.lamb)
 
-        logpt = F.log_softmax(output)
+        logpt = F.log_softmax(output,dim=0)
         logpt = logpt.gather(1,target)
         logpt = logpt.view(-1)
         pt = torch.autograd.Variable(logpt.data.exp())

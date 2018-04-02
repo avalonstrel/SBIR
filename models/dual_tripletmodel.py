@@ -13,6 +13,7 @@ class DualTripletModel(BaseModel):
 
     def name(self):
         return 'DualTripletModel'
+        
     def get_loss(self, loss_type):
         if loss_type == 'triplet':
             return torch.nn.TripletMarginLoss(self.opt.margin)

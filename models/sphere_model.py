@@ -215,7 +215,7 @@ class SphereModel(BaseModel):
     def save_model(self,  epoch_label, is_save_feature=False):
         self.save_network(self.network, 'SphereNetwork' , epoch_label)
         
-        self.save_network(self.cls_network[i], 'AngleCls', epoch_label)
+        self.save_network(self.cls_network, 'AngleCls', epoch_label)
         if self.opt.save_mode and is_save_feature:
             self.save_feature(self.opt.phase, epoch_label)
     '''
@@ -230,5 +230,5 @@ class SphereModel(BaseModel):
     def load_model(self,  epoch_label, load_path):
         self.load_network(self.network, 'TripletSBIRNetwork' , epoch_label, load_path=load_path)
         
-        self.load_network(self.cls_network[i], 'AngleCls', epoch_label)
+        self.load_network(self.cls_network, 'AngleCls', epoch_label)
 
