@@ -318,7 +318,16 @@ class AngleLinear(torch.nn.Module):
             print(theta.data.cpu())
         cos_theta = cos_theta * xlen.view(-1,1)
         phi_theta = phi_theta * xlen.view(-1,1)
+        nan_testor = np.isnan(cos_theta.data.cpu().numpy())
+        if np.max(nan_testor) == 1:
+            print('cos theta is nan')
+            print(cos_theta.data.cpu())
+        nan_testor = np.isnan(phi_theta.data.cpu().numpy())
+        if np.max(nan_testor) == 1:
+            print('phi_theta is nan')
+            print(phi_theta.data.cpu())
         output = (cos_theta,phi_theta)
+
         return output # size=(B,Classnum,2)
 class AngleClassificationNetwork(torch.nn.Module):
     def __init__(self, opt):
