@@ -14,7 +14,7 @@ class TripletModel(BaseModel):
     def name(self):
         return 'TripletModel'
     def get_loss(self, loss_type):
-        if loss_type == 'triplet':
+        if loss_type == 'triplet' or loss_type == 'moderate_triplet':
             return torch.nn.TripletMarginLoss(self.opt.margin)
         elif loss_type == 'holef':
             return HOLEFLoss(self.opt)
