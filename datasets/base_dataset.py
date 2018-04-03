@@ -11,7 +11,7 @@ def sample_negative(ind, x, search_collection, sample_num, distance_fun):
             sample_ind = np.random.randint(num)
         dist = distance_fun(x, search_collection[sample_ind])
         distance_collection.append((sample_ind, dist))
-    sorted_dist = sorted(distance_collection, key=lambda x:x[1])[::-1]
+    sorted_dist = sorted(distance_collection, key=lambda x:x[1])
     negative_inds = [term[0] for term in sorted_dist[:sample_num[0]]]
     return negative_inds
 
@@ -57,9 +57,10 @@ def hard_negative_mining(model, dataset, query_what, distance_fun, sample_num=(1
             labels.append(dataset.labels[i])
             if dataset.name == 'hairstyle':
                 attributes.append(dataset.attributes[i])
-    dataset.query_imgs, dataset.search_neg_imgs, search_imgs, dataset.fg_labels, dataset.labels = query_imgs, search_neg_imgs, search_imgs, fg_labels, labels
+    dataset.query_imgs, dataset.search_neg_imgs, dataset.search_imgs, dataset.fg_labels, dataset.labels = query_imgs, search_neg_imgs, search_imgs, fg_labels, labels
     if dataset.name == 'hairstyle':
         dataset.attributes = attributes
+    print('Hard negative mining Finish.')
 
 def create_dataset(opt):
 
