@@ -1,0 +1,2 @@
+python train.py --data_root /home/lhy/datasets/hair_tmp_sketch --name new_experiment/densenet169_from_sketchy_fg_hairs_fg --dataset_type hairstyle --continue_train --trained_model checkpoints/new_experiment/densenet169_pretrain_sketchy_fg --start_epoch_label epoch_1 --load_only_feat_network --model sphere_model --feature_model densenet169 --feat_size 256 --phase train --num_epoch 20 --n_labels 40 --n_fg_labels 784 --n_attrs 50 --scale_size 225  --image_type RGB --sketch_type RGB --batch_size 20 --gpu_ids 2,3   \
+2>&1 |tee -a log/new_log/train_densenet169_sphere_hairs_fg.log
