@@ -25,7 +25,7 @@ def hard_negative_mining(model, dataset, query_what, distance_fun, sample_num=(1
     query_collection = []
 
     for i, batch_data in enumerate(dataset, start=0):
-        batch_data = list(barch_data)
+        batch_data = list(batch_data)
         for i,item in enumerate(batch_data):
             batch_data[i] = item.cuda()
         for i, item in enumerate(batch_data):
