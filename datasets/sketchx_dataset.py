@@ -72,22 +72,28 @@ class SketchXDataset(data.Dataset):
                 ind = int(digit)
                 self.sketch_imgs[ind] = os.path.join(sketch_root, sketch_img)
                 self.image_imgs[ind] = image_img #os.path.join(image_root, image_img)
-        
+
+        self.ori_sketch_imgs = self.sketch_imgs.copy()
+        self.ori_photo_imgs = self.image_imgs.copy()
+        self.ori_labels = self.labels.copy()
+        self.ori_fg_labels = self.fg_labels.copy()
+
         print("{} images loaded.".format(len(self.image_imgs)))
         
         # For generate triplet
         if self.query_what == "image":
             self.query_image()
         elif self.query_what == "sketch":
-            self.query_sketch()       
+            self.query_sketch()
+        print("Total Sketchy Class:{}, fg class: {}".format(self.n_labels, self.n_fg_labels))       
         print("{} images loaded. After generate triplet".format(len(self.image_imgs)))
 
     def generate_triplet_all(self):
         self.generate_triplet(self.offset)
     def generate_triplet(self, offset):
-        sketch_imgs = []
-        image_imgs = []
-        image_neg_imgs = []
+        query_imgs = []
+        search_imgs = []
+        search_neg_imgs = []
         labels = []
         fg_labels = []
         attributes = []
@@ -95,14 +101,15 @@ class SketchXDataset(data.Dataset):
         for i, triplets in enumerate(self.annotation_data[mode]["triplets"]):
             triplets = triplets if self.opt.phase == "train" else [[i+offset-1,i+offset-1]]
             for triplet in triplets:
-                sketch_imgs.append(self.sketch_imgs[i+offset])
-                image_imgs.append(self.image_imgs[triplet[0]+1])
-                image_neg_imgs.append(self.image_imgs[triplet[1]+1])
+                query_imgs.append(self.query_imgs[i+offset])
+                search_imgs.append(self.search_imgs[triplet[0]+1])
+                search_neg_imgs.append(self.search_imgs[triplet[1]+1])
                 labels.append(self.labels[i].argmax())
                 fg_labels.append(i)
                 attributes.append(self.attributes[i+offset-1])
-        self.sketch_imgs, self.image_imgs, self.image_neg_imgs, self.labels, self.fg_labels, self.attributes = sketch_imgs, image_imgs, image_neg_imgs, labels, fg_labels, attributes
-        self.n_fg_labels = len(sketch_imgs)
+        self.query_imgs, self.search_imgs, self.search_neg_imgs, self.labels, self.fg_labels, self.attributes = query_imgs, search_imgs, search_neg_imgs, labels, fg_labels, attributes
+        self.n_fg_labels = i
+        self.n_labels = 15
     def query_image(self):
         self.query_imgs = self.ori_sketch_imgs
         self.search_imgs = self.ori_photo_imgs
