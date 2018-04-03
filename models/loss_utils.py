@@ -74,7 +74,15 @@ class AngleLoss(torch.nn.Module):
         logpt = logpt.gather(1,target)
         logpt = logpt.view(-1)
         pt = torch.autograd.Variable(logpt.data.exp())
-
+        nan_testor = torch.isnan(logpt.data)
+        if torch.max(nan_testor) == 1:
+            print('logpt is nan')
+        nan_testor = torch.isnan(pt.data)
+        if torch.max(nan_testor) == 1:
+            print('pt is nan')
+        nan_testor = torch.isnan((1-pt)**self.gamma)
+        if torch.max(nan_testor) == 1:
+            print('1-pt is nan')        
         loss = -1 * (1-pt)**self.gamma * logpt
         loss = loss.mean()
 
