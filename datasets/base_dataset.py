@@ -33,7 +33,7 @@ def hard_negative_mining(model, dataset, query_what, distance_fun, sample_num=(1
         for j, item in enumerate(data):
             data[i] = Variable(item)
         x0, x1, x2, attr, fg_label, label = data
-        print(x0.size())
+        print(x0)
         output0, output1, output2 = model(x0, x1, x2)
         
         output0 = output0.data.cpu()
