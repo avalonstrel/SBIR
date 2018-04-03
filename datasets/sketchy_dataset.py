@@ -72,8 +72,8 @@ class SketchyDataset(data.Dataset):
                 label += 1
         self.n_labels = label
         self.n_fg_labels = fg_label
-        self.ori_photo_imgs  = self.photo_imgs
-        self.ori_sketch_imgs = self.sketch_imgs
+        self.ori_photo_imgs  = self.photo_imgs.copy()
+        self.ori_sketch_imgs = self.sketch_imgs.copy()
         self.ori_fg_labels = self.fg_labels.copy()
         self.ori_labels = self.labels.copy()
         self.query_what = self.opt.query_what
