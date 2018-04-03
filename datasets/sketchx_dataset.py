@@ -89,7 +89,7 @@ class SketchXDataset(data.Dataset):
         
         self.generate_triplet_all()
         print("Total Sketchy Class:{}, fg class: {}".format(self.n_labels, self.n_fg_labels))       
-        print("{} images loaded. After generate triplet".format(len(self.image_imgs)))
+        print("{} images loaded. After generate triplet".format(len(self.query_imgs)))
 
     def generate_triplet_all(self):
         self.generate_triplet()
@@ -105,15 +105,16 @@ class SketchXDataset(data.Dataset):
 
         for i, triplets in enumerate(self.annotation_data[mode]["triplets"]):
             triplets = triplets if self.opt.phase == "train" else [[i+offset-1,i+offset-1]]
-            for triplet in triplets:
-                query_imgs.append(self.query_imgs[i+offset])
-                search_imgs.append(self.search_imgs[triplet[0]+1])
-                search_neg_imgs.append(self.search_imgs[triplet[1]+1])
-                labels.append(self.labels[i].argmax())
-                fg_labels.append(i)
-                attributes.append(self.attributes[i+offset-1])
-        if not self.opt.model == 'sphere_model':
-            self.query_imgs, self.search_imgs, self.search_neg_imgs, self.labels, self.fg_labels, self.attributes = query_imgs, search_imgs, search_neg_imgs, labels, fg_labels, attributes
+            for j, triplet in enumerate(triplets):
+                if not self.opt.model == 'sphere_model' or j == 0:
+                    query_imgs.append(self.query_imgs[i+offset])
+                    search_imgs.append(self.search_imgs[triplet[0]+1])
+                    search_neg_imgs.append(self.search_imgs[triplet[1]+1])
+                    labels.append(self.labels[i].argmax())
+                    fg_labels.append(i)
+                    attributes.append(self.attributes[i+offset-1])
+        
+        self.query_imgs, self.search_imgs, self.search_neg_imgs, self.labels, self.fg_labels, self.attributes = query_imgs, search_imgs, search_neg_imgs, labels, fg_labels, attributes
         self.n_fg_labels = i + 1
         self.n_labels = 15
     def query_image(self):
