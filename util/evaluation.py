@@ -31,7 +31,7 @@ def retrieval_cosine_evaluation(output0, output1, category_labels, topk=(1,5),ne
         return -torch.nn.functional.cosine_similarity(x,y)
     for i in range(output0.size(0)):
         for j in range(output0.size(0)):
-            diff[i,j] = distance(output0[i], output1[j])
+            diff[i,j] = distance(output0[i], output1[j])[0]
     #diff = output0 - output1
     #dist_sq = torch.sum(torch.pow(diff, 2), -1)
     #dist = -torch.sqrt(dist_sq)
