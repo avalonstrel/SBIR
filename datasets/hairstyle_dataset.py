@@ -78,8 +78,8 @@ class HairStyleDataset(data.Dataset):
                                 self.labels.append(label)
                     fg_label += 1
             label += 1
-        self.ori_photo_imgs  = self.photo_imgs
-        self.ori_sketch_imgs = self.sketch_imgs
+        self.ori_photo_imgs  = self.photo_imgs.copy()
+        self.ori_sketch_imgs = self.sketch_imgs.copy()
         self.ori_labels = self.labels.copy()
         self.ori_fg_labels = self.fg_labels.copy()
         self.ori_attributes = self.attributes.copy()
@@ -112,16 +112,16 @@ class HairStyleDataset(data.Dataset):
         if self.opt.phase == "train" and not self.opt.neg_flag == "moderate":
             self.generate_triplet(pair_inclass_num,pair_outclass_num)
     def query_image(self):
-        self.query_imgs = self.ori_sketch_imgs
-        self.search_imgs = self.ori_photo_imgs
+        self.query_imgs = self.ori_sketch_imgs.copy()
+        self.search_imgs = self.ori_photo_imgs.copy()
         self.search_neg_imgs = self.ori_photo_imgs.copy()
         self.labels = self.ori_labels.copy()
         self.fg_labels = self.ori_fg_labels.copy()
         self.attributes = self.ori_attributes.copy()
         print("Query is Sketch Search Image")
     def query_sketch(self):
-        self.query_imgs = self.ori_photo_imgs
-        self.search_imgs = self.ori_sketch_imgs
+        self.query_imgs = self.ori_photo_imgs.copy()
+        self.search_imgs = self.ori_sketch_imgs.copy()
         self.search_neg_imgs = self.ori_sketch_imgs.copy()
         self.labels = self.ori_labels.copy()
         self.fg_labels = self.ori_fg_labels.copy()
