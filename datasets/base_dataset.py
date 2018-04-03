@@ -5,6 +5,7 @@ from torch.autograd import Variable
 def sample_negative(ind, x, search_collection, fg_labels, sample_num, distance_fun):
     distance_collection = []
     num = len(search_collection)
+    print(len(fg_labels), len(search_collection))
     for i in range(sample_num[1]):
         sample_ind = np.random.randint(num)
         while fg_labels[sample_ind] == fg_labels[ind]:
@@ -42,7 +43,7 @@ def hard_negative_mining(model, dataset, query_what, distance_fun, sample_num=(1
         for j in range(output0.size(0)):
             query_collection.append(output0[j])
             search_collection.append(output1[j])
-            fg_labels.append(fg_label)
+            fg_labels.append(fg_label[j])
     # query_collection = query_collection.data.cpu()
     # search_collection = search_collection.data.cpu()
     query_imgs, search_neg_imgs, search_imgs, attributes, fg_labels, labels = [],[],[],[],[],[]
