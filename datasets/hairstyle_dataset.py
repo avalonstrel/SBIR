@@ -87,7 +87,7 @@ class HairStyleDataset(data.Dataset):
         self.labels_dict = {i:[] for i in range(self.n_labels)}
         for i, label in enumerate(self.labels):
             self.labels_dict[label].append(i)
-            self.fg_labels_dict = {i:[] for i in range(self.n_fg_labels)}
+        self.fg_labels_dict = {i:[] for i in range(self.n_fg_labels)}
         for i, fg_label in enumerate(self.fg_labels):
             self.fg_labels_dict[fg_label].append(i)
 
