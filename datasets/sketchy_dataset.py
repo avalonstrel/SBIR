@@ -118,6 +118,7 @@ class SketchyDataset(data.Dataset):
         self.generate_triplet_all()
         self.load_search = self.load_image
         self.load_query = self.load_sketch
+        print("Query is Sketch Search image")
     def query_sketch(self):
         self.query_imgs = self.ori_photo_imgs
         self.search_imgs = self.ori_sketch_imgs
@@ -127,6 +128,7 @@ class SketchyDataset(data.Dataset):
         self.generate_triplet_all()
         self.load_query = self.load_image
         self.load_search = self.load_sketch
+        print("Query is Image Search Sketch")
     def load_image(self, pil):
         def show(mode, pil_numpy):
             print(mode, len(",".join([str(i) for i in pil_numpy.flatten() if i != 0])))

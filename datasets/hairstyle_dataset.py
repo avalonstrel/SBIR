@@ -122,7 +122,7 @@ class HairStyleDataset(data.Dataset):
         self.labels = self.ori_labels.copy()
         self.fg_labels = self.ori_fg_labels.copy()
         self.generate_triplet_all()
-        print("Query is Image Search Search")
+        print("Query is Image Search Sketch")
     def transform(self, pil, mode="sketch"):
         def show(mode, pil_numpy):
             print(mode, ",".join([str(i) for i in pil_numpy.flatten() if i != 0]))

@@ -85,6 +85,7 @@ class SketchXDataset(data.Dataset):
             self.query_image()
         elif self.query_what == "sketch":
             self.query_sketch()
+
         print("Total Sketchy Class:{}, fg class: {}".format(self.n_labels, self.n_fg_labels))       
         print("{} images loaded. After generate triplet".format(len(self.image_imgs)))
 
@@ -110,7 +111,7 @@ class SketchXDataset(data.Dataset):
                 fg_labels.append(i)
                 attributes.append(self.attributes[i+offset-1])
         self.query_imgs, self.search_imgs, self.search_neg_imgs, self.labels, self.fg_labels, self.attributes = query_imgs, search_imgs, search_neg_imgs, labels, fg_labels, attributes
-        self.n_fg_labels = i
+        self.n_fg_labels = i + 1
         self.n_labels = 15
     def query_image(self):
         self.query_imgs = self.ori_sketch_imgs
@@ -121,6 +122,7 @@ class SketchXDataset(data.Dataset):
         self.generate_triplet_all()
         self.load_search = self.load_image
         self.load_query = self.load_sketch
+        print("Query is Sketch Search Image")
     def query_sketch(self):
         self.query_imgs = self.ori_photo_imgs
         self.search_imgs = self.ori_sketch_imgs
@@ -130,6 +132,7 @@ class SketchXDataset(data.Dataset):
         self.generate_triplet_all()
         self.load_query = self.load_image
         self.load_search = self.load_sketch
+        print("Query is Image Search Sketch")
 
     def load_image(self, pil):
         def show(mode, pil_numpy):
@@ -194,7 +197,7 @@ class SketchXDataset(data.Dataset):
         #data_info.write(",".join([str(i) for i in pil_numpy.numpy().flatten() if i != 0])+"\n")
         return pil_numpy
     def __len__(self):
-        return len(self.image_imgs)
+        return len(self.query_imgs)
 
     def __getitem__(self,index):
         #print(len(self.attributes),"image",len(self.image_imgs),"ind:",index)
