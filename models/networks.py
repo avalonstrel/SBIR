@@ -304,6 +304,7 @@ class AngleLinear(torch.nn.Module):
         if self.phiflag:
             cos_m_theta = self.mlambda[self.m](cos_theta)
             theta = torch.autograd.Variable(cos_theta.data.acos())
+
             k = (self.m*theta/3.14159265).floor()
             n_one = k*0.0 - 1
             phi_theta = (n_one**k) * cos_m_theta - 2*k
@@ -311,7 +312,10 @@ class AngleLinear(torch.nn.Module):
             theta = cos_theta.acos()
             phi_theta = myphi(theta,self.m)
             phi_theta = phi_theta.clamp(-1*self.m,1)
-
+        nan_testor = np.isnan(theta.data.cpu().numpy())
+        if np.max(nan_testor) == 1:
+            print('theta is nan')
+            print(theta.data.cpu())
         cos_theta = cos_theta * xlen.view(-1,1)
         phi_theta = phi_theta * xlen.view(-1,1)
         output = (cos_theta,phi_theta)
