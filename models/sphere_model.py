@@ -122,6 +122,14 @@ class SphereModel(BaseModel):
             batch_data[i] = Variable(item)
         
         x0, x1, x2, attrs, fg_labels, labels = batch_data
+        nan_testor = np.isnan(x0.data.cpu().numpy())
+        if np.max(nan_testor) == 1:
+            print('x0 is nan')
+            print(x0.data.cpu())
+        nan_testor = np.isnan(x1.data.cpu().numpy())
+        if np.max(nan_testor) == 1:
+            print('x1 is nan')
+            print(x1.data.cpu())
 
         #Feature Extractor (4 dim in each paramters)
         #output0, output1, output2 = self.network(x0, x1, x2)
