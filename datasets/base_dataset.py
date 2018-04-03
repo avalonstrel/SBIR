@@ -2,10 +2,10 @@ import torch
 from torch.utils import data
 import numpy as np
 from torch.autograd import Variable
-def sample_negative(ind, x, search_collection, smaple_num, distance_fun):
+def sample_negative(ind, x, search_collection, sample_num, distance_fun):
     distance_collection = []
     num = len(search_collection)
-    for i in range(smaple_num[1]):
+    for i in range(sample_num[1]):
         sample_ind = np.random.randint(num)
         while sample_ind == ind:
             sample_ind = np.random.randint(num)
