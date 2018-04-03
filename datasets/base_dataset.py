@@ -24,7 +24,7 @@ def hard_negative_mining(model, dataset, query_what, distance_fun, sample_num=(1
 
     search_collection = []
     query_collection = []
-    fg_labels = []
+    ori_fg_labels = []
     dataloader = torch.utils.data.DataLoader(
                 dataset,
                 batch_size=20,
@@ -43,13 +43,13 @@ def hard_negative_mining(model, dataset, query_what, distance_fun, sample_num=(1
         for j in range(output0.size(0)):
             query_collection.append(output0[j])
             search_collection.append(output1[j])
-            fg_labels.append(fg_label[j])
+            ori_fg_labels.append(fg_label[j])
     # query_collection = query_collection.data.cpu()
     # search_collection = search_collection.data.cpu()
     query_imgs, search_neg_imgs, search_imgs, attributes, fg_labels, labels = [],[],[],[],[],[]
 
     for i, query in enumerate(query_collection):
-        negative_inds = sample_negative(i, query, search_collection, fg_labels, sample_num, distance_fun)
+        negative_inds = sample_negative(i, query, search_collection, ori_fg_labels, sample_num, distance_fun)
         for negative_ind in negative_inds:
             
             query_imgs.append(dataset.query_imgs[i])
