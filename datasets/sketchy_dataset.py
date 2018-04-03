@@ -72,6 +72,8 @@ class SketchyDataset(data.Dataset):
         self.n_fg_labels = fg_label
         self.ori_photo_imgs  = self.photo_imgs
         self.ori_sketch_imgs = self.sketch_imgs
+        self.ori_fg_labels = self.fg_labels.copy()
+        self.ori_labels = self.labels.copy()
         self.query_what = self.opt.query_what
         # self.labels_dict = [{} for i in range(self.n_labels)]
         # for i, label in enumerate(self.labels):
@@ -87,7 +89,7 @@ class SketchyDataset(data.Dataset):
         self.fg_labels_dict = {i:[] for i in range(self.n_fg_labels)}
         for i, fg_label in enumerate(self.fg_labels):
             self.fg_labels_dict[fg_label].append(i)
-        print("Total Sketchy Class:{}, fg class: {}".format(label, fg_label))
+        print("Total Sketchy Class:{}, fg class: {}".format(self.n_labels, self.n_fg_labels))
         if self.query_what == "image":
             self.query_image()
         elif self.query_what == "sketch":
@@ -111,6 +113,8 @@ class SketchyDataset(data.Dataset):
         self.query_imgs = self.ori_sketch_imgs
         self.search_imgs = self.ori_photo_imgs
         self.search_neg_imgs = self.ori_photo_imgs.copy()
+        self.labels = self.ori_labels.copy()
+        self.fg_labels = self.ori_fg_labels.copy()
         self.generate_triplet_all()
         self.load_search = self.load_image
         self.load_query = self.load_sketch
@@ -118,6 +122,8 @@ class SketchyDataset(data.Dataset):
         self.query_imgs = self.ori_photo_imgs
         self.search_imgs = self.ori_sketch_imgs
         self.search_neg_imgs = self.ori_sketch_imgs.copy()
+        self.labels = self.ori_labels.copy()
+        self.fg_labels = self.ori_fg_labels.copy()
         self.generate_triplet_all()
         self.load_query = self.load_image
         self.load_search = self.load_sketch

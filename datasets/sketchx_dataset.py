@@ -17,7 +17,7 @@ class SketchXDataset(data.Dataset):
         self.mode = mode
         sketch_root = os.path.join(root, mode, "sketches")
         image_root = os.path.join(root, mode, "images")
-
+        self.query_what = self.opt.query_what
         self.flag = opt.loss_flag
         self.levels = opt.sketch_levels
         transforms_list = []
@@ -43,11 +43,11 @@ class SketchXDataset(data.Dataset):
  
         if thing_type == 'chairs':
             label_key = 'labels'
-            offset = 1 if mode == "train" else 201
+            self.offset = 1 if mode == "train" else 201
         
         elif thing_type == 'shoes':
             label_key = 'label'
-            offset = 1 if mode == "train" else 305
+            self.offset = 1 if mode == "train" else 305
 
         label_dat = sio.loadmat(os.path.join(root,"annotation/sketch_label.mat"))
         self.labels = np.array(label_dat[label_key])
@@ -76,6 +76,15 @@ class SketchXDataset(data.Dataset):
         print("{} images loaded.".format(len(self.image_imgs)))
         
         # For generate triplet
+        if self.query_what == "image":
+            self.query_image()
+        elif self.query_what == "sketch":
+            self.query_sketch()       
+        print("{} images loaded. After generate triplet".format(len(self.image_imgs)))
+
+    def generate_triplet_all(self):
+        self.generate_triplet(self.offset)
+    def generate_triplet(self, offset):
         sketch_imgs = []
         image_imgs = []
         image_neg_imgs = []
@@ -84,7 +93,7 @@ class SketchXDataset(data.Dataset):
         attributes = []
 
         for i, triplets in enumerate(self.annotation_data[mode]["triplets"]):
-            triplets = triplets if mode == "train" else [[i+offset-1,i+offset-1]]
+            triplets = triplets if self.opt.phase == "train" else [[i+offset-1,i+offset-1]]
             for triplet in triplets:
                 sketch_imgs.append(self.sketch_imgs[i+offset])
                 image_imgs.append(self.image_imgs[triplet[0]+1])
@@ -94,7 +103,24 @@ class SketchXDataset(data.Dataset):
                 attributes.append(self.attributes[i+offset-1])
         self.sketch_imgs, self.image_imgs, self.image_neg_imgs, self.labels, self.fg_labels, self.attributes = sketch_imgs, image_imgs, image_neg_imgs, labels, fg_labels, attributes
         self.n_fg_labels = len(sketch_imgs)
-        print("{} images loaded. After generate triplet".format(len(self.image_imgs)))
+    def query_image(self):
+        self.query_imgs = self.ori_sketch_imgs
+        self.search_imgs = self.ori_photo_imgs
+        self.search_neg_imgs = self.ori_photo_imgs.copy()
+        self.labels = self.ori_labels.copy()
+        self.fg_labels = self.ori_fg_labels.copy()
+        self.generate_triplet_all()
+        self.load_search = self.load_image
+        self.load_query = self.load_sketch
+    def query_sketch(self):
+        self.query_imgs = self.ori_photo_imgs
+        self.search_imgs = self.ori_sketch_imgs
+        self.search_neg_imgs = self.ori_sketch_imgs.copy()
+        self.labels = self.ori_labels.copy()
+        self.fg_labels = self.ori_fg_labels.copy()
+        self.generate_triplet_all()
+        self.load_query = self.load_image
+        self.load_search = self.load_sketch
 
     def load_image(self, pil):
         def show(mode, pil_numpy):
@@ -138,7 +164,7 @@ class SketchXDataset(data.Dataset):
             pil = Image.fromarray(pil_numpy)
             pil_numpy = transform_fun(pil)
         
-        return 255 - pil_numpy
+        return pil_numpy
 
 
     def transform(self, pil):
@@ -163,20 +189,20 @@ class SketchXDataset(data.Dataset):
 
     def __getitem__(self,index):
         #print(len(self.attributes),"image",len(self.image_imgs),"ind:",index)
-        image_img,sketch_img,image_neg_img,fg_label,label, attribute = self.image_imgs[index], self.sketch_imgs[index], self.image_neg_imgs[index], self.fg_labels[index], self.labels[index], self.attributes[index]
+        search_img,query_img,search_neg_img,fg_label,label, attribute = self.search_imgs[index], self.query_imgs[index], self.search_neg_imgs[index], self.fg_labels[index], self.labels[index], self.attributes[index]
         if self.levels == "stack":
-            sketch_s_pil, sketch_c_pil = self.load_sketch(Image.open(sketch_img[0])), self.load_sketch(Image.open(sketch_img[1]))
-            sketch_s_pil[:,:,1] = sketch_c_pil[:,:,0]
-            sketch_pil = sketch_s_pil
+            query_s_pil, query_c_pil = self.load_query(Image.open(query_img[0])), self.load_query(Image.open(query_img[1]))
+            query_s_pil[:,:,1] = query_c_pil[:,:,0]
+            query_pil = query_s_pil
         else:
-            sketch_pil = Image.open(sketch_img)
-            sketch_pil = self.load_sketch(sketch_pil)
-        image_pil, image_neg_pil = Image.open(image_img), Image.open(image_neg_img)
+            query_pil = Image.open(query_img)
+            query_pil = self.load_query(query_pil)
+        search_pil, search_neg_pil = Image.open(search_img), Image.open(search_neg_img)
 
         #if self.transform is not None:
-        image_pil = self.load_image(image_pil)
-        image_neg_pil = self.load_image(image_neg_pil)
-        #print(image_pil)
-        #print(sketch_pil.size())
-        return sketch_pil, image_pil, image_neg_pil, attribute, fg_label, label
+        search_pil = self.load_search(search_pil)
+        search_neg_pil = self.load_search(search_neg_pil)
+        #print(search_pil)
+        #print(query_pil.size())
+        return query_pil, search_pil, search_neg_pil, attribute, fg_label, label
         

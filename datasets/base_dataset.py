@@ -2,6 +2,9 @@ import torch
 from torch.utils import data
 import numpy as np
 
+def hard_negative_mining(model, dataloader):
+
+
 def create_dataset(opt):
 
     name = opt.dataset_type

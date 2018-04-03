@@ -78,10 +78,12 @@ class HairStyleDataset(data.Dataset):
             label += 1
         self.ori_photo_imgs  = self.photo_imgs
         self.ori_sketch_imgs = self.sketch_imgs
+        self.ori_labels = self.labels.copy()
+        self.ori_fg_labels = self.fg_labels.copy()
         self.n_labels = label
         self.n_fg_labels = fg_label
         self.query_what = self.opt.query_what
-        print("Total Sketchy Class:{}, fg class: {}".format(label, fg_label))
+        print("Total Sketchy Class:{}, fg class: {}".format(self.n_labels, self.n_fg_labels))
         print("FG TOTAL:",fg_label,len(self.photo_imgs))
         print("{} images loaded.".format(len(self.photo_imgs)))
         self.labels_dict = {i:[] for i in range(self.n_labels)}
@@ -109,12 +111,16 @@ class HairStyleDataset(data.Dataset):
         self.query_imgs = self.ori_sketch_imgs
         self.search_imgs = self.ori_photo_imgs
         self.search_neg_imgs = self.ori_photo_imgs.copy()
+        self.labels = self.ori_labels.copy()
+        self.fg_labels = self.ori_fg_labels.copy()
         self.generate_triplet_all()
         print("Query is Sketch Search Image")
     def query_sketch(self):
         self.query_imgs = self.ori_photo_imgs
         self.search_imgs = self.ori_sketch_imgs
         self.search_neg_imgs = self.ori_sketch_imgs.copy()
+        self.labels = self.ori_labels.copy()
+        self.fg_labels = self.ori_fg_labels.copy()
         self.generate_triplet_all()
         print("Query is Image Search Search")
     def transform(self, pil, mode="sketch"):
