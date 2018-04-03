@@ -85,7 +85,8 @@ class SketchXDataset(data.Dataset):
             self.query_image()
         elif self.query_what == "sketch":
             self.query_sketch()
-
+        if not self.opt.model == 'sphere_model':
+            self.generate_triplet_all()
         print("Total Sketchy Class:{}, fg class: {}".format(self.n_labels, self.n_fg_labels))       
         print("{} images loaded. After generate triplet".format(len(self.image_imgs)))
 
@@ -119,7 +120,7 @@ class SketchXDataset(data.Dataset):
         self.search_neg_imgs = self.ori_photo_imgs.copy()
         self.labels = self.ori_labels.copy()
         self.fg_labels = self.ori_fg_labels.copy()
-        self.generate_triplet_all()
+        
         self.load_search = self.load_image
         self.load_query = self.load_sketch
         print("Query is Sketch Search Image")
@@ -129,7 +130,7 @@ class SketchXDataset(data.Dataset):
         self.search_neg_imgs = self.ori_sketch_imgs.copy()
         self.labels = self.ori_labels.copy()
         self.fg_labels = self.ori_fg_labels.copy()
-        self.generate_triplet_all()
+        
         self.load_query = self.load_image
         self.load_search = self.load_sketch
         print("Query is Image Search Sketch")
