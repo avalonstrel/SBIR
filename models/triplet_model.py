@@ -120,7 +120,7 @@ class TripletModel(BaseModel):
         if isinstance(loss, float):
             result_record[key]['loss_value'].update(loss, size)
         else:
-            result_record[key]['loss_value'].update(loss.data.item(), size)
+            result_record[key]['loss_value'].update(loss.data[0], size)
         if accs != None:
             
             for i, topk in enumerate(self.opt.topk):
@@ -133,7 +133,7 @@ class TripletModel(BaseModel):
             res = accuracy(prediction, labels, self.opt.topk)
             #print(res)
             for i, topk in enumerate(self.opt.topk):
-                result_record[key]['acc'][topk].update(res[topk].data.item(), size)  
+                result_record[key]['acc'][topk].update(res[topk].data[0], size)  
 
     def generate_message(self, result_record):
         messages = []
