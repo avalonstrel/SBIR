@@ -31,7 +31,7 @@ def hard_negative_mining(feat_extractor, dataset, query_what, distance_fun, samp
         for i,item in enumerate(data):
             data[i] = item.cuda()
         for i, item in enumerate(data):
-            data[i] = Variable(item)
+            data[i] = torch.autograd.Variable(item)
         x0, x1, x2, attr, fg_label, label = data
         output1 = feat_extractor(x1)
         output0 = feat_extractor(x0)
