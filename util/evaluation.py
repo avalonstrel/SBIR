@@ -28,6 +28,8 @@ def retrieval_cosine_evaluation(output0, output1, category_labels, topk=(1,5),ne
     def distance(x,y):
         x = x.view(-1, x.size(0))
         y = y.view(-1, y.size(0))
+        a = -torch.nn.functional.cosine_similarity(x,y)
+        print(a)
         return -torch.nn.functional.cosine_similarity(x,y)
     for i in range(output0.size(0)):
         for j in range(output0.size(0)):
