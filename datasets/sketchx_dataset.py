@@ -89,8 +89,10 @@ class SketchXDataset(data.Dataset):
         print("{} images loaded. After generate triplet".format(len(self.image_imgs)))
 
     def generate_triplet_all(self):
-        self.generate_triplet(self.offset)
-    def generate_triplet(self, offset):
+        self.generate_triplet()
+    def generate_triplet(self):
+        mode = self.opt.phase
+        offset = self.offset
         query_imgs = []
         search_imgs = []
         search_neg_imgs = []
