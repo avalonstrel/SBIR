@@ -20,20 +20,18 @@ def hard_negative_mining(model, dataset, query_what, distance_fun, sample_num=(1
         dataset.query_image()
     elif query_what == 'sketch':
         dataset.query_sketch()
-    dataloader = torch.utils.data.DataLoader(
-                dataset,
-                batch_size=20,
-                shuffle=False,
-                num_workers=1)
+
     search_collection = []
     query_collection = []
-    for i, data in enumerate(dataloader, start=0):
-        for j,item in enumerate(data):
-            data[i] = item.cuda()
-        for j, item in enumerate(data):
-            data[i] = Variable(item)
+
+    for i, batch_data in enumerate(dataset, start=0):
+        for i,item in enumerate(batch_data):
+            batch_data[i] = item.cuda()
+        for i, item in enumerate(batch_data):
+            batch_data[i] = Variable(item)
+        
         x0, x1, x2, attr, fg_label, label = data
-        print(x0)
+        print(x0, x1, x2)
         output0, output1, output2 = model(x0, x1, x2)
         
         output0 = output0.data.cpu()
