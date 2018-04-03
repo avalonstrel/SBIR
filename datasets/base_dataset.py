@@ -33,7 +33,7 @@ class ModerateNegativeBatchSampler(data.sampler.Sampler):
     A sampler for moderate negative sampling in batch form
     """
     def __init__(self, labels_dict):
-        print(labels_dict)
+        #print(labels_dict)
         self.labels_dict = labels_dict
         self.P = 8
         self.K = 4
