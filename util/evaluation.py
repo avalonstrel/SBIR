@@ -3,6 +3,14 @@ import torch
 import numpy as np
 import math
 
+def cosine_distance(x,y):
+    x = x.view(-1, x.size(0))
+    y = y.view(-1, y.size(0))
+        # a = -torch.nn.functional.cosine_similarity(x,y)
+        # print(a)
+    return -torch.nn.functional.cosine_similarity(x,y)
+def euclidean_distance(x,y):
+    return math.sqrt(torch.sum(torch.pow(x-y, 2)))
 class AverageMeter(object):
     """Computes and stores the average and current value"""
     def __init__(self):

@@ -8,6 +8,8 @@ import json
 import cv2 
 """Hairstyle Dataset"""
 class HairStyleDataset(data.Dataset):
+    def name(self):
+        return "hairstyle"
     def __init__(self,  opt): #augment_types=[""], levels="cs", mode="train",flag="two_loss", train_split=20,  pair_inclass_num=5,pair_outclass_num=0,edge_map=True):
         # parameters setting
         self.opt = opt
@@ -80,6 +82,7 @@ class HairStyleDataset(data.Dataset):
         self.ori_sketch_imgs = self.sketch_imgs
         self.ori_labels = self.labels.copy()
         self.ori_fg_labels = self.fg_labels.copy()
+        self.ori_attributes = self.attributes.copy()
         self.n_labels = label
         self.n_fg_labels = fg_label
         self.query_what = self.opt.query_what
@@ -114,6 +117,7 @@ class HairStyleDataset(data.Dataset):
         self.search_neg_imgs = self.ori_photo_imgs.copy()
         self.labels = self.ori_labels.copy()
         self.fg_labels = self.ori_fg_labels.copy()
+        self.attributes = self.ori_attributes.copy()
         print("Query is Sketch Search Image")
     def query_sketch(self):
         self.query_imgs = self.ori_photo_imgs
@@ -121,7 +125,7 @@ class HairStyleDataset(data.Dataset):
         self.search_neg_imgs = self.ori_sketch_imgs.copy()
         self.labels = self.ori_labels.copy()
         self.fg_labels = self.ori_fg_labels.copy()
-
+        self.attributes = self.ori_attributes.copy()
         print("Query is Image Search Sketch")
     def transform(self, pil, mode="sketch"):
         def show(mode, pil_numpy):
@@ -169,7 +173,7 @@ class HairStyleDataset(data.Dataset):
         search_pil = self.transform(search_pil, "image")
         search_neg_pil = self.transform(search_neg_pil, "image")
 
-        return query_pil,search_pil,search_neg_pil,attribute, fg_label,label
+        return query_pil, search_pil,search_neg_pil,attribute, fg_label,label
 
     def generate_triplet(self, pair_inclass_num, pair_outclass_num=0):
         query_imgs, search_neg_imgs, search_imgs,attributes, fg_labels, labels = [],[],[],[],[],[]

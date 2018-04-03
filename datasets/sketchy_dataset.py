@@ -6,6 +6,8 @@ import os,re,json
 import cv2
 from PIL import Image
 class SketchyDataset(data.Dataset):
+    def name(self):
+        return "sketchy"
     def __init__(self, opt):# root,photo_types,sketch_types,batch_size, mode="train", train_split=2000,  pair_inclass_num=2,pair_outclass_num=3):
         self.opt = opt
         root = opt.data_root
@@ -239,8 +241,6 @@ class SketchyDataset(data.Dataset):
 
     def generate_triplet(self, pair_inclass_num,pair_outclass_num=0):
         sketch_imgs, search_neg_imgs, search_imgs, fg_labels, labels = [],[],[],[],[]
-
-
 
         for i, (sketch_img, search_img, fg_label, label) in enumerate(zip(self.sketch_imgs, self.search_imgs, self.fg_labels, self.labels)):
             num = len(self.labels_dict[label])

@@ -2,7 +2,20 @@ import torch
 from torch.utils import data
 import numpy as np
 
-def hard_negative_mining(feat_extractor, dataset, query_what):
+def sample_negative(ind, x, search_collection, smaple_num, distance_fun):
+    distance_collection = []
+    num = search_collection.size(0)
+    for i in range(smaple_num[1]):
+        sample_ind = np.random.randint(num)
+        while sample_ind == ind:
+            sample_ind = np.random.randint(num)
+        dist = distance_fun(x, search_collection[sample_ind])
+        distance_collection.append((sample_ind, dist))
+    sorted_dist = sorted(distance_collection, key=lambda x:x[1])[::-1]
+    negative_inds = [term[0] for term in sorted_dist[:sample_num[0]]]
+    return negative_inds
+
+def hard_negative_mining(feat_extractor, dataset, query_what, distance_fun, sample_num=(10,50)):
     if query_what == 'image':
         dataset.query_image()
     elif query_what == 'sketch':
@@ -12,8 +25,8 @@ def hard_negative_mining(feat_extractor, dataset, query_what):
                 batch_size=20,
                 shuffle=False,
                 num_workers=int(opt.n_threads))
-    search_collection = torch.autograd.Variable()
-    query_collection = torch.autograd.Variable()
+    search_collection = torch.autograd.Variable().cuda()
+    query_collection = torch.autograd.Variable().cuda()
     for i, data in enumerate(dataloader, start=0):
         for i,item in enumerate(data):
             data[i] = item.cuda()
@@ -24,7 +37,24 @@ def hard_negative_mining(feat_extractor, dataset, query_what):
         output0 = feat_extractor(x0)
         query_collection = torch.cat([query_collection, output0], dim=0)
         search_collection = torch.cat([search_collection, output1], dim=0)
-    
+    query_collection = query_collection.data.cpu()
+    search_collection = search_collection.data.cpu()
+    query_imgs, search_neg_imgs, search_imgs, attributes, fg_labels, labels = [],[],[],[],[],[]
+
+    for i, query in enumerate(query_collection):
+        negative_inds = sample_negative(i, query, search_collection, sample_num, distance_fun)
+        for negative_ind in negative_inds:
+            
+            query_imgs.append(dataset.query_imgs[i])
+            search_imgs.append(dataset.search_imgs[i])
+            search_neg_imgs.append(dataset.search_imgs[negative_ind])
+            fg_labels.append(dataset.fg_labels[i])
+            labels.append(dataset.labels[i])
+            if dataset.name == 'hairstyle':
+                attributes.append(dataset.attributes[i])
+    dataset.query_imgs, dataset.search_neg_imgs, search_imgs, dataset.fg_labels, dataset.labels = query_imgs, search_neg_imgs, search_imgs, fg_labels, labels
+    if dataset.name == 'hairstyle':
+        dataset.attributes = attributes
 
 def create_dataset(opt):
 

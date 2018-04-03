@@ -9,6 +9,8 @@ import cv2
 
 #SketchX dataset
 class SketchXDataset(data.Dataset):
+    def name(self):
+        return "sketchx"
     def __init__(self, opt):# root,thing_type="chairs",levels="cs", mode="train", flag="two_loss"):
         self.opt = opt
         # Parameters Setting
