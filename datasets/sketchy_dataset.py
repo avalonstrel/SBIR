@@ -97,7 +97,7 @@ class SketchyDataset(data.Dataset):
         print("{} pairs loaded. After generate triplet".format(len(self.photo_imgs)))
     def generate_triplet_all(self):
         pair_inclass_num, pair_outclass_num = self.opt.pair_num
-        if self.phase == "train" and not self.opt.model == 'cls_model' and not self.opt.neg_flag == "moderate" :
+        if self.opt.phase == "train" and not self.opt.model == 'cls_model' and not self.opt.neg_flag == "moderate" :
             if self.opt.task == 'fg_sbir':
                 self.generate_triplet(pair_inclass_num,pair_outclass_num)
             elif self.opt.task == 'cate_sbir':
