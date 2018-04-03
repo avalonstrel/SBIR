@@ -97,6 +97,7 @@ class HairStyleDataset(data.Dataset):
             self.query_image()
         elif self.query_what == "sketch":
             self.query_sketch()  
+        self.generate_triplet_all()
         print("FG TOTAL:",fg_label,len(self.query_imgs))
         print("{} images loaded.".format(len(self.query_imgs))) 
 
@@ -113,7 +114,6 @@ class HairStyleDataset(data.Dataset):
         self.search_neg_imgs = self.ori_photo_imgs.copy()
         self.labels = self.ori_labels.copy()
         self.fg_labels = self.ori_fg_labels.copy()
-        self.generate_triplet_all()
         print("Query is Sketch Search Image")
     def query_sketch(self):
         self.query_imgs = self.ori_photo_imgs
@@ -121,7 +121,7 @@ class HairStyleDataset(data.Dataset):
         self.search_neg_imgs = self.ori_sketch_imgs.copy()
         self.labels = self.ori_labels.copy()
         self.fg_labels = self.ori_fg_labels.copy()
-        self.generate_triplet_all()
+
         print("Query is Image Search Sketch")
     def transform(self, pil, mode="sketch"):
         def show(mode, pil_numpy):

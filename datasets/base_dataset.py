@@ -2,8 +2,29 @@ import torch
 from torch.utils import data
 import numpy as np
 
-def hard_negative_mining(model, dataloader):
-    pass
+def hard_negative_mining(feat_extractor, dataset, query_what):
+    if query_what == 'image':
+        dataset.query_image()
+    elif query_what == 'sketch':
+        dataset.query_sketch()
+    dataloader = torch.utils.data.DataLoader(
+                dataset,
+                batch_size=20,
+                shuffle=False,
+                num_workers=int(opt.n_threads))
+    search_collection = torch.autograd.Variable()
+    query_collection = torch.autograd.Variable()
+    for i, data in enumerate(dataloader, start=0):
+        for i,item in enumerate(data):
+            data[i] = item.cuda()
+        for i, item in enumerate(data):
+            data[i] = Variable(item)
+        x0, x1, x2, attr, fg_label, label = data
+        output1 = feat_extractor(x1)
+        output0 = feat_extractor(x0)
+        query_collection = torch.cat([query_collection, output0], dim=0)
+        search_collection = torch.cat([search_collection, output1], dim=0)
+    
 
 def create_dataset(opt):
 

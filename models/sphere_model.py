@@ -155,7 +155,7 @@ class SphereModel(BaseModel):
 
     def retrieval_evaluation(self, data, loss,  labels):
         self.test_result_record['retrieval'] = self.record_initialize(True)
-        cate_accs, cate_fg_accs = retrieval_evaluation(data['sketch'], data['image'], labels, self.opt.topk)
+        cate_accs, cate_fg_accs = retrieval_cosine_evaluation(data['sketch'], data['image'], labels, self.opt.topk)
         self.update_record(self.test_result_record, 'retrieval', loss, labels.size(0), accs=cate_fg_accs)
         self.test_result_record['cate_retrieval'] = self.record_initialize(True)
         self.update_record(self.test_result_record, 'cate_retrieval', loss, labels.size(0), accs=cate_accs)
