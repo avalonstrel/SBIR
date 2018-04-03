@@ -55,11 +55,11 @@ def hard_negative_mining(model, dataset, query_what, distance_fun, sample_num=(1
             search_neg_imgs.append(dataset.search_imgs[negative_ind])
             fg_labels.append(dataset.fg_labels[i])
             labels.append(dataset.labels[i])
-            if dataset.name == 'hairstyle':
+            if dataset.name() == 'hairstyle':
                 attributes.append(dataset.attributes[i])
     dataset.query_imgs, dataset.search_neg_imgs, dataset.search_imgs, dataset.fg_labels, dataset.labels = query_imgs, search_neg_imgs, search_imgs, fg_labels, labels
     print(len(dataset.query_imgs), len(dataset.search_neg_imgs), len(dataset.search_imgs), len(dataset.fg_labels), len(dataset.labels))
-    if dataset.name == 'hairstyle':
+    if dataset.name() == 'hairstyle':
         dataset.attributes = attributes
     print('Hard negative mining Finish.')
 
