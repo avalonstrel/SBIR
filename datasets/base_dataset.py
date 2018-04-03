@@ -4,7 +4,7 @@ import numpy as np
 from torch.autograd import Variable
 def sample_negative(ind, x, search_collection, smaple_num, distance_fun):
     distance_collection = []
-    num = search_collection.size(0)
+    num = len(search_collection)
     for i in range(smaple_num[1]):
         sample_ind = np.random.randint(num)
         while sample_ind == ind:
@@ -33,7 +33,7 @@ def hard_negative_mining(model, dataset, query_what, distance_fun, sample_num=(1
         x1 = Variable(x1.cuda())
         x2 = Variable(x2.cuda())
 
-        print(x0, x1, x2)
+        #print(x0, x1, x2)
         output0, output1, output2 = model(x0, x1, x2)
         
         output0 = output0.data.cpu()
