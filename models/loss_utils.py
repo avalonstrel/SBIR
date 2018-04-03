@@ -12,6 +12,7 @@ class ModerateTripletNegativeLoss(torch.nn.Module):
     def __init__(self,opt):
         super(ModerateTripletNegativeLoss, self).__init__()
         # margin=1.0, P=8, K=4
+        self.opt = opt
         self.margin = self.opt.margin
         self.P = self.opt.P
         self.K = self.opt.K
