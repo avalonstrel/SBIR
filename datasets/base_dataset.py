@@ -28,17 +28,19 @@ def hard_negative_mining(feat_extractor, dataset, query_what, distance_fun, samp
     search_collection = torch.autograd.Variable().cuda()
     query_collection = torch.autograd.Variable().cuda()
     for i, data in enumerate(dataloader, start=0):
-        for i,item in enumerate(data):
+        for j,item in enumerate(data):
             data[i] = item.cuda()
-        for i, item in enumerate(data):
+        for j, item in enumerate(data):
             data[i] = torch.autograd.Variable(item)
         x0, x1, x2, attr, fg_label, label = data
         output1 = feat_extractor(x1)
         output0 = feat_extractor(x0)
-        query_collection = torch.cat([query_collection, output0], dim=0)
-        search_collection = torch.cat([search_collection, output1], dim=0)
-    query_collection = query_collection.data.cpu()
-    search_collection = search_collection.data.cpu()
+        for j in range(output0.size(0)):
+            query_collection.append(output0[i])
+            search_collection.append(output1[i])
+        
+    # query_collection = query_collection.data.cpu()
+    # search_collection = search_collection.data.cpu()
     query_imgs, search_neg_imgs, search_imgs, attributes, fg_labels, labels = [],[],[],[],[],[]
 
     for i, query in enumerate(query_collection):
