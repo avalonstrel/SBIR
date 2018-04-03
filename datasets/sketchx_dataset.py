@@ -44,6 +44,7 @@ class SketchXDataset(data.Dataset):
         if thing_type == 'chairs':
             label_key = 'labels'
             self.offset = 1 if mode == "train" else 201
+
         
         elif thing_type == 'shoes':
             label_key = 'label'
@@ -85,8 +86,8 @@ class SketchXDataset(data.Dataset):
             self.query_image()
         elif self.query_what == "sketch":
             self.query_sketch()
-        if not self.opt.model == 'sphere_model':
-            self.generate_triplet_all()
+        
+        self.generate_triplet_all()
         print("Total Sketchy Class:{}, fg class: {}".format(self.n_labels, self.n_fg_labels))       
         print("{} images loaded. After generate triplet".format(len(self.image_imgs)))
 
@@ -111,7 +112,8 @@ class SketchXDataset(data.Dataset):
                 labels.append(self.labels[i].argmax())
                 fg_labels.append(i)
                 attributes.append(self.attributes[i+offset-1])
-        self.query_imgs, self.search_imgs, self.search_neg_imgs, self.labels, self.fg_labels, self.attributes = query_imgs, search_imgs, search_neg_imgs, labels, fg_labels, attributes
+        if not self.opt.model == 'sphere_model':
+            self.query_imgs, self.search_imgs, self.search_neg_imgs, self.labels, self.fg_labels, self.attributes = query_imgs, search_imgs, search_neg_imgs, labels, fg_labels, attributes
         self.n_fg_labels = i + 1
         self.n_labels = 15
     def query_image(self):
