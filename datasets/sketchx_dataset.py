@@ -75,7 +75,7 @@ class SketchXDataset(data.Dataset):
                 ind = int(digit)
                 self.sketch_imgs[ind] = os.path.join(sketch_root, sketch_img)
                 self.image_imgs[ind] = image_img #os.path.join(image_root, image_img)
-                
+
         self.ori_sketch_imgs = self.sketch_imgs.copy()
         self.ori_photo_imgs = self.image_imgs.copy()
         self.ori_labels = self.labels.copy()
@@ -121,8 +121,8 @@ class SketchXDataset(data.Dataset):
         self.n_fg_labels = i + 1
         self.n_labels = 15
     def query_image(self):
-        self.query_imgs = self.ori_sketch_imgs
-        self.search_imgs = self.ori_photo_imgs
+        self.query_imgs = self.ori_sketch_imgs.copy()
+        self.search_imgs = self.ori_photo_imgs.copy()
         self.search_neg_imgs = self.ori_photo_imgs.copy()
         self.labels = self.ori_labels.copy()
         self.fg_labels = self.ori_fg_labels.copy()
@@ -131,8 +131,8 @@ class SketchXDataset(data.Dataset):
         self.load_query = self.load_sketch
         print("Query is Sketch Search Image")
     def query_sketch(self):
-        self.query_imgs = self.ori_photo_imgs
-        self.search_imgs = self.ori_sketch_imgs
+        self.query_imgs = self.ori_photo_imgs.copy()
+        self.search_imgs = self.ori_sketch_imgs.copy()
         self.search_neg_imgs = self.ori_sketch_imgs.copy()
         self.labels = self.ori_labels.copy()
         self.fg_labels = self.ori_fg_labels.copy()

@@ -96,11 +96,8 @@ def train():
         model.reset_test_records()
         if epoch % 2 == 0:
             opt.query_what = "sketch"
-            train_data_loader.dataset.query_sketch()
-
         else:
             opt.query_what = "image"
-            train_data_loader.dataset.query_image()
         if opt.model == 'sphere_model':
             distance_fun = cosine_distance
         else:

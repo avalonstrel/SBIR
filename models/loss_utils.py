@@ -49,7 +49,7 @@ class ModerateTripletNegativeLoss(torch.nn.Module):
 class AngleLoss(torch.nn.Module):
     def __init__(self, gamma=0):
         super(AngleLoss, self).__init__()
-        self.gamma   = gamma
+        self.gamma = gamma
         self.it = 0
         self.LambdaMin = 5.0
         self.LambdaMax = 1500.0
@@ -74,22 +74,7 @@ class AngleLoss(torch.nn.Module):
         logpt = logpt.gather(1,target)
         logpt = logpt.view(-1)
         pt = torch.autograd.Variable(logpt.data.exp())
-        nan_testor = np.isnan(output.data.cpu().numpy())
-        if np.max(nan_testor) == 1:
-            print('output is nan')
-            print(output.data.cpu())
-        nan_testor = np.isnan(logpt.data.cpu().numpy())
-        if np.max(nan_testor) == 1:
-            print('logpt is nan')
-            print(logpt.data.cpu())
-        nan_testor = np.isnan(pt.data.cpu().numpy())
-        if np.max(nan_testor) == 1:
-            print('pt is nan')
-            print(pt.data.cpu())
-        nan_testor = np.isnan(((1-pt)**self.gamma).data.cpu().numpy())
-        if np.max(nan_testor) == 1:
-            print('1-pt is nan') 
-            print(((1-pt)**self.gamma).data.cpu())      
+        
         loss = -1 * (1-pt)**self.gamma * logpt
         loss = loss.mean()
 
