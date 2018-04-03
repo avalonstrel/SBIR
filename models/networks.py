@@ -291,6 +291,10 @@ class AngleLinear(torch.nn.Module):
 
     def forward(self, input):
         x = input   # size=(B,F)    F is feature len
+        nan_testor = np.isnan(x.data.cpu().numpy())
+        if np.max(nan_testor) == 1:
+            print('x is nan')
+            print(x.data.cpu())
         w = self.weight # size=(F,Classnum) F=in_features Classnum=out_features
 
         ww = w.renorm(2,1,1e-5).mul(1e5)
