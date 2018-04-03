@@ -80,7 +80,7 @@ class AngleLoss(torch.nn.Module):
         nan_testor = np.isnan(pt.data.cpu().numpy())
         if np.max(nan_testor) == 1:
             print('pt is nan')
-        nan_testor = np.isnan(((1-pt)**self.gamma).cpu().numpy())
+        nan_testor = np.isnan(((1-pt)**self.gamma).data.cpu().numpy())
         if np.max(nan_testor) == 1:
             print('1-pt is nan')        
         loss = -1 * (1-pt)**self.gamma * logpt
