@@ -15,7 +15,7 @@ def sample_negative(ind, x, search_collection, smaple_num, distance_fun):
     negative_inds = [term[0] for term in sorted_dist[:sample_num[0]]]
     return negative_inds
 
-def hard_negative_mining(feat_extractor, dataset, query_what, distance_fun, sample_num=(10,50)):
+def hard_negative_mining(model, dataset, query_what, distance_fun, sample_num=(10,50)):
     if query_what == 'image':
         dataset.query_image()
     elif query_what == 'sketch':
@@ -33,8 +33,8 @@ def hard_negative_mining(feat_extractor, dataset, query_what, distance_fun, samp
         for j, item in enumerate(data):
             data[i] = Variable(item)
         x0, x1, x2, attr, fg_label, label = data
-        output1 = feat_extractor(x1)
-        output0 = feat_extractor(x0)
+        output0, output1, output2 = model(x0, x1, x2)
+        
         output0 = output0.data.cpu()
         output1 = output1.data.cpu()
         for j in range(output0.size(0)):

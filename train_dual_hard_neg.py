@@ -105,7 +105,7 @@ def train():
             distance_fun = cosine_distance
         else:
             distance_fun = euclidean_distance
-        hard_negative_mining(model.network.feat_extractor, train_data_loader.dataset, opt.query_what, distance_fun, sample_num=(10,50))
+        hard_negative_mining(model.network, train_data_loader.dataset, opt.query_what, distance_fun, sample_num=(10,50))
         train_data_loader.dataloader = torch.utils.data.DataLoader(
                 train_data_loader.dataset,
                 batch_size=opt.batch_size,

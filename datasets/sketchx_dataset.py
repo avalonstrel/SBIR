@@ -75,11 +75,12 @@ class SketchXDataset(data.Dataset):
                 ind = int(digit)
                 self.sketch_imgs[ind] = os.path.join(sketch_root, sketch_img)
                 self.image_imgs[ind] = image_img #os.path.join(image_root, image_img)
-
+                
         self.ori_sketch_imgs = self.sketch_imgs.copy()
         self.ori_photo_imgs = self.image_imgs.copy()
         self.ori_labels = self.labels.copy()
         self.ori_fg_labels = self.fg_labels.copy()
+        self.ori_attributes = self.attributes.copy()
 
         print("{} images loaded.".format(len(self.image_imgs)))
         
