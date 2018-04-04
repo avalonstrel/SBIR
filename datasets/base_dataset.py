@@ -2,12 +2,13 @@ import torch
 from torch.utils import data
 import numpy as np
 from torch.autograd import Variable
-def sample_negative(ind, x, search_collection, sample_num, distance_fun):
+def sample_negative(ind, x, search_collection, fg_labels, sample_num, distance_fun):
     distance_collection = []
     num = len(search_collection)
+    print(len(fg_labels), len(search_collection))
     for i in range(sample_num[1]):
         sample_ind = np.random.randint(num)
-        while sample_ind == ind:
+        while fg_labels[sample_ind] == fg_labels[ind]:
             sample_ind = np.random.randint(num)
         dist = distance_fun(x, search_collection[sample_ind])
         distance_collection.append((sample_ind, dist))
@@ -23,6 +24,7 @@ def hard_negative_mining(model, dataset, query_what, distance_fun, sample_num=(1
 
     search_collection = []
     query_collection = []
+    ori_fg_labels = []
     dataloader = torch.utils.data.DataLoader(
                 dataset,
                 batch_size=20,
@@ -41,13 +43,13 @@ def hard_negative_mining(model, dataset, query_what, distance_fun, sample_num=(1
         for j in range(output0.size(0)):
             query_collection.append(output0[j])
             search_collection.append(output1[j])
-        
+            ori_fg_labels.append(fg_label[j])
     # query_collection = query_collection.data.cpu()
     # search_collection = search_collection.data.cpu()
     query_imgs, search_neg_imgs, search_imgs, attributes, fg_labels, labels = [],[],[],[],[],[]
 
     for i, query in enumerate(query_collection):
-        negative_inds = sample_negative(i, query, search_collection, sample_num, distance_fun)
+        negative_inds = sample_negative(i, query, search_collection, ori_fg_labels, sample_num, distance_fun)
         for negative_ind in negative_inds:
             
             query_imgs.append(dataset.query_imgs[i])
@@ -55,10 +57,11 @@ def hard_negative_mining(model, dataset, query_what, distance_fun, sample_num=(1
             search_neg_imgs.append(dataset.search_imgs[negative_ind])
             fg_labels.append(dataset.fg_labels[i])
             labels.append(dataset.labels[i])
-            if dataset.name == 'hairstyle':
+            if dataset.name() == 'hairstyle':
                 attributes.append(dataset.attributes[i])
     dataset.query_imgs, dataset.search_neg_imgs, dataset.search_imgs, dataset.fg_labels, dataset.labels = query_imgs, search_neg_imgs, search_imgs, fg_labels, labels
-    if dataset.name == 'hairstyle':
+    print(len(dataset.query_imgs), len(dataset.search_neg_imgs), len(dataset.search_imgs), len(dataset.fg_labels), len(dataset.labels))
+    if dataset.name() == 'hairstyle':
         dataset.attributes = attributes
     print('Hard negative mining Finish.')
 
