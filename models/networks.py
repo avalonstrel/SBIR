@@ -63,7 +63,7 @@ class DilatedConvBlock(torch.nn.Module):
                 
 
 class SpatialTransformerNetwork(torch.nn.Module):
-    def __init__(self, opt, num_input_features):
+    def __init__(self,opt, num_input_features):
         super(SpatialTransformerNetwork, self).__init__()
         # Spatial transformer localization-network
         self.localization = nn.Sequential(
@@ -230,21 +230,29 @@ Triplet Siamese Network, For SBIR
 class TripletSiameseNetwork(torch.nn.Module):
     def __init__(self, opt):
         super(TripletSiameseNetwork, self).__init__()
+        if self.opt.sketch_type == 'GRAY':
+            self.num_input_features = 1
+        else:
+            self.num_input_features = 3
         self.opt = opt
         self.feat_extractor = self.get_extractor(opt.feature_model)
         self.bn = nn.BatchNorm1d(opt.feat_size)
+        if self.opt.stn:
+            self.stn = SpatialTransformerNetwork(opt, self.num_input_features)
     def forward_once(self, x):
+        if self.opt.stn:
+            x = self.stn(x)
         out = self.feat_extractor(x)
+
         #out = self.bn(out)
         return out  
     def get_extractor(self, feature_model):
         feature_extractor = None
-        if self.opt.sketch_type == 'GRAY':
-            num_input_features = 1
-        else:
-            num_input_features = 3
+
+        
+
         if feature_model == 'attention':
-            feature_extractor = AttentionNetwork(self.opt, num_input_features)
+            feature_extractor = AttentionNetwork(self.opt, self.num_input_features)
         elif feature_model == 'densenet169':
             feature_extractor = models.densenet169(pretrained=not self.opt.no_densenet_pretrain)
             feature_extractor.classifier = nn.Linear(feature_extractor.classifier.in_features, self.opt.feat_size)
@@ -254,8 +262,8 @@ class TripletSiameseNetwork(torch.nn.Module):
         elif feature_model == 'denseblock':
             feature_extractor = DenseNet(num_init_features=64, growth_rate=32,block_config=(6,6,12,12))
             feature_extractor.classifier = nn.Linear(feature_extractor.classifier.in_features, self.opt.feat_size)
-            print(feature_extractor.classifier.in_features)
-        return feature_extractor
+            #rint(feature_extractor.classifier.in_features)
+        return features
 
     def forward(self, x0, x1, x2):
         out0 = self.forward_once(x0)

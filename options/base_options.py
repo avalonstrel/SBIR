@@ -42,6 +42,7 @@ class BaseOptions():
         self.parser.add_argument('--attention_mode', action='store_true', help='Whether use attention in embedding')
         self.parser.add_argument('--fc_layer_mode',action='store_true', help='Whether use fc_layer in embedding mode')
         self.parser.add_argument('--fusion_mode', action='store_true', help='Whether use fusion mode')
+        self.parser.add_argument('--stn', action='store_true', help='STN before')
         self.parser.add_argument('--save_mode', action='store_true', default=True, help='Whether save embedded feature')
         self.parser.add_argument('--dataset_type', type=str, required=True, help='Dataset type')
         self.parser.add_argument('--image_type', type=str, default='EDGE', help='Image type')
