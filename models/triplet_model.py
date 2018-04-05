@@ -193,8 +193,8 @@ class TripletModel(BaseModel):
         cls_loss = {}
         for key, i in self.feat_map.items():
             prediction = self.cls_network[i](final_layer_data[key])
-            if key == 'sphere':
-                cls_loss[key] = self.angle_loss(prediction, labels)
+            if key == 'sphere_cls':
+                cls_loss[key] = self.angle_loss(prediction, fg_labels)
             else:
                 cls_loss[key] = self.cls_loss(prediction, labels)
             loss += cls_loss[key] * self.opt.loss_rate[2]
@@ -277,8 +277,8 @@ class TripletModel(BaseModel):
             prediction = self.cls_network[i](final_layer_data[key])
             prediction = prediction.cuda()
             labels = labels.cuda()
-            if key == 'sphere':
-                cls_loss[key] = self.angle_loss(prediction, labels)
+            if key == 'sphere_cls':
+                cls_loss[key] = self.angle_loss(prediction, fg_labels)
             else:
                 cls_loss[key] = self.cls_loss(prediction, labels)
             loss += cls_loss[key] * self.opt.loss_rate[2]
