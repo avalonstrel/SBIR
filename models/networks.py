@@ -67,11 +67,10 @@ class SpatialTransformerNetwork(torch.nn.Module):
         super(SpatialTransformerNetwork, self).__init__()
         # Spatial transformer localization-network
         self.localization = nn.Sequential(
-            nn.Conv2d(num_input_features, 8, kernel_size=7),
-            nn.MaxPool2d(2, stride=2),
-            nn.ReLU(True),
-            nn.Conv2d(8, 10, kernel_size=5),
-            nn.MaxPool2d(2, stride=2),
+            nn.Conv2d(num_input_features, 8, kernel_size=7, stride=3),
+            nn.MaxPool2d(kernel_size=3, stride=2, padding=0),
+            ConvLayer(8, 16, kernel_size=5, stride=1, padding=0),
+            nn.MaxPool2d(kernel_size=3, stride=2, padding=0),
             nn.ReLU(True)
         )
 
@@ -89,6 +88,7 @@ class SpatialTransformerNetwork(torch.nn.Module):
     # Spatial transformer network forward function
     def forward(self, x):
         xs = self.localization(x)
+        print(xs.size())
         xs = xs.view(-1, 10 * 3 * 3)
         theta = self.fc_loc(xs)
         theta = theta.view(-1, 2, 3)
