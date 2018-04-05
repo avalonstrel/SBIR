@@ -77,7 +77,7 @@ class SpatialTransformerNetwork(torch.nn.Module):
 
         # Regressor for the 3 * 2 affine matrix
         self.fc_loc = nn.Sequential(
-            nn.Linear(16 * 9 * 9, 32),
+            nn.Linear(16 * 7 * 7, 32),
             nn.ReLU(True),
             nn.Linear(32, 3 * 2)
         )
@@ -90,7 +90,7 @@ class SpatialTransformerNetwork(torch.nn.Module):
     def forward(self, x):
         xs = self.localization(x)
         print(xs.size())
-        xs = xs.view(-1, 16 * 9 * 9)
+        xs = xs.view(-1, 16 * 7 * 7)
         theta = self.fc_loc(xs)
         theta = theta.view(-1, 2, 3)
 
