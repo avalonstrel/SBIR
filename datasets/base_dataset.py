@@ -16,7 +16,7 @@ def sample_negative(ind, x, search_collection, fg_labels, sample_num, distance_f
     negative_inds = [term[0] for term in sorted_dist[:sample_num[0]]]
     return negative_inds
 
-def hard_negative_mining(model, dataset, query_what, distance_fun, sample_num=(10,50)):
+def hard_negative_mining(model, dataset, query_what, distance_fun, sample_num=(10,100)):
     if query_what == 'image':
         dataset.query_image()
     elif query_what == 'sketch':

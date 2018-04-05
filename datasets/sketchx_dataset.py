@@ -32,9 +32,9 @@ class SketchXDataset(data.Dataset):
             transforms_list.append(transforms.RandomVerticalFlip())
         #transforms_list.append(transforms.Resize((self.opt.scale_size, self.opt.scale_size)))
         transforms_list.append(transforms.ToTensor())
-        transforms_list.append(transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)))
+        
         self.transform_fun = transforms.Compose(transforms_list)
-        self.test_transform_fun = transforms.Compose([transforms.Resize((self.opt.scale_size, self.opt.scale_size)), transforms.ToTensor(),transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+        self.test_transform_fun = transforms.Compose([transforms.Resize((self.opt.scale_size, self.opt.scale_size)), transforms.ToTensor()])
         if 'chairs' in root:
             thing_type = 'chairs'
         else:

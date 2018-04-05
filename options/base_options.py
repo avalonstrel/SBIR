@@ -26,7 +26,7 @@ class BaseOptions():
         self.parser.add_argument('--neg_flag', type=str, default="Linear", help='how to sample')
         self.parser.add_argument('--batch_size', type=int, default=50, help='batch size for training')
         self.parser.add_argument('--topk', type=str, default='1,5,10', help='the option for retrieval result, shoe top k result')
-        self.parser.add_argument('--pair_num', type=str, default='5,5', help='pair number for generating triplet training data')
+        self.parser.add_argument('--pair_num', type=str, default='5,10', help='pair number for generating triplet training data')
         self.parser.add_argument('--name', type=str, default='experiment', help='Experiment name of this case')
         self.parser.add_argument('--feature_model', type=str, default='densenet169', help='The model for extracting feature of the data for retrieval')
         self.parser.add_argument('--model', type=str, default='denselosssiamese', help='The model for for retrieval')
