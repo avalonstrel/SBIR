@@ -230,11 +230,12 @@ Triplet Siamese Network, For SBIR
 class TripletSiameseNetwork(torch.nn.Module):
     def __init__(self, opt):
         super(TripletSiameseNetwork, self).__init__()
+        self.opt = opt
         if self.opt.sketch_type == 'GRAY':
             self.num_input_features = 1
         else:
             self.num_input_features = 3
-        self.opt = opt
+        
         self.feat_extractor = self.get_extractor(opt.feature_model)
         self.bn = nn.BatchNorm1d(opt.feat_size)
         if self.opt.stn:
