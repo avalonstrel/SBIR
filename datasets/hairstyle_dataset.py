@@ -110,7 +110,10 @@ class HairStyleDataset(data.Dataset):
     def generate_triplet_all(self):
         pair_inclass_num, pair_outclass_num = self.opt.pair_num        
         if self.opt.phase == "train" and not self.opt.neg_flag == "moderate":
-            self.generate_triplet(pair_inclass_num,pair_outclass_num)
+            if self.opt.task == 'fg_sbir':
+                self.generate_triplet(pair_inclass_num,pair_outclass_num)
+            elif self.opt.task == 'cate_sbir':
+                self.generate_cate_triplet(pair_inclass_num,pair_inclass_num)  
     def query_image(self):
         self.query_imgs = self.ori_sketch_imgs.copy()
         self.search_imgs = self.ori_photo_imgs.copy()
@@ -174,7 +177,36 @@ class HairStyleDataset(data.Dataset):
         search_neg_pil = self.transform(search_neg_pil, "image")
 
         return query_pil, search_pil,search_neg_pil,attribute, fg_label,label
+    def generate_cate_triplet(self, pair_inclass_num, pair_outclass_num):
+        query_imgs, search_imgs, search_neg_imgs, attributes, fg_labels, labels = [],[],[],[],[]
 
+        labels_dict = [[] for i in range(self.n_labels)]
+        for i, label in enumerate(self.labels):
+            labels_dict[label].append(i)
+
+        for i, (query_img, search_img, attribute, fg_label, label) in enumerate(zip(self.query_imgs, self.search_imgs, self.attributes, self.fg_labels, self.labels)):
+
+            
+            for t, l in enumerate(labels_dict[label]):
+                if l != i and t < pair_inclass_num:
+                    for j in range(pair_outclass_num):
+                        ind_label = np.random.randint(self.n_labels)
+                        while ind_label == label:
+
+                            ind_label = np.random.randint(self.n_labels)
+                        #print(ind_label)
+                        ind = np.random.randint(len(labels_dict[ind_label]))
+                        
+                        query_imgs.append(query_img)
+                        search_imgs.append(self.search_imgs[l])
+                        attributes.append(attribute)
+                        search_neg_imgs.append(self.search_imgs[labels_dict[ind_label][ind]])
+                        fg_labels.append(fg_label)
+                        labels.append(label)
+
+        self.query_imgs, self.search_neg_imgs, self.search_imgs, self.attributes, self.fg_labels, self.labels = query_imgs, search_neg_imgs, search_imgs, attributes, fg_labels, labels
+
+           
     def generate_triplet(self, pair_inclass_num, pair_outclass_num=0):
         query_imgs, search_neg_imgs, search_imgs,attributes, fg_labels, labels = [],[],[],[],[],[]
 
