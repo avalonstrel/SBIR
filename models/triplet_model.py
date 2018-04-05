@@ -58,7 +58,7 @@ class TripletModel(BaseModel):
             self.cls_network.append(AngleClassificationNetwork(self.opt))
             self.feat_map['sphere'] = len(self.feat_map)
             self.optimize_modules.append(self.cls_network[self.feat_map['sphere']])
-            self.result_record['sphere'] = self.record_initialize(True)
+            self.result_record['sphere'] = self.record_initialize(False)
         if 'attr' in self.opt.loss_type:
 
             self.attr_network = AttributeNetwork(self.opt.feat_size*2, self.opt.n_attrs)
@@ -195,11 +195,13 @@ class TripletModel(BaseModel):
             prediction = self.cls_network[i](final_layer_data[key])
             if key == 'sphere':
                 cls_loss[key] = self.angle_loss(prediction, torch.cat([fg_labels, fg_labels], dim=0))
+                self.update_record(self.result_record, key, cls_loss[key])
             else:
                 cls_loss[key] = self.cls_loss(prediction, labels)
+                self.update_record(self.result_record, key, cls_loss[key], labels.size(0), prediction, labels)
             loss += cls_loss[key] * self.opt.loss_rate[2]
             #Update result
-            self.update_record(self.result_record, key, cls_loss[key], prediction.size(0), prediction, labels)
+            
 
         #Attr Loss
         #
@@ -281,12 +283,15 @@ class TripletModel(BaseModel):
             s_fg_labels = s_fg_labels.cuda()
             if key == 'sphere':
                 cls_loss[key] = self.angle_loss(prediction, s_fg_labels)
+                self.update_record(self.test_result_record, key, cls_loss[key])
             else:
                 cls_loss[key] = self.cls_loss(prediction, labels)
+                self.update_record(self.test_result_record, key, cls_loss[key], labels.size(0), prediction, labels)
             loss += cls_loss[key] * self.opt.loss_rate[2]
             
             #Update result
-            self.update_record(self.test_result_record, key, cls_loss[key], prediction.size(0), prediction, labels)
+            
+            
 
         #Attr Loss
         if 'attr' in self.opt.loss_type:
