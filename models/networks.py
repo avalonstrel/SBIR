@@ -71,7 +71,7 @@ class SpatialTransformerNetwork(torch.nn.Module):
             nn.MaxPool2d(kernel_size=3, stride=2, padding=0),
             ConvLayer(8, 16, kernel_size=5, stride=1, padding=0),
             nn.MaxPool2d(kernel_size=3, stride=2, padding=0),
-            nn.MaxPool2d(kernel_size=3, stride=2, padding=0)
+            nn.MaxPool2d(kernel_size=3, stride=2, padding=0),
             nn.ReLU(True)
         )
 
