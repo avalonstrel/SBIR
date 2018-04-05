@@ -71,12 +71,13 @@ class SpatialTransformerNetwork(torch.nn.Module):
             nn.MaxPool2d(kernel_size=3, stride=2, padding=0),
             ConvLayer(8, 16, kernel_size=5, stride=1, padding=0),
             nn.MaxPool2d(kernel_size=3, stride=2, padding=0),
+            nn.MaxPool2d(kernel_size=3, stride=2, padding=0)
             nn.ReLU(True)
         )
 
         # Regressor for the 3 * 2 affine matrix
         self.fc_loc = nn.Sequential(
-            nn.Linear(10 * 3 * 3, 32),
+            nn.Linear(16 * 9 * 9, 32),
             nn.ReLU(True),
             nn.Linear(32, 3 * 2)
         )
@@ -89,7 +90,7 @@ class SpatialTransformerNetwork(torch.nn.Module):
     def forward(self, x):
         xs = self.localization(x)
         print(xs.size())
-        xs = xs.view(-1, 10 * 3 * 3)
+        xs = xs.view(-1, 16 * 9 * 9)
         theta = self.fc_loc(xs)
         theta = theta.view(-1, 2, 3)
 
