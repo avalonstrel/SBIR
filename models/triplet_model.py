@@ -278,8 +278,8 @@ class TripletModel(BaseModel):
         for key, i in self.feat_map.items():
             final_layer_data[key] = final_layer_data[key].cuda()
             prediction = self.cls_network[i](final_layer_data[key])
-            prediction = prediction.cuda()
-            labels = labels.cuda()
+            #prediction = prediction.cuda()
+            #labels = labels.cuda()
             s_fg_labels = torch.cat([fg_labels, fg_labels], dim=0)
             s_fg_labels = s_fg_labels.cuda()
             if key == 'sphere':
