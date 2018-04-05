@@ -89,7 +89,7 @@ class SpatialTransformerNetwork(torch.nn.Module):
     # Spatial transformer network forward function
     def forward(self, x):
         xs = self.localization(x)
-        print(xs.size())
+        #print(xs.size())
         xs = xs.view(-1, 16 * 7 * 7)
         theta = self.fc_loc(xs)
         theta = theta.view(-1, 2, 3)
