@@ -307,7 +307,7 @@ class TripletModel(BaseModel):
             attrs = attrs.cuda()
             attr_loss = self.attr_loss(predicted_attrs, attrs)
             loss += attr_loss * self.opt.loss_rate[1]
-            self.update_record(self.test_result_record, key, attr_loss, predicted_attrs.size(0))
+            self.update_record(self.test_result_record, 'attr', attr_loss, predicted_attrs.size(0))
             
         self.update_record(self.test_result_record, 'total', loss, final_layer_data['sketch'].size(0))
 
