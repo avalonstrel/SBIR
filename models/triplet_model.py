@@ -244,6 +244,9 @@ class TripletModel(BaseModel):
         self.train(False)
         #self.cpu()
         #self.network.train(True)
+        if self.opt.cuda:
+            for i, item in enumerate(test_data):
+                test_data[i] = item.cuda()
         for i, item in enumerate(test_data):
             test_data[i] = Variable(item)
         #print(test_data)
@@ -251,9 +254,7 @@ class TripletModel(BaseModel):
         #    for i, item in enumerate(test_data):
         #       test_data[i] = torch.nn.DataParallel(item)
         #print(test_data)
-        if self.opt.cuda:
-            for i, item in enumerate(test_data):
-                item.cuda()
+
 
         x0, x1, x2, attrs, fg_labels, labels = test_data
         #print(x0, x1)
@@ -280,12 +281,16 @@ class TripletModel(BaseModel):
             prediction = self.cls_network[i](final_layer_data[key])
             #prediction = prediction.cuda()
             #labels = labels.cuda()
-            s_fg_labels = torch.cat([fg_labels, fg_labels], dim=0)
-            s_fg_labels = s_fg_labels.cuda()
+
             if key == 'sphere':
+                prediction = (prediction[0].cuda(), prediction[1].cuda())
+                s_fg_labels = torch.cat([fg_labels, fg_labels], dim=0)
+                s_fg_labels = s_fg_labels.cuda()                
                 cls_loss[key] = self.angle_loss(prediction, s_fg_labels)
                 self.update_record(self.test_result_record, key, cls_loss[key], labels.size(0))
             else:
+                prediction = prediction.cuda()
+                labels = labels.cuda()
                 cls_loss[key] = self.cls_loss(prediction, labels)
                 self.update_record(self.test_result_record, key, cls_loss[key], labels.size(0), prediction, labels)
             loss += cls_loss[key] * self.opt.loss_rate[2]
