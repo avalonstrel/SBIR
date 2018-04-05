@@ -5,7 +5,7 @@ from torch.autograd import Variable
 def sample_negative(ind, x, search_collection, fg_labels, sample_num, distance_fun):
     distance_collection = []
     num = len(search_collection)
-    print(len(fg_labels), len(search_collection))
+    #print(len(fg_labels), len(search_collection))
     for i in range(sample_num[1]):
         sample_ind = np.random.randint(num)
         while fg_labels[sample_ind] == fg_labels[ind]:
