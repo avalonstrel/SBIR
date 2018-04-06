@@ -223,6 +223,7 @@ class HairStyleDataset(data.Dataset):
             num = len(labels_dict[label])
             inds = [labels_dict[label].index(i)]
             for j in range(pair_inclass_num):
+                num = len(labels_dict[label])
                 ind = np.random.randint(num)
                 while ind in inds or ind in fg_labels_dict[fg_label]:
                     ind = np.random.randint(num)
