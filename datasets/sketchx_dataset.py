@@ -132,7 +132,7 @@ class SketchXDataset(data.Dataset):
                 search_imgs.append(search_img)
                 fg_labels.append(fg_label)
                 attributes.append(attribute)
-                labels.append(label)
+                labels.append(label.argmax())
 
 
         self.query_imgs, self.search_neg_imgs, self.search_imgs, self.fg_labels, self.labels, self.attributes = query_imgs, search_neg_imgs, search_imgs, fg_labels, labels, attributes
