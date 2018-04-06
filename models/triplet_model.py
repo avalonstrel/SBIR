@@ -46,6 +46,7 @@ class TripletModel(BaseModel):
             self.feat_map['sketch'] = len(self.feat_map) 
             self.optimize_modules.append(self.cls_network[self.feat_map['sketch']])
             self.result_record['sketch'] = self.record_initialize(True)
+
         if 'image_cls' in self.opt.loss_type:
             self.cls_network.append(ClassificationNetwork(self.opt.feat_size, self.opt.n_labels))
             self.feat_map['image'] = len(self.feat_map) 
@@ -56,6 +57,11 @@ class TripletModel(BaseModel):
             self.feat_map['combine'] = len(self.feat_map)
             self.optimize_modules.append(self.cls_network[self.feat_map['combine']])
             self.result_record['combine'] = self.record_initialize(True)
+        if 'fg_cls' in self.opt.loss_type:
+            self.cls_network.append(ClassificationNetwork(self.opt.feat_size, self.opt.n_fg_labels))
+            self.feat_map['fg'] = len(self.feat_map) 
+            self.optimize_modules.append(self.cls_network[self.feat_map['fg']])
+            self.result_record['fg'] = self.record_initialize(True)
         if 'sphere_cls' in self.opt.loss_type:
             self.cls_network.append(AngleClassificationNetwork(self.opt))
             self.feat_map['sphere'] = len(self.feat_map)
@@ -191,6 +197,7 @@ class TripletModel(BaseModel):
         #Cls Loss
         final_layer_data = {'sketch':output0, 
                             'image':output1, 
+                            'fg':output1,
                             'sphere':torch.cat([output0, output1], dim=0),
                             'combine':torch.cat([output0, output1], dim=1)}
         cls_loss = {}
@@ -199,6 +206,9 @@ class TripletModel(BaseModel):
             if key == 'sphere':
                 cls_loss[key] = self.angle_loss(prediction, torch.cat([fg_labels, fg_labels], dim=0))
                 self.update_record(self.result_record, key, cls_loss[key], labels.size(0))
+            elif key == 'fg':
+                cls_loss[key] = self.cls_loss(prediction, fg_labels)
+                self.update_record(self.result_record, key, cls_loss[key], fg_labels.size(0), prediction, fg_labels)
             else:
                 cls_loss[key] = self.cls_loss(prediction, labels)
                 self.update_record(self.result_record, key, cls_loss[key], labels.size(0), prediction, labels)
@@ -270,6 +280,7 @@ class TripletModel(BaseModel):
         #Cls Loss
         final_layer_data = {'sketch':output0, 
                             'image':output1, 
+                            'fg':output1,
                             'sphere':torch.cat([output0, output1], dim=0),
                             'combine':torch.cat([output0, output1], dim=1)}
 
@@ -286,6 +297,12 @@ class TripletModel(BaseModel):
                 s_fg_labels = s_fg_labels.cuda()                
                 cls_loss[key] = self.angle_loss(prediction, s_fg_labels)
                 self.update_record(self.test_result_record, key, cls_loss[key], labels.size(0))
+            elif key == 'fg':
+                prediction = prediction.cuda()
+                fg_labels = fg_labels.cuda()  
+                cls_loss[key] = self.cls_loss(prediction, fg_labels)
+                self.update_record(self.test_result_record, key, cls_loss[key], fg_labels.size(0), prediction, fg_labels)
+              
             else:
                 prediction = prediction.cuda()
                 labels = labels.cuda()
