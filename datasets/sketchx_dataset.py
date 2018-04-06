@@ -83,6 +83,7 @@ class SketchXDataset(data.Dataset):
                 self.sketch_list.append(os.path.join(sketch_root, sketch_img))
                 self.fg_labels.append(j)
             j+=1
+        self.n_fg_labels = j
         self.ori_sketch_imgs = self.sketch_imgs.copy()
         self.ori_photo_imgs = self.image_imgs.copy()
         self.ori_labels = self.labels.copy()
