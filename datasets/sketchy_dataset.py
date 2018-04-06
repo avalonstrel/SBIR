@@ -240,9 +240,9 @@ class SketchyDataset(data.Dataset):
            
 
     def generate_triplet(self, pair_inclass_num,pair_outclass_num=0):
-        sketch_imgs, search_neg_imgs, search_imgs, fg_labels, labels = [],[],[],[],[]
+        query_imgs, search_neg_imgs, search_imgs, fg_labels, labels = [],[],[],[],[]
 
-        for i, (sketch_img, search_img, fg_label, label) in enumerate(zip(self.sketch_imgs, self.search_imgs, self.fg_labels, self.labels)):
+        for i, (query_img, search_img, fg_label, label) in enumerate(zip(self.query_imgs, self.search_imgs, self.fg_labels, self.labels)):
             num = len(self.labels_dict[label])
             inds = [self.labels_dict[label].index(i)]
             for j in range(pair_inclass_num):
@@ -250,24 +250,24 @@ class SketchyDataset(data.Dataset):
                 while ind in inds or ind in self.fg_labels_dict[fg_label]:
                     ind = np.random.randint(num)
                 inds.append(ind)
-                sketch_imgs.append(sketch_img)
+                query_imgs.append(query_img)
                 search_neg_imgs.append(self.search_imgs[self.labels_dict[label][ind]])
                 search_imgs.append(search_img)
                 fg_labels.append(fg_label)
                 labels.append(label)
 
         num = len(self.search_imgs)
-        for i, (sketch_img, search_img, fg_label, label) in enumerate(zip(self.sketch_imgs, self.search_imgs, self.fg_labels, self.labels)):
+        for i, (query_img, search_img, fg_label, label) in enumerate(zip(self.query_imgs, self.search_imgs, self.fg_labels, self.labels)):
             inds = [i]
             for j in range(pair_outclass_num):
                 ind = np.random.randint(num)
                 while ind in inds or ind in self.fg_labels_dict[fg_label] or ind in self.labels_dict[label]:
                     ind = np.random.randint(num)
                 inds.append(ind)
-                sketch_imgs.append(sketch_img)
+                query_imgs.append(query_img)
                 search_neg_imgs.append(self.search_imgs[ind])
                 search_imgs.append(search_img)
                 fg_labels.append(fg_label)
                 labels.append(label)
 
-        self.sketch_imgs, self.search_neg_imgs, self.search_imgs, self.fg_labels, self.labels = sketch_imgs, search_neg_imgs, search_imgs, fg_labels, labels
+        self.query_imgs, self.search_neg_imgs, self.search_imgs, self.fg_labels, self.labels = query_imgs, search_neg_imgs, search_imgs, fg_labels, labels

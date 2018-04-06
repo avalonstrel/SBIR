@@ -32,7 +32,7 @@ class SketchXDataset(data.Dataset):
             transforms_list.append(transforms.RandomVerticalFlip())
         #transforms_list.append(transforms.Resize((self.opt.scale_size, self.opt.scale_size)))
         transforms_list.append(transforms.ToTensor())
-        
+
         self.transform_fun = transforms.Compose(transforms_list)
         self.test_transform_fun = transforms.Compose([transforms.Resize((self.opt.scale_size, self.opt.scale_size)), transforms.ToTensor()])
         if 'chairs' in root:
@@ -96,8 +96,89 @@ class SketchXDataset(data.Dataset):
         print("{} images loaded. After generate triplet".format(len(self.query_imgs)))
 
     def generate_triplet_all(self):
-        self.generate_triplet()
-    def generate_triplet(self):
+        pair_inclass_num, pair_outclass_num = self.opt.pair_num
+        if self.opt.triplet_type == 'annotation':
+            self.generate_annotation_triplet()
+        elif self.opt.triplet_type == 'random':
+            if self.opt.task == 'fg_sbir':
+                self.generate_triplet(pair_inclass_num, pair_outclass_num)
+            elif self.opt.task == 'cate_sbir':
+                self.generate_cate_triplet(pair_inclass_num, pair_outclass_num)
+
+
+    def generate_cate_triplet(self, pair_inclass_num, pair_outclass_num):
+        query_imgs, search_imgs, search_neg_imgs, attributes, fg_labels, labels = [],[],[],[],[]
+
+        labels_dict = [[] for i in range(self.n_labels)]
+        for i, label in enumerate(self.labels):
+            labels_dict[label].append(i)
+
+        for i, (query_img, search_img, attribute, fg_label, label) in enumerate(zip(self.query_imgs, self.search_imgs, self.attributes, self.fg_labels, self.labels)):
+
+            
+            for t, l in enumerate(labels_dict[label]):
+                if l != i and t < pair_inclass_num:
+                    for j in range(pair_outclass_num):
+                        ind_label = np.random.randint(self.n_labels)
+                        while ind_label == label:
+
+                            ind_label = np.random.randint(self.n_labels)
+                        #print(ind_label)
+                        ind = np.random.randint(len(labels_dict[ind_label]))
+                        
+                        query_imgs.append(query_img)
+                        search_imgs.append(self.search_imgs[l])
+                        attributes.append(attribute)
+                        search_neg_imgs.append(self.search_imgs[labels_dict[ind_label][ind]])
+                        fg_labels.append(fg_label)
+                        labels.append(label)
+
+        self.query_imgs, self.search_neg_imgs, self.search_imgs, self.attributes, self.fg_labels, self.labels = query_imgs, search_neg_imgs, search_imgs, attributes, fg_labels, labels
+
+           
+    def generate_triplet(self, pair_inclass_num, pair_outclass_num=0):
+        query_imgs, search_neg_imgs, search_imgs,attributes, fg_labels, labels = [],[],[],[],[],[]
+
+        labels_dict = [[] for i in range(self.n_labels)]
+        for i, label in enumerate(self.labels):
+            labels_dict[label].append(i)
+        fg_labels_dict = [[] for i in range(self.n_fg_labels)]
+        for i, fg_label in enumerate(self.fg_labels):
+            fg_labels_dict[fg_label].append(i)
+
+        for i, (query_img, search_img, fg_label, label,attribute) in enumerate(zip(self.query_imgs, self.search_imgs, self.fg_labels, self.labels, self.attributes)):
+            num = len(labels_dict[label])
+            inds = [labels_dict[label].index(i)]
+            for j in range(pair_inclass_num):
+                ind = np.random.randint(num)
+                while ind in inds or ind in fg_labels_dict[fg_label]:
+                    ind = np.random.randint(num)
+                inds.append(ind)
+                query_imgs.append(query_img)
+                search_neg_imgs.append(self.search_imgs[labels_dict[label][ind]])
+                search_imgs.append(search_img)
+                fg_labels.append(fg_label)
+                attributes.append(attribute)
+                labels.append(label)
+        num = len(self.search_imgs)
+        for i, (query_img, search_img, fg_label, label,attribute) in enumerate(zip(self.query_imgs, self.search_imgs, self.fg_labels, self.labels,self.attributes)):
+            inds = [labels_dict[label].index(i)]
+            for j in range(pair_outclass_num):
+                ind = np.random.randint(num)
+                while ind in inds or ind in fg_labels_dict[fg_label] or ind in labels_dict[label]:
+                    ind = np.random.randint(num)
+                inds.append(ind)
+                query_imgs.append(query_img)
+                search_neg_imgs.append(self.search_imgs[ind])
+                search_imgs.append(search_img)
+                fg_labels.append(fg_label)
+                attributes.append(attribute)
+                labels.append(label)
+
+
+        self.query_imgs, self.search_neg_imgs, self.search_imgs, self.fg_labels, self.labels, self.attributes = query_imgs, search_neg_imgs, search_imgs, fg_labels, labels, attributes
+
+    def generate_annotation_triplet(self):
         mode = self.opt.phase
         offset = self.offset
         query_imgs = []
