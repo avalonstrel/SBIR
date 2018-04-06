@@ -162,6 +162,7 @@ class TripletModel(BaseModel):
         self.features = {'sketch':[], 'image':[], 'neg_image':[], 'labels':[]}
     def reset_test_features(self):
         self.test_features = {'sketch':[], 'image':[], 'neg_image':[], 'labels':[]}
+
     def append_features(self, features, output0, output1, output2, labels):
         features['sketch'].append(output0.data.cpu())
         features['image'].append(output1.data.cpu())
@@ -234,7 +235,10 @@ class TripletModel(BaseModel):
 
     def retrieval_evaluation(self, data, loss,  labels):
         self.test_result_record['retrieval'] = self.record_initialize(True)
-        cate_accs, cate_fg_accs = retrieval_evaluation(data['sketch'], data['image'], labels, self.opt.topk)
+        if self.opt.test_metric == 'euclidean': 
+            cate_accs, cate_fg_accs = retrieval_evaluation(data['sketch'], data['image'], labels, self.opt.topk)
+        elif self.opt.test_metric == 'cosine':
+            cate_accs, cate_fg_accs = retrieval_cosine_evaluation(data['sketch'], data['image'], labels, self.opt.topk)
         self.update_record(self.test_result_record, 'retrieval', loss, labels.size(0), accs=cate_fg_accs)
         self.test_result_record['cate_retrieval'] = self.record_initialize(True)
         self.update_record(self.test_result_record, 'cate_retrieval', loss, labels.size(0), accs=cate_accs)
@@ -249,12 +253,6 @@ class TripletModel(BaseModel):
                 test_data[i] = item.cuda()
         for i, item in enumerate(test_data):
             test_data[i] = Variable(item)
-        #print(test_data)
-        #if self.parallel_flag:
-        #    for i, item in enumerate(test_data):
-        #       test_data[i] = torch.nn.DataParallel(item)
-        #print(test_data)
-
 
         x0, x1, x2, attrs, fg_labels, labels = test_data
         #print(x0, x1)
