@@ -63,20 +63,24 @@ class HairDataset(data.Dataset):
                             sketch_pat = re.compile(augment_type+flag+str(digit)+level+".*\.png")
                             sketch_imgs = list(filter(lambda fname:sketch_pat.match(fname),files))
                             for sketch_img in sketch_imgs:
-                                
-                                self.photo_imgs.append(os.path.join(root,photo_img))
-                                if self.levels == "stack":
-                                    sketch_other_img = sketch_img.replace("s.","c.")
-                                    sketch_ohter_img = sketch_other_img.replace("s_","c_")
-                                    self.sketch_imgs.append([os.path.join(root,sketch_img),os.path.join(root,sketch_other_img)])
-                                else:
+                                try:
+                                    Image.open(os.path.join(root,photo_img))
+                                    Image.open(os.path.join(root,sketch_img))
+                                    self.photo_imgs.append(os.path.join(root,photo_img))
+                                    if self.levels == "stack":
+                                        sketch_other_img = sketch_img.replace("s.","c.")
+                                        sketch_ohter_img = sketch_other_img.replace("s_","c_")
+                                        self.sketch_imgs.append([os.path.join(root,sketch_img),os.path.join(root,sketch_other_img)])
+                                    else:
 
-                                    self.sketch_imgs.append(os.path.join(root,sketch_img))
-                                self.photo_neg_imgs.append(os.path.join(root,photo_img))
-                                
-                                self.attributes.append(self.attributes_dict[cls_name])
-                                self.fg_labels.append(fg_label)
-                                self.labels.append(label)
+                                        self.sketch_imgs.append(os.path.join(root,sketch_img))
+                                    self.photo_neg_imgs.append(os.path.join(root,photo_img))
+                                    
+                                    self.attributes.append(self.attributes_dict[cls_name])
+                                    self.fg_labels.append(fg_label)
+                                    self.labels.append(label)
+                                except:
+                                    print(photo_img,'is truncated in loading')
                     fg_label += 1
             label += 1
         print(self.photo_imgs[0])
