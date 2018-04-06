@@ -117,16 +117,13 @@ class SketchXDataset(data.Dataset):
         query_imgs, search_neg_imgs, search_imgs,attributes, fg_labels, labels = [],[],[],[],[],[]
 
         
-        fg_labels_dict = [[] for i in range(self.n_fg_labels)]
-        for i, fg_label in enumerate(self.fg_labels):
-            fg_labels_dict[fg_label].append(i)
 
         num = len(self.search_list)
         for i, (query_img, search_img, fg_label, label,attribute) in enumerate(zip(self.query_list, self.search_list, self.fg_labels, self.labels,self.attributes)):
             
             for j in range(pair_outclass_num):
                 ind = np.random.randint(num)
-                while  ind in fg_labels_dict[fg_label]:
+                while  ind == i:
                     ind = np.random.randint(num)
                 inds.append(ind)
                 query_imgs.append(query_img)
