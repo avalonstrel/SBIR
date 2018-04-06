@@ -111,7 +111,6 @@ class SketchXDataset(data.Dataset):
 
         labels_dict = [[] for i in range(self.n_labels)]
         for i, label in enumerate(self.labels):
-            print(i,label)
             labels_dict[label].append(i)
 
         for i, (query_img, search_img, attribute, fg_label, label) in enumerate(zip(self.query_imgs, self.search_imgs, self.attributes, self.fg_labels, self.labels)):
@@ -142,6 +141,7 @@ class SketchXDataset(data.Dataset):
 
         labels_dict = [[] for i in range(self.n_labels)]
         for i, label in enumerate(self.labels):
+            print(i, label)
             labels_dict[label].append(i)
         fg_labels_dict = [[] for i in range(self.n_fg_labels)]
         for i, fg_label in enumerate(self.fg_labels):
