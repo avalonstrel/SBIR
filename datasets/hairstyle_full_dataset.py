@@ -84,7 +84,7 @@ class HairDataset(data.Dataset):
                                     self.attributes.append(self.attributes_dict[cls_name])
                                     self.fg_labels.append(fg_label)
                                     self.labels.append(label)
-                    fg_label += 1
+                        fg_label += 1
                     except:
                         print(photo_img,'is truncated in loading')
             label += 1
