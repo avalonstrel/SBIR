@@ -120,10 +120,10 @@ class SketchXDataset(data.Dataset):
 
         num = len(self.search_list)
         for i, (query_img, search_img, fg_label, label,attribute) in enumerate(zip(self.query_list, self.search_list, self.fg_labels, self.labels,self.attributes)):
-            
+            inds = [i]
             for j in range(pair_outclass_num):
                 ind = np.random.randint(num)
-                while  ind == i or ind in inds:
+                while ind in inds:
                     ind = np.random.randint(num)
                 inds.append(ind)
                 query_imgs.append(query_img)
