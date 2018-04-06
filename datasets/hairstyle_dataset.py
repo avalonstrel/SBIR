@@ -112,8 +112,11 @@ class HairStyleDataset(data.Dataset):
         if self.opt.phase == "train" and not self.opt.neg_flag == "moderate":
             if self.opt.task == 'fg_sbir':
                 self.generate_triplet(pair_inclass_num,pair_outclass_num)
+
             elif self.opt.task == 'cate_sbir':
                 self.generate_cate_triplet(pair_inclass_num,pair_inclass_num)  
+            elif self.opt.task == 'fg_sbir_cate_pos':
+                self.generate_triplet_cate_pos(pair_inclass_num,pair_inclass_num)
     def query_image(self):
         self.query_imgs = self.ori_sketch_imgs.copy()
         self.search_imgs = self.ori_photo_imgs.copy()
@@ -206,6 +209,61 @@ class HairStyleDataset(data.Dataset):
 
         self.query_imgs, self.search_neg_imgs, self.search_imgs, self.attributes, self.fg_labels, self.labels = query_imgs, search_neg_imgs, search_imgs, attributes, fg_labels, labels
 
+    def generate_triplet_cate_pos(self, pair_inclass_num, pair_outclass_num):
+        query_imgs, search_neg_imgs, search_imgs,attributes, fg_labels, labels = [],[],[],[],[],[]
+
+        labels_dict = [[] for i in range(self.n_labels)]
+        for i, label in enumerate(self.labels):
+            labels_dict[label].append(i)
+        fg_labels_dict = [[] for i in range(self.n_fg_labels)]
+        for i, fg_label in enumerate(self.fg_labels):
+            fg_labels_dict[fg_label].append(i)
+
+        for i, (query_img, search_img, fg_label, label,attribute) in enumerate(zip(self.query_imgs, self.search_imgs, self.fg_labels, self.labels, self.attributes)):
+            num = len(labels_dict[label])
+            inds = [labels_dict[label].index(i)]
+            for j in range(pair_inclass_num):
+                ind = np.random.randint(num)
+                while ind in inds or ind in fg_labels_dict[fg_label]:
+                    ind = np.random.randint(num)
+                inds.append(ind)
+                query_imgs.append(query_img)
+                search_neg_imgs.append(self.search_imgs[labels_dict[label][ind]])
+                search_imgs.append(search_img)
+                fg_labels.append(fg_label)
+                attributes.append(attribute)
+                labels.append(label)
+
+                cate_ind = np.random.randint(num)
+                while cate_ind in inds or cate_ind in fg_labels_dict[fg_label]:
+                    cate_ind = np.random.randint(num)
+                num = len(self.search_imgs)
+                fg_inds = [labels_dict[label].index(i)]
+                for k in range(pair_outclass_num):
+                    fg_ind = np.random.randint(num)
+                    while fg_ind in fg_inds or fg_ind in fg_labels_dict[fg_label] or fg_ind in labels_dict[label]:
+                        fg_ind = np.random.randint(num)
+                    fg_inds.append(fg_ind)
+                    query_imgs.append(query_img)
+                    search_neg_imgs.append(self.search_imgs[fg_ind])
+                    search_imgs.append(self.search_imgs[cate_ind])
+                    fg_labels.append(fg_label)
+                    attributes.append(attribute)
+                    labels.append(label)
+        num = len(self.search_imgs)
+        for i, (query_img, search_img, fg_label, label,attribute) in enumerate(zip(self.query_imgs, self.search_imgs, self.fg_labels, self.labels,self.attributes)):
+            inds = [labels_dict[label].index(i)]
+            for j in range(pair_outclass_num):
+                ind = np.random.randint(num)
+                while ind in inds or ind in fg_labels_dict[fg_label] or ind in labels_dict[label]:
+                    ind = np.random.randint(num)
+                inds.append(ind)
+                query_imgs.append(query_img)
+                search_neg_imgs.append(self.search_imgs[ind])
+                search_imgs.append(search_img)
+                fg_labels.append(fg_label)
+                attributes.append(attribute)
+                labels.append(label)
            
     def generate_triplet(self, pair_inclass_num, pair_outclass_num=0):
         query_imgs, search_neg_imgs, search_imgs,attributes, fg_labels, labels = [],[],[],[],[],[]
