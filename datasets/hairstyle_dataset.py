@@ -264,6 +264,7 @@ class HairStyleDataset(data.Dataset):
                 fg_labels.append(fg_label)
                 attributes.append(attribute)
                 labels.append(label)
+        self.query_imgs, self.search_neg_imgs, self.search_imgs, self.fg_labels, self.labels, self.attributes = query_imgs, search_neg_imgs, search_imgs, fg_labels, labels, attributes
            
     def generate_triplet(self, pair_inclass_num, pair_outclass_num=0):
         query_imgs, search_neg_imgs, search_imgs,attributes, fg_labels, labels = [],[],[],[],[],[]
