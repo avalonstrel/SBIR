@@ -46,7 +46,7 @@ class BaseOptions():
         self.parser.add_argument('--save_mode', action='store_true', default=True, help='Whether save embedded feature')
         self.parser.add_argument('--dataset_type', type=str, required=True, help='Dataset type')
         self.parser.add_argument('--image_type', type=str, default='EDGE', help='Image type')
-        self.parser.add_argument('--triplet_type', type=str, default='random', help='how to generate triplets')
+        self.parser.add_argument('--triplet_type', type=str, default='annotation', help='how to generate triplets')
         self.parser.add_argument('--sketch_type', type=str, default='GRAY', help='Sketch type')
         self.parser.add_argument('--serial_batches', action='store_true', help='if true, takes images in order to make batches, otherwise takes them randomly')
         self.parser.add_argument('--max_dataset_size', type=int, default=float("inf"), help='Maximum number of samples allowed per dataset. If the dataset directory contains more than max_dataset_size, only a subset is loaded.')
