@@ -72,7 +72,7 @@ def create_dataset(opt):
         from .hairstyle_dataset import HairStyleDataset
         return HairStyleDataset(opt)
     elif name == 'hairstyle_full':
-        from .hairstyle_full_dataset import HairStyleDataset
+        from .hairstyle_full_dataset import HairDataset
         return HairDataset(opt)
     elif name == 'sketchx':
         from .sketchx_dataset import SketchXDataset
