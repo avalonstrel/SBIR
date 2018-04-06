@@ -62,12 +62,15 @@ class SketchXDataset(data.Dataset):
 
         self.image_imgs = {}
         self.sketch_imgs = {}
+        self.image_list = []
+        self.sketch_list = []
         self.image_neg_imgs = []
         self.fg_labels = []
-
+        j=0
         for root, subFolders, files in os.walk(sketch_root):
             sketch_pat = re.compile("\d+.png")
             sketch_imgs = list(filter(lambda fname:sketch_pat.match(fname), files))
+
             if len(sketch_imgs) == 0:
                 continue
             for i, sketch_img in enumerate(sketch_imgs):
@@ -76,13 +79,17 @@ class SketchXDataset(data.Dataset):
                 ind = int(digit)
                 self.sketch_imgs[ind] = os.path.join(sketch_root, sketch_img)
                 self.image_imgs[ind] = image_img #os.path.join(image_root, image_img)
-
+                self.image_list.append(image_img)
+                self.sketch_list.append(os.path.join(sketch_root, sketch_img))
+                self.fg_labels.append(j)
+            j+=1
         self.ori_sketch_imgs = self.sketch_imgs.copy()
         self.ori_photo_imgs = self.image_imgs.copy()
         self.ori_labels = self.labels.copy()
         self.ori_fg_labels = self.fg_labels.copy()
         self.ori_attributes = self.attributes.copy()
-
+        self.ori_sketch_list = self.sketch_list.copy()
+        self.ori_image_list = self.image_list.copy()
         print("{} images loaded.".format(len(self.image_imgs)))
         
         # For generate triplet
@@ -90,8 +97,8 @@ class SketchXDataset(data.Dataset):
             self.query_image()
         elif self.query_what == "sketch":
             self.query_sketch()
-        
-        self.generate_triplet_all()
+        if self.opt.phase == 'train':
+            self.generate_triplet_all()
         print("Total Sketchy Class:{}, fg class: {}".format(self.n_labels, self.n_fg_labels))       
         print("{} images loaded. After generate triplet".format(len(self.query_imgs)))
 
@@ -102,75 +109,27 @@ class SketchXDataset(data.Dataset):
         elif self.opt.triplet_type == 'random':
             if self.opt.task == 'fg_sbir':
                 self.generate_triplet(pair_inclass_num, pair_outclass_num)
-            elif self.opt.task == 'cate_sbir':
-                self.generate_cate_triplet(pair_inclass_num, pair_outclass_num)
-
-
-    def generate_cate_triplet(self, pair_inclass_num, pair_outclass_num):
-        query_imgs, search_imgs, search_neg_imgs, attributes, fg_labels, labels = [],[],[],[],[]
-
-        labels_dict = [[] for i in range(self.n_labels)]
-        for i, label in enumerate(self.labels):
-            labels_dict[label].append(i)
-
-        for i, (query_img, search_img, attribute, fg_label, label) in enumerate(zip(self.query_imgs, self.search_imgs, self.attributes, self.fg_labels, self.labels)):
-
-            
-            for t, l in enumerate(labels_dict[label]):
-                if l != i and t < pair_inclass_num:
-                    for j in range(pair_outclass_num):
-                        ind_label = np.random.randint(self.n_labels)
-                        while ind_label == label:
-
-                            ind_label = np.random.randint(self.n_labels)
-                        #print(ind_label)
-                        ind = np.random.randint(len(labels_dict[ind_label]))
-                        
-                        query_imgs.append(query_img)
-                        search_imgs.append(self.search_imgs[l])
-                        attributes.append(attribute)
-                        search_neg_imgs.append(self.search_imgs[labels_dict[ind_label][ind]])
-                        fg_labels.append(fg_label)
-                        labels.append(label)
-
-        self.query_imgs, self.search_neg_imgs, self.search_imgs, self.attributes, self.fg_labels, self.labels = query_imgs, search_neg_imgs, search_imgs, attributes, fg_labels, labels
+        
 
            
     def generate_triplet(self, pair_inclass_num, pair_outclass_num=0):
         query_imgs, search_neg_imgs, search_imgs,attributes, fg_labels, labels = [],[],[],[],[],[]
 
-        labels_dict = [[] for i in range(self.n_labels)]
-        for i, label in enumerate(self.labels):
-            print(i, label)
-            labels_dict[label].append(i)
+        
         fg_labels_dict = [[] for i in range(self.n_fg_labels)]
         for i, fg_label in enumerate(self.fg_labels):
             fg_labels_dict[fg_label].append(i)
 
-        for i, (query_img, search_img, fg_label, label,attribute) in enumerate(zip(self.query_imgs, self.search_imgs, self.fg_labels, self.labels, self.attributes)):
-            num = len(labels_dict[label])
-            inds = [labels_dict[label].index(i)]
-            for j in range(pair_inclass_num):
-                ind = np.random.randint(num)
-                while ind in inds or ind in fg_labels_dict[fg_label]:
-                    ind = np.random.randint(num)
-                inds.append(ind)
-                query_imgs.append(query_img)
-                search_neg_imgs.append(self.search_imgs[labels_dict[label][ind]])
-                search_imgs.append(search_img)
-                fg_labels.append(fg_label)
-                attributes.append(attribute)
-                labels.append(label)
-        num = len(self.search_imgs)
-        for i, (query_img, search_img, fg_label, label,attribute) in enumerate(zip(self.query_imgs, self.search_imgs, self.fg_labels, self.labels,self.attributes)):
-            inds = [labels_dict[label].index(i)]
+        num = len(self.search_list)
+        for i, (query_img, search_img, fg_label, label,attribute) in enumerate(zip(self.query_list, self.search_list, self.fg_labels, self.labels,self.attributes)):
+            
             for j in range(pair_outclass_num):
                 ind = np.random.randint(num)
-                while ind in inds or ind in fg_labels_dict[fg_label] or ind in labels_dict[label]:
+                while  ind in fg_labels_dict[fg_label]:
                     ind = np.random.randint(num)
                 inds.append(ind)
                 query_imgs.append(query_img)
-                search_neg_imgs.append(self.search_imgs[ind])
+                search_neg_imgs.append(self.search_list[ind])
                 search_imgs.append(search_img)
                 fg_labels.append(fg_label)
                 attributes.append(attribute)
@@ -209,7 +168,8 @@ class SketchXDataset(data.Dataset):
         self.search_neg_imgs = self.ori_photo_imgs.copy()
         self.labels = self.ori_labels.copy()
         self.fg_labels = self.ori_fg_labels.copy()
-        
+        self.query_list = self.ori_sketch_list.copy()
+        self.search_list = self.ori_image_list.copy()
         self.load_search = self.load_image
         self.load_query = self.load_sketch
         print("Query is Sketch Search Image")
@@ -219,7 +179,8 @@ class SketchXDataset(data.Dataset):
         self.search_neg_imgs = self.ori_sketch_imgs.copy()
         self.labels = self.ori_labels.copy()
         self.fg_labels = self.ori_fg_labels.copy()
-        
+        self.query_list = self.ori_image_list.copy()
+        self.search_list = self.ori_sketch_list.copy()        
         self.load_query = self.load_image
         self.load_search = self.load_sketch
         print("Query is Image Search Sketch")
