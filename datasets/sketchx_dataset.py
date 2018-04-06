@@ -123,7 +123,7 @@ class SketchXDataset(data.Dataset):
             
             for j in range(pair_outclass_num):
                 ind = np.random.randint(num)
-                while  ind == i:
+                while  ind == i or ind in inds:
                     ind = np.random.randint(num)
                 inds.append(ind)
                 query_imgs.append(query_img)
