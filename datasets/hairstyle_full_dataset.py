@@ -52,7 +52,7 @@ class HairDataset(data.Dataset):
                 continue
             sketch_imgs=[]
             cls_name = root[root.rfind('/')+1:]
-            print(len(photo_imgs))
+            #print(len(photo_imgs))
             for i, photo_img in enumerate(photo_imgs):
                 digit = re.findall("\d+", photo_img)[0]
                 if i >= start and i < end :
@@ -79,6 +79,7 @@ class HairDataset(data.Dataset):
                                 self.labels.append(label)
                     fg_label += 1
             label += 1
+        print(self.ori_photo_imgs[0])
         self.ori_photo_imgs  = self.photo_imgs.copy()
         self.ori_sketch_imgs = self.sketch_imgs.copy()
         self.ori_labels = self.labels.copy()
