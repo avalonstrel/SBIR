@@ -64,8 +64,10 @@ class HairDataset(data.Dataset):
                             sketch_imgs = list(filter(lambda fname:sketch_pat.match(fname),files))
                             for sketch_img in sketch_imgs:
                                 try:
-                                    Image.open(os.path.join(root,photo_img))
-                                    Image.open(os.path.join(root,sketch_img))
+                                    Image.open(os.path.join(root,photo_img)).convert('L')
+                                    Image.open(os.path.join(root,photo_img)).convert('RGB')
+                                    Image.open(os.path.join(root,sketch_img)).convert('L')
+                                    Image.open(os.path.join(root,sketch_img)).convert('RGB')
                                     self.photo_imgs.append(os.path.join(root,photo_img))
                                     if self.levels == "stack":
                                         sketch_other_img = sketch_img.replace("s.","c.")
