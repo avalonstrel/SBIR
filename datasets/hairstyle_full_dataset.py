@@ -52,6 +52,7 @@ class HairDataset(data.Dataset):
                 continue
             sketch_imgs=[]
             cls_name = root[root.rfind('/')+1:]
+            print(len(photo_imgs))
             for i, photo_img in enumerate(photo_imgs):
                 digit = re.findall("\d+", photo_img)[0]
                 if i >= start and i < end :
