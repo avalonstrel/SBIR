@@ -98,8 +98,8 @@ class SketchXDataset(data.Dataset):
             self.query_image()
         elif self.query_what == "sketch":
             self.query_sketch()
-        if self.opt.phase == 'train':
-            self.generate_triplet_all()
+        
+        self.generate_triplet_all()
         print("Total Sketchy Class:{}, fg class: {}".format(self.n_labels, self.n_fg_labels))       
         print("{} images loaded. After generate triplet".format(len(self.query_imgs)))
 
@@ -108,9 +108,10 @@ class SketchXDataset(data.Dataset):
         if self.opt.triplet_type == 'annotation':
             self.generate_annotation_triplet()
         elif self.opt.triplet_type == 'random':
-            if self.opt.task == 'fg_sbir':
+            if self.opt.task == 'fg_sbir' and self.opt.phase == 'train':
                 self.generate_triplet(pair_inclass_num, pair_outclass_num)
-        
+            elif self.opt.task == 'fg_sbir' and self.opt.phase == 'test':        
+                self.generate_triplet(0,1)
 
            
     def generate_triplet(self, pair_inclass_num, pair_outclass_num=0):
