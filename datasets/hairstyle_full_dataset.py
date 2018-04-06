@@ -79,7 +79,7 @@ class HairDataset(data.Dataset):
                                 self.labels.append(label)
                     fg_label += 1
             label += 1
-        print(self.ori_photo_imgs[0])
+        print(self.photo_imgs[0])
         self.ori_photo_imgs  = self.photo_imgs.copy()
         self.ori_sketch_imgs = self.sketch_imgs.copy()
         self.ori_labels = self.labels.copy()
