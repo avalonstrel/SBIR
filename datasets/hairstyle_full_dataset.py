@@ -84,7 +84,7 @@ class HairDataset(data.Dataset):
                                     self.attributes.append(self.attributes_dict[cls_name])
                                     self.fg_labels.append(fg_label)
                                     self.labels.append(label)
-                        fg_label += 1
+                         fg_label += 1
                     except:
                         print(photo_img,'is truncated in loading')
             label += 1
@@ -164,6 +164,7 @@ class HairDataset(data.Dataset):
         if self.opt.image_type == 'EDGE':
             gray_pil = Image.fromarray(pil_numpy)
             pil_numpy = np.array(gray_pil.convert('L'))
+            pil_numpy = to_rgb(pil_numpy)
         pil_numpy = cv2.resize(pil_numpy,(self.opt.scale_size,self.opt.scale_size))
         if self.transform_fun is not None:
             pil_numpy = self.transform_fun(pil_numpy)

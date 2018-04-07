@@ -199,7 +199,9 @@ class SketchXDataset(data.Dataset):
             pil_numpy = np.array(pil)
             #show('edge', pil_numpy)
             pil_numpy = cv2.Canny(pil_numpy, 0, 200)
-            pil_numpy = pil_numpy
+            
+        if 'densenet' in self.opt.feature_model:
+            pil_numpy = to_rgb(pil_numpy)
         #print('image{}'.format(pil_numpy.shape))
         #if self.opt.image_type == 'GRAY' or self.opt.image_type == 'EDGE':
         #    pil_numpy = pil_numpy.reshape(pil_numpy.shape + (1,))
@@ -218,7 +220,7 @@ class SketchXDataset(data.Dataset):
         pil = pil.convert('L')
         pil_numpy = np.array(pil)
 
-        if self.opt.sketch_type == 'RGB':
+        if self.opt.sketch_type == 'RGB' or 'densenet' in self.opt.feature_model:
             pil_numpy = to_rgb(pil_numpy)   
 
         transform_fun = self.transform_fun if self.mode == 'train' else self.test_transform_fun
