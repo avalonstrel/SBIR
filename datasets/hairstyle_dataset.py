@@ -153,6 +153,7 @@ class HairStyleDataset(data.Dataset):
         if self.opt.image_type == 'EDGE':
             gray_pil = Image.fromarray(pil_numpy)
             pil_numpy = np.array(gray_pil.convert('L'))
+            pil_numpy = to_rgb(pil_numpy)
         pil_numpy = cv2.resize(pil_numpy,(self.opt.scale_size,self.opt.scale_size))
         if self.transform_fun is not None:
             pil_numpy = self.transform_fun(pil_numpy)
