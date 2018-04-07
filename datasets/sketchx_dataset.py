@@ -200,7 +200,7 @@ class SketchXDataset(data.Dataset):
             #show('edge', pil_numpy)
             pil_numpy = cv2.Canny(pil_numpy, 0, 200)
             
-        if 'densenet' in self.opt.feature_model:
+        if 'densenet' in self.opt.feature_model and not self.opt.image_type == 'RGB':
             pil_numpy = to_rgb(pil_numpy)
         #print('image{}'.format(pil_numpy.shape))
         #if self.opt.image_type == 'GRAY' or self.opt.image_type == 'EDGE':
