@@ -328,6 +328,7 @@ class TripletModel(BaseModel):
 
         #if not (self.opt.dataset_type == 'sketchy' or self.opt.dataset_type == 'imagenet'):
         self.append_features(self.test_features, output0, output1, output2, labels)
+        print(self.test_features)
         if retrieval_now:
             self.retrieval_evaluation(final_layer_data, loss, labels)
         #self.cuda()
