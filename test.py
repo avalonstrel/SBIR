@@ -11,11 +11,11 @@ def test():
     opt = TestOptions().parse()
     test_data_loader = CustomDatasetDataLoader(opt)
     model = create_model(opt)
-    
+    print(opt)
     model.train(False)
     val_start_time = time.time()
     for i, batch_test_data in enumerate(test_data_loader, start=0):
-        model.test(batch_test_data)
+        model.test(batch_test_data,False)
     model.save_feature('test', 'test_epoch')
     if not opt.retrieval_now:
         model.test_features = model.combine_features(model.test_features)
