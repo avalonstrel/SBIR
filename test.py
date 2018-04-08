@@ -18,7 +18,7 @@ def test():
         model.test(batch_test_data,False)
     model.save_feature('test', 'test_epoch')
     if not opt.retrieval_now:
-        print(model.test_features)
+        #print(model.test_features)
         model.test_features = model.combine_features(model.test_features)
         model.retrieval_evaluation(model.test_features, model.test_result_record['total']['loss_value'].avg, model.test_features['labels'])
     print('Test Result:{}'.format(model.generate_message(model.test_result_record)))

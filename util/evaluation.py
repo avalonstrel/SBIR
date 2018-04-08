@@ -28,7 +28,7 @@ class AverageMeter(object):
         self.count += n
         self.avg = self.sum / self.count
 
-def retrieval_cosine_evaluation(output0, output1, category_labels, topk=(1,5),need_cpu=True):
+def retrieval_cosine_evaluation(output0, output1, category_labels, topk=(1,5,10),need_cpu=True):
     if need_cpu:
         output0 = output0.data.cpu()
         output1 = output1.data.cpu()
@@ -71,7 +71,7 @@ def retrieval_cosine_evaluation(output0, output1, category_labels, topk=(1,5),ne
     return correct / total * 100.0, correct_fg
 
 
-def retrieval_evaluation(output0, output1, category_labels, topk=(1,5),need_cpu=True):
+def retrieval_evaluation(output0, output1, category_labels, topk=(1,5,10),need_cpu=True):
     if need_cpu:
         output0 = output0.data.cpu()
         output1 = output1.data.cpu()
@@ -102,7 +102,8 @@ def retrieval_evaluation(output0, output1, category_labels, topk=(1,5),need_cpu=
         maxk_indices = prediction.argsort()[-maxk:][::-1]
 
         for top in topk:
-            print('Fg:{}, retreival top{}:{}'.format(i, top, maxk_indices))
+            if top == 10:
+                print('Fg:{}, retreival top{}:{}'.format(i, top, maxk_indices))
             if i in maxk_indices[:top]:
                 correct_fg[top] += 1
     #print(correct, total)
@@ -128,7 +129,7 @@ def retrieval_evaluation_parallel(output0,output1,category_labels,topk=(1,5)):
     total = predictions.shape[0]
     maxk = max(topk)
     for i, prediction in enumerate(predictions):
-        print("prediction:",np.argmax(prediction),"category:",category_labels[i],"predict category:",category_labels[np.argmax(prediction)])
+        #print("prediction:",np.argmax(prediction),"category:",category_labels[i],"predict category:",category_labels[np.argmax(prediction)])
         if category_labels[i] == category_labels[np.argmax(prediction)]:
             correct += 1
         maxk_indices = prediction.argsort()[-maxk:][::-1]
