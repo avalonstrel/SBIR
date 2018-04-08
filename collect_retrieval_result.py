@@ -8,6 +8,7 @@ from util.util import *
 from datasets.base_dataset import CustomDatasetDataLoader
 from models.base_model import create_model
 import matplotlib.pyplot as plt
+import re
 # parameters setting
 
 def load_attribute(path):
