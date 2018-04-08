@@ -347,6 +347,7 @@ class TripletModel(BaseModel):
         else:
             torch.save(self.test_features, save_path)
             #self.reset_test_features()
+            
     '''
     Save the model
     '''

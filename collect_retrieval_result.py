@@ -31,7 +31,7 @@ def load_attribute(path):
 
 opt = TrainOptions().parse()
 class Dataset():
-    def read_result(opt):
+    def read(opt):
         self.opt = opt
         self.root = opt.data_root
         self.flag = opt.loss_flag
@@ -101,7 +101,7 @@ class Dataset():
             label += 1
 
 
-dataset = Dataset().read_result(opt)
+dataset = Dataset().read(opt)
 
 retreival_result_file = 'retreival_result_51.txt'
 retrieval_result = read_result(retreival_result_file)
