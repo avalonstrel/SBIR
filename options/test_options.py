@@ -14,7 +14,9 @@ class TestOptions(BaseOptions):
         self.parser.add_argument('--continue_train', action='store_true', help='continue training: load the start epoch model')
         self.parser.add_argument('--load_only_feat_network',action='store_true', help='Load only feat model')
         self.parser.add_argument('--model_prefix',type=str, default='AttentionClsNetwork', help='Retrieval result when training?')
-
+        self.parser.add_argument('--loss_type', type=str, default='triplet|sphere_cls|attr,three_loss', help='The loss for training')        
+        self.parser.add_argument('--loss_rate', type=str, default='0,0.5,0.5', help='The loss rate for different loss')
+  
         self.update()
 
     def parse_specific_args(self):
@@ -22,5 +24,7 @@ class TestOptions(BaseOptions):
         self.opt.loss_type, self.opt.loss_flag = self.opt.loss_type.split(',')
         self.opt.loss_type = self.opt.loss_type.split('|')
         self.opt.augment_types = tuple(augment_type for augment_type in self.opt.augment_types.split(','))
+        self.opt.loss_type, self.opt.loss_flag = self.opt.loss_type.split(',')
+        self.opt.loss_type = self.opt.loss_type.split('|')
 
         self.opt.is_train = False
