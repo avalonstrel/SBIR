@@ -1,5 +1,6 @@
 import os
 import time
+from torchvision import transforms
 from options.train_options import TrainOptions
 from options.test_options import TestOptions
 from models.denseloss_model import *
@@ -110,7 +111,7 @@ for i, fig, result in enumerate(retrieval_result):
         plt.subplot(5,11, 11*i+j)
         plt.imshow(photo_imgs[photo_ind])
         plt.axis('off') 
-
+plt.savefig('result.png')
 
 def read_result(path):
     retrieval_result = {}
