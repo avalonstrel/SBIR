@@ -16,6 +16,7 @@ def test():
     val_start_time = time.time()
     for i, batch_test_data in enumerate(test_data_loader, start=0):
         model.test(batch_test_data)
+    model.save_feature('test', 'test_epoch')
     if not opt.retrieval_now:
         model.test_features = model.combine_features(model.test_features)
         model.retrieval_evaluation(model.test_features, model.test_result_record['total']['loss_value'].avg, model.test_features['labels'])
