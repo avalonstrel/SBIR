@@ -8,6 +8,25 @@ from datasets.base_dataset import CustomDatasetDataLoader
 from models.base_model import create_model
 import matplotlib.pyplot as plt
 # parameters setting
+
+def load_attribute(path):
+    with open(path) as reader:
+        categories = reader.readline()
+        categories = categories.strip().split()
+        attributes = {category:[] for category in categories}
+        length = 0
+        for line in reader:
+            length += 1
+            terms = line.strip().split()
+            terms = np.array([float(term) for term in terms])
+            if np.max(terms)-np.min(terms) != 0:
+                terms =  (terms - np.min(terms))/ (np.max(terms) - np.min(terms))
+            for i, term in enumerate(terms):
+                attributes[categories[i]].append(term)
+        attributes = {key:np.array(val) for key,val in attributes.items() }
+        return attributes, length
+
+
 opt = TrainOptions().parse()
 opt = opt
 root = opt.data_root
