@@ -31,7 +31,7 @@ def load_attribute(path):
 
 opt = TrainOptions().parse()
 class Dataset():
-    def read(opt):
+    def read(self,opt):
         self.opt = opt
         self.root = opt.data_root
         self.flag = opt.loss_flag
