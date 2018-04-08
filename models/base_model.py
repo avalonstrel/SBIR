@@ -79,3 +79,5 @@ class BaseModel():
             save_path = os.path.join(self.save_dir, save_filename)
         if os.path.exists(save_path):
             network.load_state_dict(torch.load(save_path))
+        else:
+            print("No loading path...")
