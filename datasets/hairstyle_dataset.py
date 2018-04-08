@@ -61,7 +61,7 @@ class HairStyleDataset(data.Dataset):
                             flag = "_" if mode == "train" and augment_type != "" else ""
                             sketch_pat = re.compile("cropped_"+augment_type+flag+str(digit)+level+".*\.png")
                             sketch_imgs = list(filter(lambda fname:sketch_pat.match(fname),files))
-                            print(sketch_imgs)
+                            #print(sketch_imgs)
                             for sketch_img in sketch_imgs:
                                 
                                 self.photo_imgs.append(os.path.join(root,photo_img))
