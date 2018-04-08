@@ -13,6 +13,7 @@ class TestOptions(BaseOptions):
         self.parser.add_argument('--no_densenet_pretrain', action='store_true', help='Whether use pretrained densenet')
         self.parser.add_argument('--continue_train', action='store_true', help='continue training: load the start epoch model')
         self.parser.add_argument('--load_only_feat_network',action='store_true', help='Load only feat model')
+        self.parser.add_argument('--model_prefix',type=str, default='AttentionClsNetwork', help='Retrieval result when training?')
 
         self.update()
 

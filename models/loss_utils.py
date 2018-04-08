@@ -169,7 +169,10 @@ class TripletLoss(torch.nn.Module):
 
     def forward(self, x0, x1, x2 ):
         # euclidian distance
-
+        x0 = F.normalize(x0)
+        x1 = F.normalize(x1)
+        x2 = F.normalize(x2)
+        
         diff_pos = x0 - x1
         diff_neg = x0 - x2
         #print(diff_pos.cpu().numpy())

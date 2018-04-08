@@ -245,7 +245,7 @@ class TripletSiameseNetwork(torch.nn.Module):
         if self.opt.stn:
             x = self.stn(x)
         out = self.feat_extractor(x)
-        out = F.normalize(out)
+        
         #out = self.bn(out)
         return out  
     def get_extractor(self, feature_model):
