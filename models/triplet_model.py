@@ -87,12 +87,13 @@ class TripletModel(BaseModel):
                 try:
                     #self.network.feat_extractor = torch.nn.DataParallel(self.network.module.feat_extractor)
                     #print(self.network.module.feat_extractor.state_dict())
+                    print('Load cnn....')
                     self.load_CNN(self.opt.model_prefix, self.opt.start_epoch_label, self.opt.trained_model_path )
                 except:
                     #self.network.module.feat_extractor = torch.nn.DataParallel(self.network.module.feat_extractor)
                     #print(self.network.module.feat_extractor.state_dict())
-                    self.load_CNN(self.opt.model_prefix, self.opt.start_epoch_label, self.opt.trained_model_path )
-
+                    #self.load_CNN(self.opt.model_prefix, self.opt.start_epoch_label, self.opt.trained_model_path )
+                    print('Can not load the data')   
                 
             else:
 
