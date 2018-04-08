@@ -103,7 +103,7 @@ class Dataset():
 
 dataset = Dataset().read(opt)
 
-retreival_result_file = 'retreival_result_51.txt'
+retreival_result_file = 'retreival_result.txt'
 retrieval_result = read_result(retreival_result_file)
 path_result = []
 plt.tight_layout()
