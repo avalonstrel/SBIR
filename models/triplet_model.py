@@ -88,7 +88,7 @@ class TripletModel(BaseModel):
                     #self.network.feat_extractor = torch.nn.DataParallel(self.network.module.feat_extractor)
                     #print(self.network.module.feat_extractor.state_dict())
                     print('Load cnn....')
-                    self.load_CNN(self.opt.model_prefix, self.opt.start_epoch_label, self.opt.trained_model_path )
+                    self.load_CNN('TripletSBIRNetwork', self.opt.start_epoch_label, self.opt.trained_model_path )
                 except:
                     #self.network.module.feat_extractor = torch.nn.DataParallel(self.network.module.feat_extractor)
                     #print(self.network.module.feat_extractor.state_dict())
@@ -363,8 +363,16 @@ class TripletModel(BaseModel):
     '''
     Only Load CNN Model
     '''
-    def load_CNN(self, model_prefix, epoch_label, load_path ):
-
+    def load_CNN(self, network_label, epoch_label, load_path ):
+        save_filename = '%s_net_%s.pth.tar' % (epoch_label, network_label)
+        if not load_path is None:
+            save_path = os.path.join(load_path, save_filename)
+        else:
+            save_path = os.path.join(self.save_dir, save_filename)
+        if os.path.exists(save_path):
+            network.load_state_dict(torch.load(save_path))
+        else:
+            print("No loading path...")
         self.load_network(self.network.feat_extractor, model_prefix , epoch_label, load_path=load_path)
     '''
     Load the model
