@@ -101,6 +101,19 @@ class Dataset():
             label += 1
 
 
+def read_result(path):
+    retrieval_result = {}
+    with open(path, 'r') as reader:
+        for line in reader:
+            fig, result = line.strip().split(',')
+            result = result[17:]
+            result = result[1:len(result)-1].split(' ')
+            result = [int(i) for i in result if i != '']
+            retrieval_result[int(fig[3:])] = result
+
+
+
+
 dataset = Dataset().read(opt)
 
 retreival_result_file = 'retreival_result.txt'
@@ -117,17 +130,4 @@ for i, fig, result in enumerate(retrieval_result):
         plt.imshow(dataset.photo_imgs[photo_ind])
         plt.axis('off') 
 plt.savefig('result.png')
-
-def read_result(path):
-    retrieval_result = {}
-    with open(path, 'r') as reader:
-        for line in reader:
-            fig, result = line.strip().split(',')
-            result = result[17:]
-            result = result[1:len(result)-1].split(' ')
-            result = [int(i) for i in result if i != '']
-            retrieval_result[int(fig[3:])] = result
-
-
-
 
