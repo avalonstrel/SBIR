@@ -11,6 +11,7 @@ class TestOptions(BaseOptions):
         #self.parser.add_argument('--continue_train', action='store_true', help='continue training: load the start epoch model')
         self.parser.add_argument('--augment_types', type=str, default=',cvt_dlg,cvt_dl', help='The augment type of the sketch data')
         self.parser.add_argument('--no_densenet_pretrain', action='store_true', help='Whether use pretrained densenet')
+        self.parser.add_argument('--continue_train', action='store_true', help='continue training: load the start epoch model')
 
         self.update()
 
