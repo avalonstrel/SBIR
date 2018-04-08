@@ -39,8 +39,6 @@ class TripletModel(BaseModel):
         self.cls_network = torch.nn.ModuleList([])
         self.feat_map = {} 
         self.result_record = {'total':self.record_initialize(False)}
-        self.features = []
-
         if 'sketch_cls' in self.opt.loss_type:
             self.cls_network.append(ClassificationNetwork(self.opt.feat_size, self.opt.n_labels))
             self.feat_map['sketch'] = len(self.feat_map) 
@@ -344,10 +342,10 @@ class TripletModel(BaseModel):
         save_path = os.path.join(feature_dir, save_filename)
         if mode == 'train':
             torch.save(self.features, save_path)
-            self.reset_features()
+            #self.reset_features()
         else:
             torch.save(self.test_features, save_path)
-            self.reset_test_features()
+            #self.reset_test_features()
     '''
     Save the model
     '''
