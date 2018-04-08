@@ -100,7 +100,9 @@ def retrieval_evaluation(output0, output1, category_labels, topk=(1,5),need_cpu=
         if category_labels[i] == category_labels[np.argmax(prediction)]:
             correct += 1
         maxk_indices = prediction.argsort()[-maxk:][::-1]
+
         for top in topk:
+            print('Fg:{}, retreival top{}:{}'.format(i, top, maxk_indices))
             if i in maxk_indices[:top]:
                 correct_fg[top] += 1
     #print(correct, total)
