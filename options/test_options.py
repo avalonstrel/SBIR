@@ -20,6 +20,6 @@ class TestOptions(BaseOptions):
     def parse_specific_args(self):
         BaseOptions.parse_specific_args(self)
         self.opt.loss_type, self.opt.loss_flag = self.opt.loss_type.split(',')
-        self.opt.loss_type = self.opt.loss_type.split('|')
+        self.opt.loss_type = [float(i) for i in self.opt.loss_type.split('|')]
         self.opt.augment_types = tuple(augment_type for augment_type in self.opt.augment_types.split(','))
         self.opt.is_train = False
