@@ -28,7 +28,7 @@ def hard_negative_mining(model, dataset, query_what, distance_fun, sample_num=(2
     dataloader = torch.utils.data.DataLoader(
                 dataset,
                 batch_size=20,
-                shuffle=False) 
+                shuffle=False)
     for i, batch_data in enumerate(dataloader):
         x0, x1, x2, attr, fg_label, label = batch_data
         x0 = Variable(x0.cuda())
@@ -37,7 +37,7 @@ def hard_negative_mining(model, dataset, query_what, distance_fun, sample_num=(2
 
         #print(x0, x1, x2)
         output0, output1, output2 = model(x0, x1, x2)
-        
+
         output0 = output0.data.cpu()
         output1 = output1.data.cpu()
         for j in range(output0.size(0)):
@@ -51,7 +51,7 @@ def hard_negative_mining(model, dataset, query_what, distance_fun, sample_num=(2
     for i, query in enumerate(query_collection):
         negative_inds = sample_negative(i, query, search_collection, ori_fg_labels, sample_num, distance_fun)
         for negative_ind in negative_inds:
-            
+
             query_imgs.append(dataset.query_imgs[i])
             search_imgs.append(dataset.search_imgs[i])
             search_neg_imgs.append(dataset.search_imgs[negative_ind])
@@ -92,6 +92,9 @@ def create_dataset(opt):
     elif name == 'coco':
         from .coco_edgemap_dataset import CoCoEdgeMapDataset
         return CoCoEdgeMapDataset(opt)
+    elif name == "sketchxv2":
+        from .sketchxv2_dataset import SketchXDataset
+        return SketchXDataset(opt)
     return None
 
 class ModerateNegativeBatchSampler(data.sampler.Sampler):
@@ -137,7 +140,7 @@ class CustomDatasetDataLoader():
         else:
             if not opt.retrieval_once:
                 batch_size = opt.batch_size
-            
+
 
             else:
                 batch_size = len(self.dataset)
@@ -145,7 +148,7 @@ class CustomDatasetDataLoader():
                 self.dataset,
                 batch_size=batch_size,
                 shuffle=not opt.serial_batches,
-                num_workers=int(opt.n_threads))        
+                num_workers=int(opt.n_threads))
         if opt.loss_type[0] == "moderate_triplet":
             self.batch_sampler = ModerateNegativeBatchSampler(self.dataset.labels_dict)
 
